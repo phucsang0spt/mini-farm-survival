@@ -1,0 +1,6 @@
+{
+  "appId": "com.spt.hc.mini.farm.survival",
+  "appName": "Mini Farm Survival",
+  "webDir": "build",
+  "bundledWebRuntime": false
+}

@@ -1,0 +1,7 @@
+{
+  "name": "mini-farm-survival",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
