@@ -8,7 +8,7 @@ export class Menu extends Scene<MenuUIProps> {
     return [];
   }
 
-  protected getUIProps() {
+  getUIProps() {
     return {
       onStart: () => {
         console.log("game start");

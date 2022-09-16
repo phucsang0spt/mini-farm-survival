@@ -37,15 +37,19 @@ export class Scene1 extends Scene {
     };
   }
 
-  protected getUIProps() {
-    return {};
+  getInitialData() {
+    return {
+      joystick: true,
+    };
   }
 
   onBootstrapDone(camera: SimpleCamera) {
-    camera.y -= this.backgroundSprite.height / 2;
-    camera.y += Renderer.scaler.screenUnitToCanvasUnit(
-      Renderer.scaler.screenSize.height / 2
-    );
+    const topOfBg = 0 - this.backgroundSprite.height / 2;
+    const targetPos = topOfBg + Renderer.height / 2;
+
+    const distanceUpCamera = camera.y - targetPos;
+    camera.y -= distanceUpCamera;
+    camera.y -= (Renderer.height - Renderer.scaler.viewport.height) / 2;
     camera.x += 130;
   }
 

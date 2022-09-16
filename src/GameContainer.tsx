@@ -25,16 +25,8 @@ export function GameContainer() {
         // logPopup
         scenes={[Menu, Scene1]}
         width={1280}
-        height={820}
-        // assetsFailBehavior={{
-        //   render: (errors) => (
-        //     <div
-        //       style={{ width: "100%", height: "100%", backgroundColor: "#39c" }}
-        //     >
-        //       {errors.map((t) => t.detail).join(",")}
-        //     </div>
-        //   ),
-        // }}
+        height={720}
+        joystick
         assetsLoader={<AssetsLoader bg={LoadingBG} />}
       />
     </Root>
