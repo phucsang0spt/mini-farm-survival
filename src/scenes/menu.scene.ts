@@ -5,7 +5,7 @@ import { MenuUI, MenuUIProps } from "./menu.ui.scene";
 @SceneUI(MenuUI)
 export class Menu extends Scene<MenuUIProps> {
   public getComponents() {
-    return [];
+    return [] as any[];
   }
 
   getUIProps() {

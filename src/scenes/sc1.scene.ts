@@ -13,9 +13,12 @@ import {
 } from "react-simple-game-engine/lib/export-types";
 import { SoundType } from "react-simple-game-engine/lib/export-enums";
 
-import background from "assets/images/survival-farm-map.png";
-
 import { Background } from "entities/background.entity";
+import { Farmer } from "entities/farmer.entity";
+
+import background from "assets/images/survival-farm-map.png";
+import farmer from "assets/images/farmer.png";
+
 import { GamePlayUI } from "./game-play.ui.scene";
 
 @SceneTag("scene-1")
@@ -23,6 +26,8 @@ import { GamePlayUI } from "./game-play.ui.scene";
 export class Scene1 extends Scene {
   @SpriteFrom(background)
   backgroundSprite!: Avatar;
+  @SpriteFrom(farmer)
+  farmerSprite!: Avatar;
 
   async onLoadAssets() {}
 
@@ -51,6 +56,9 @@ export class Scene1 extends Scene {
     camera.y -= distanceUpCamera;
     camera.y -= (Renderer.height - Renderer.scaler.viewport.height) / 2;
     camera.x += 130;
+
+    this.worldManagement.getEntity(Farmer).position.x = camera.x;
+    this.worldManagement.getEntity(Farmer).position.y = camera.y;
   }
 
   getComponents() {
@@ -60,6 +68,14 @@ export class Scene1 extends Scene {
         {
           props: {
             backgroundSprite: this.backgroundSprite,
+          },
+        },
+      ]),
+      new LogicComponent([
+        Farmer,
+        {
+          props: {
+            farmerSprite: this.farmerSprite,
           },
         },
       ]),
