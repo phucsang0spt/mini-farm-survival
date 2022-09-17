@@ -3,6 +3,7 @@ import {
   AvatarAnimationSprite,
   AvatarSprite,
   LogicComponent,
+  Matter,
   RectEntity,
 } from "react-simple-game-engine";
 import {
@@ -108,10 +109,7 @@ export class Farmer extends RectEntity<Props> {
         width: 32,
         height: 32,
       },
-      bodyOptions: {
-        isSensor: true,
-        isStatic: true,
-      },
+      enabledGravity: false,
     };
   }
 
@@ -131,7 +129,7 @@ export class Farmer extends RectEntity<Props> {
       }
     } else if (this.lastMove.vector.x < 0) {
       if (this.simpleCamera.x > this.position.x) {
-        this.simpleCamera.x = Renderer.constrainMin(this.position.x, nextX);
+        this.simpleCamera.x = Renderer.constrainMin(nextX, this.position.x);
       }
     }
 
@@ -141,7 +139,7 @@ export class Farmer extends RectEntity<Props> {
       }
     } else if (this.lastMove.vector.y < 0) {
       if (this.simpleCamera.y > this.position.y) {
-        this.simpleCamera.y = Renderer.constrainMin(this.position.y, nextY);
+        this.simpleCamera.y = Renderer.constrainMin(nextY, this.position.y);
       }
     }
 
@@ -158,16 +156,24 @@ export class Farmer extends RectEntity<Props> {
   }
 
   private moveFarmer(edge: EntityEdge) {
-    this.position.x = Renderer.constrain(
-      this.position.x + this.lastMove!.vector.x,
+    const nextPosition = {
+      x: this.position.x + this.lastMove!.vector.x,
+      y: this.position.y + this.lastMove!.vector.y,
+    };
+    nextPosition.x = Renderer.constrain(
+      nextPosition.x,
       edge.left + this.width / 2,
       edge.right - this.width / 2
     );
-    this.position.y = Renderer.constrain(
-      this.position.y + this.lastMove!.vector.y,
+    nextPosition.y = Renderer.constrain(
+      nextPosition.y,
       edge.top + this.height / 2,
       edge.bottom - this.height / 2
     );
+    Matter.Body.setPosition(this.body, {
+      x: nextPosition.x,
+      y: nextPosition.y,
+    });
   }
 
   private movement() {
@@ -198,7 +204,7 @@ export class Farmer extends RectEntity<Props> {
     this.scene.onJoystickAction((data) => {
       if (data.type === JoystickActionType.MOVE) {
         this.lastMove = {
-          vector: data.vector.mult(6 * data.weight),
+          vector: data.vector.mult(1.2 * (data.length / 40)),
           direction: data.direction,
         };
       } else {
