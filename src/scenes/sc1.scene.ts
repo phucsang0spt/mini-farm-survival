@@ -16,24 +16,31 @@ import { SoundType } from "react-simple-game-engine/lib/export-enums";
 
 import { Background } from "entities/background.entity";
 import { Farmer } from "entities/farmer.entity";
+import { Generator } from "entities/generator.entity";
+import { InvisibleWallPrefab } from "entities/invisible-wall.entity";
+import { Forground } from "entities/forground.entity";
 
 import background from "assets/images/survival-farm-map.png";
+import forground from "assets/images/survival-farm-map-forground.png";
 import invisibleWall from "assets/images/invisible-wall.jpg";
 import farmer from "assets/images/farmer.png";
 
 import invisibleWallOffsets from "data/invisible-wall-offsets.json";
 
 import { GamePlayUI } from "./game-play.ui.scene";
-import { Generator } from "entities/generator.entity";
-import { InvisibleWallPrefab } from "entities/invisible-wall.entity";
 
 @SceneTag("scene-1")
 @SceneUI(GamePlayUI)
 export class Scene1 extends Scene {
   @SpriteFrom(background)
   backgroundSprite!: Avatar;
+
+  @SpriteFrom(forground)
+  forgroundSprite!: Avatar;
+
   @SpriteFrom(invisibleWall)
   invisibleWallSprite!: Avatar;
+
   @SpriteFrom(farmer)
   farmerSprite!: Avatar;
 
@@ -69,7 +76,6 @@ export class Scene1 extends Scene {
       x: camera.x,
       y: camera.y,
     });
-    // this.worldManagement.getEntity(Farmer).position.y = camera.y;
   }
 
   getComponents() {
@@ -82,6 +88,7 @@ export class Scene1 extends Scene {
           },
         },
       ]),
+
       new InvisibleWallPrefab({
         props: {
           sprite: this.invisibleWallSprite,
@@ -101,6 +108,14 @@ export class Scene1 extends Scene {
         {
           props: {
             farmerSprite: this.farmerSprite,
+          },
+        },
+      ]),
+      new LogicComponent([
+        Forground,
+        {
+          props: {
+            forgroundSprite: this.forgroundSprite,
           },
         },
       ]),

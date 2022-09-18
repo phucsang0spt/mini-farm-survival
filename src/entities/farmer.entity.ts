@@ -204,7 +204,7 @@ export class Farmer extends RectEntity<Props> {
     this.scene.onJoystickAction((data) => {
       if (data.type === JoystickActionType.MOVE) {
         this.lastMove = {
-          vector: data.vector.mult(1.2 * (data.length / 40)),
+          vector: data.vector.mult(0.9 * (data.length / 35)),
           direction: data.direction,
         };
       } else {
