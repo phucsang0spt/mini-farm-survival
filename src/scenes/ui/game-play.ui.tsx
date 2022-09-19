@@ -13,6 +13,7 @@ import { Button } from "components/button";
 
 import heart from "assets/images/heart.png";
 import cog from "assets/images/cog.png";
+import waterBar from "assets/images/water-bar.png";
 
 const Root = styled.div`
   width: 100%;
@@ -34,6 +35,28 @@ const HeartStack = styled.div`
     + img {
       margin-left: 5px;
     }
+  }
+`;
+
+const WaterBar = styled.div`
+  position: relative;
+  width: 100px;
+  height: 16px;
+
+  img {
+    width: 100%;
+    height: 100%;
+  }
+
+  &::before {
+    position: absolute;
+    content: "";
+    top: 0;
+    left: 0;
+    width: 90%;
+    bottom: 0;
+    background-color: #036ee9c6;
+    z-index: -1;
   }
 `;
 
@@ -59,6 +82,11 @@ export function GamePlayUI({ scene }: GamePlayUIProps) {
           }
         </Watcher>
       </HeartStack>
+      <Control top={40} left={10}>
+        <WaterBar>
+          <img src={waterBar} alt="" />
+        </WaterBar>
+      </Control>
       <Control top={20} right={20} yAxisOriginCenter>
         <Button size="small" onClick={() => ref.current!.open()} src={cog} />
       </Control>

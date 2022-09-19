@@ -51,7 +51,7 @@ export class Scene1 extends Scene {
   @SpriteFrom(farmer)
   farmerSprite!: Avatar;
 
-  @SoundFrom(backgroundMusic, SoundType.BACKGROUND)
+  @SoundFrom({ src: backgroundMusic, volumn: 0.5 }, SoundType.BACKGROUND)
   backgroundMusic!: Sound;
 
   async onLoadAssets() {}
