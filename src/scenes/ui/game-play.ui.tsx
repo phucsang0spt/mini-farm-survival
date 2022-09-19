@@ -2,12 +2,14 @@ import { useRef } from "react";
 import styled from "styled-components";
 import { Scene } from "react-simple-game-engine";
 import {
+  Control,
   Modal,
   RefModalFunctions,
   Watcher,
 } from "react-simple-game-engine/lib/utilities";
 
 import { SettingsPanel } from "components/settings-panel";
+import { Button } from "components/button";
 
 import heart from "assets/images/heart.png";
 import cog from "assets/images/cog.png";
@@ -35,16 +37,6 @@ const HeartStack = styled.div`
   }
 `;
 
-const SettingsButton = styled.img`
-  position: absolute;
-  top: 20px;
-  right: 10px;
-
-  width: 20px;
-  height: 20px;
-  transform: translateY(-50%);
-`;
-
 export type GamePlayUIProps = {
   scene: Scene;
 };
@@ -67,7 +59,9 @@ export function GamePlayUI({ scene }: GamePlayUIProps) {
           }
         </Watcher>
       </HeartStack>
-      <SettingsButton onClick={() => ref.current!.open()} src={cog} alt="" />
+      <Control top={20} right={20} yAxisOriginCenter>
+        <Button size="small" onClick={() => ref.current!.open()} src={cog} />
+      </Control>
     </Root>
   );
 }

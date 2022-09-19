@@ -1,5 +1,6 @@
 import { Scene } from "react-simple-game-engine/lib";
 import {
+  Control,
   SoundBackgroundWatcher,
   SoundOnceWatcher,
 } from "react-simple-game-engine/lib/utilities";
@@ -22,15 +23,6 @@ const Root = styled.div<{
   padding: 20px;
   position: relative;
   border-radius: 4px;
-`;
-
-const CloseBtn = styled.img`
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 20px;
-  height: 20px;
-  translate: 50% -50%;
 `;
 
 const SoundStack = styled.div`
@@ -68,7 +60,9 @@ export function SettingsPanel({
 }: SettingsPanelProps) {
   return (
     <Root width={Renderer.scaler.screenSizeUI.width}>
-      <CloseBtn onClick={closeModal} src={close} alt="" />
+      <Control top={0} right={0} xAxisOriginCenter yAxisOriginCenter>
+        <Button size="small" onClick={closeModal} src={close} />
+      </Control>
       <ButtonStack>
         <SoundStack>
           <SoundBackgroundWatcher scene={scene}>
@@ -82,7 +76,12 @@ export function SettingsPanel({
             )}
           </SoundOnceWatcher>
         </SoundStack>
-        <Button src={home} />
+        <Button
+          src={home}
+          onClick={() => {
+            scene.switchToScene("menu");
+          }}
+        />
       </ButtonStack>
     </Root>
   );
