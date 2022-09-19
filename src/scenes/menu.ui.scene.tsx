@@ -19,6 +19,10 @@ const Root = styled.div`
   img:last-child {
     margin-top: 30px;
   }
+
+  img:first-child {
+    max-width: 90%;
+  }
 `;
 
 export type MenuUIProps = {

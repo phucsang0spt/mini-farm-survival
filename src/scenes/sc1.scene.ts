@@ -65,11 +65,12 @@ export class Scene1 extends Scene {
 
   onBootstrapDone(camera: SimpleCamera) {
     const topOfBg = 0 - this.backgroundSprite.height / 2;
-    const targetPos = topOfBg + Renderer.height / 2;
+    const targetPos = topOfBg + this.renderer.height / 2;
 
     const distanceUpCamera = camera.y - targetPos;
     camera.y -= distanceUpCamera;
-    camera.y -= (Renderer.height - Renderer.scaler.viewport.height) / 2;
+    camera.y -=
+      (this.renderer.height - this.renderer.scaler.viewport.height) / 2;
     camera.x += 130;
 
     Matter.Body.setPosition(this.worldManagement.getEntity(Farmer).body, {
@@ -88,7 +89,6 @@ export class Scene1 extends Scene {
           },
         },
       ]),
-
       new InvisibleWallPrefab({
         props: {
           sprite: this.invisibleWallSprite,

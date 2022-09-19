@@ -37,6 +37,7 @@ const SettingsButton = styled.img`
   height: 20px;
   transform: translateY(-50%);
 `;
+
 export type GamePlayUIProps = {
   scene: Scene;
 };
@@ -44,6 +45,7 @@ export type GamePlayUIProps = {
 export function GamePlayUI({ scene }: GamePlayUIProps) {
   return (
     <Root>
+      {/* <Modal defaultOpen content={<SettingsPanel />} /> */}
       <HeartStack>
         <Watcher
           names="farmer-hp"
