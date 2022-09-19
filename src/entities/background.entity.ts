@@ -2,6 +2,7 @@ import {
   AvatarSprite,
   LogicComponent,
   RectEntity,
+  Sound,
 } from "react-simple-game-engine";
 
 import {
@@ -11,6 +12,7 @@ import {
 
 type Props = {
   backgroundSprite: Avatar;
+  backgroundMusic: Sound;
 };
 export class Background extends RectEntity<Props> {
   protected onPrepare(): EntityPrepare<this> {
@@ -32,5 +34,16 @@ export class Background extends RectEntity<Props> {
         isStatic: true,
       },
     };
+  }
+
+  onActive() {
+    this.props.backgroundMusic.play();
+    this.scene.onSoundBackgroundOptionsChange(({ canPlay }) => {
+      if (canPlay) {
+        this.props.backgroundMusic.play();
+      } else {
+        this.props.backgroundMusic.stop();
+      }
+    });
   }
 }

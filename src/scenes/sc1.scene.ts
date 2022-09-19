@@ -7,6 +7,8 @@ import {
   SceneUI,
   SimpleCamera,
   Matter,
+  SoundFrom,
+  Sound,
 } from "react-simple-game-engine";
 import {
   type Avatar,
@@ -28,6 +30,8 @@ import forground from "assets/images/survival-farm-map-forground.png";
 import invisibleWall from "assets/images/invisible-wall.jpg";
 import farmer from "assets/images/farmer.png";
 
+import backgroundMusic from "assets/sounds/music.wav";
+
 import invisibleWallOffsets from "data/invisible-wall-offsets.json";
 
 import { GamePlayUI } from "./ui/game-play.ui";
@@ -46,6 +50,9 @@ export class Scene1 extends Scene {
 
   @SpriteFrom(farmer)
   farmerSprite!: Avatar;
+
+  @SoundFrom(backgroundMusic, SoundType.BACKGROUND)
+  backgroundMusic!: Sound;
 
   async onLoadAssets() {}
 
@@ -89,6 +96,7 @@ export class Scene1 extends Scene {
         {
           props: {
             backgroundSprite: this.backgroundSprite,
+            backgroundMusic: this.backgroundMusic,
           },
         },
       ]),
