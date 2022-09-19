@@ -1,11 +1,24 @@
-import { Scene, SceneTag, SceneUI } from "react-simple-game-engine";
-import { MenuUI, MenuUIProps } from "./menu.ui.scene";
+import { Saver, Scene, SceneTag, SceneUI } from "react-simple-game-engine";
+import {
+  SoundStoreKey,
+  SoundType,
+} from "react-simple-game-engine/lib/export-enums";
+import { GetSoundOptions } from "react-simple-game-engine/lib/export-types";
+
+import { MenuUI, MenuUIProps } from "./ui/menu.ui";
 
 @SceneTag("menu")
 @SceneUI(MenuUI)
 export class Menu extends Scene<MenuUIProps> {
-  public getComponents() {
-    return [] as any[];
+  protected getSoundOptions(): GetSoundOptions {
+    return {
+      [SoundType.ONCE]: {
+        canPlay: Saver.get(SoundStoreKey.ONCE, Boolean),
+      },
+      [SoundType.BACKGROUND]: {
+        canPlay: Saver.get(SoundStoreKey.BACKGROUND, Boolean),
+      },
+    };
   }
 
   getUIProps() {

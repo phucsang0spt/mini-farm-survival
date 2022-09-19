@@ -1,36 +1,35 @@
-import { Scene } from "react-simple-game-engine/lib";
+import styled from "styled-components";
+
 import {
   SoundBackgroundWatcher,
   SoundOnceWatcher,
 } from "react-simple-game-engine/lib/utilities";
-import styled from "styled-components";
+import { Scene } from "react-simple-game-engine";
 
-import close from "assets/images/close.png";
-import home from "assets/images/home.png";
+import { SoundButton } from "components/sound-button";
+import { Button } from "components/button";
 
-import { SoundButton } from "./sound-button";
-import { Button } from "./button";
+import background from "assets/images/menu-background.png";
+import play from "assets/images/play.png";
+import title from "assets/images/menu-title.png";
 
-const Root = styled.div<{
-  width: number;
-}>`
-  width: ${({ width }) => width};
-  max-width: 400px;
-  min-width: 300px;
-  background-color: #b79962;
-  border: 2px solid #9f7f48;
-  padding: 20px;
-  position: relative;
-  border-radius: 4px;
-`;
+const Root = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-image: url("${background}");
 
-const CloseBtn = styled.img`
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 20px;
-  height: 20px;
-  translate: 50% -50%;
+  > * {
+    translate: 0 -50px;
+  }
+
+  > img:first-child {
+    max-width: 90%;
+    margin-bottom: 20px;
+  }
 `;
 
 const SoundStack = styled.div`
@@ -57,18 +56,15 @@ const ButtonStack = styled.div`
   }
 `;
 
-type SettingsPanelProps = {
-  close?: () => void;
+export type MenuUIProps = {
+  onStart: () => void;
   scene: Scene;
 };
 
-export function SettingsPanel({
-  scene,
-  close: closeModal,
-}: SettingsPanelProps) {
+export function MenuUI({ onStart, scene }: MenuUIProps) {
   return (
-    <Root width={Renderer.scaler.screenSizeUI.width}>
-      <CloseBtn onClick={closeModal} src={close} alt="" />
+    <Root>
+      <img src={title} alt="" />
       <ButtonStack>
         <SoundStack>
           <SoundBackgroundWatcher scene={scene}>
@@ -82,7 +78,7 @@ export function SettingsPanel({
             )}
           </SoundOnceWatcher>
         </SoundStack>
-        <Button src={home} />
+        <Button src={play} onClick={onStart} />
       </ButtonStack>
     </Root>
   );

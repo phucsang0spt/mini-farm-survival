@@ -1,6 +1,13 @@
+import { useRef } from "react";
 import styled from "styled-components";
 import { Scene } from "react-simple-game-engine";
-import { Watcher } from "react-simple-game-engine/lib/utilities";
+import {
+  Modal,
+  RefModalFunctions,
+  Watcher,
+} from "react-simple-game-engine/lib/utilities";
+
+import { SettingsPanel } from "components/settings-panel";
 
 import heart from "assets/images/heart.png";
 import cog from "assets/images/cog.png";
@@ -43,9 +50,10 @@ export type GamePlayUIProps = {
 };
 
 export function GamePlayUI({ scene }: GamePlayUIProps) {
+  const ref = useRef<RefModalFunctions>();
   return (
     <Root>
-      {/* <Modal defaultOpen content={<SettingsPanel />} /> */}
+      <Modal ref={ref} content={<SettingsPanel scene={scene} />} />
       <HeartStack>
         <Watcher
           names="farmer-hp"
@@ -59,7 +67,7 @@ export function GamePlayUI({ scene }: GamePlayUIProps) {
           }
         </Watcher>
       </HeartStack>
-      <SettingsButton src={cog} alt="" />
+      <SettingsButton onClick={() => ref.current!.open()} src={cog} alt="" />
     </Root>
   );
 }

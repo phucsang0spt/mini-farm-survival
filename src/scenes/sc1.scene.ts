@@ -12,7 +12,10 @@ import {
   type Avatar,
   GetSoundOptions,
 } from "react-simple-game-engine/lib/export-types";
-import { SoundType } from "react-simple-game-engine/lib/export-enums";
+import {
+  SoundStoreKey,
+  SoundType,
+} from "react-simple-game-engine/lib/export-enums";
 
 import { Background } from "entities/background.entity";
 import { Farmer } from "entities/farmer.entity";
@@ -27,7 +30,7 @@ import farmer from "assets/images/farmer.png";
 
 import invisibleWallOffsets from "data/invisible-wall-offsets.json";
 
-import { GamePlayUI } from "./game-play.ui.scene";
+import { GamePlayUI } from "./ui/game-play.ui";
 
 @SceneTag("scene-1")
 @SceneUI(GamePlayUI)
@@ -49,10 +52,10 @@ export class Scene1 extends Scene {
   protected getSoundOptions(): GetSoundOptions {
     return {
       [SoundType.ONCE]: {
-        canPlay: Saver.get("sound", Boolean),
+        canPlay: Saver.get(SoundStoreKey.ONCE, Boolean),
       },
       [SoundType.BACKGROUND]: {
-        canPlay: Saver.get("background-music", Boolean),
+        canPlay: Saver.get(SoundStoreKey.BACKGROUND, Boolean),
       },
     };
   }

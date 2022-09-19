@@ -24,7 +24,6 @@ export function GameContainer() {
       <GameBootstrap
         // logPopup
         scenes={[Menu, Scene1]}
-        // scenes={[Scene1]}
         width={1280}
         height={720}
         joystick

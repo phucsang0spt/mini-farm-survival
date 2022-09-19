@@ -1,23 +1,29 @@
-import { ButtonHTMLAttributes } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
-const Root = styled.button`
-  border: 1px solid #39c;
-  border-radius: 0;
-  width: unset;
-  height: unset;
-  padding: 5px;
-  line-height: 0px;
-  background-color: #fff;
-  cursor: pointer;
+const Root = styled.img<{
+  size: number;
+}>`
+  ${({ size }) => css`
+    width: ${size}px;
+    height: ${size}px;
+  `}
 
-  + button {
-    margin-left: 15px;
-  }
+  object-fit: cover;
 `;
 
-export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {};
+type ButtonProps = {
+  src: string;
+  size?: "default" | "small";
+  onClick?: () => void;
+};
 
-export function Button({ children, ...props }: ButtonProps) {
-  return <Root {...props}>{children}</Root>;
+export function Button({ onClick, size = "default", src }: ButtonProps) {
+  return (
+    <Root
+      onClick={onClick}
+      size={size === "default" ? 30 : 20}
+      alt=""
+      src={src}
+    />
+  );
 }
