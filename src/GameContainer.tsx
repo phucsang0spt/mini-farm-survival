@@ -91,7 +91,7 @@ export function GameContainer() {
   return (
     <Root>
       <GameBootstrap
-        // logPopup
+        logPopup={process.env.NODE_ENV !== "production"}
         scenes={[Menu, Scene1]}
         width={1280}
         height={720}
