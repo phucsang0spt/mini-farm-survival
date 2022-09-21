@@ -21,3 +21,12 @@ export function toText(obj: Record<string, any> | Record<string, any>[]) {
     return obj;
   }
 }
+
+export function paginatedList<I = any>(list: I[], pageSize: number) {
+  const rows = Math.ceil(list.length / pageSize);
+  return Array.from({ length: rows }).map((_, i) => {
+    const start = i * pageSize;
+    const end = start + pageSize;
+    return list.slice(start, end);
+  });
+}

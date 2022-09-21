@@ -1131,7 +1131,7 @@
   resolved "https://registry.yarnpkg.com/@capacitor/keyboard/-/keyboard-4.0.1.tgz#36cd5f8aa2ef87a722f318e525d1bda12e7811d1"
   integrity sha512-JZVci2v9jAKH0sIoNNZzmw/cWGXWf+KneLt0yDr/6YSs/2/tfuH10yOrUOhgrKFkR+fFj/rddTClQXUQ8Rqcrg==
 
-"@capacitor/status-bar@4.0.1":
+"@capacitor/status-bar@^4.0.1":
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/@capacitor/status-bar/-/status-bar-4.0.1.tgz#d1320add5f4ef383394b94beae45a0c5af7250e1"
   integrity sha512-BmEyOf3m/hAf8bO4hCX0m5gpQPSgd05mGYl+9E841WUZeJjcYlmiG/EBshAUb2uGCVtyNaG36yPXB0r0Ypg+rw==
@@ -7709,10 +7709,10 @@ react-scripts@^5.0.0:
   optionalDependencies:
     fsevents "^2.3.2"
 
-react-simple-game-engine@^0.2.89:
-  version "0.2.89"
-  resolved "https://registry.yarnpkg.com/react-simple-game-engine/-/react-simple-game-engine-0.2.89.tgz#5b4827ca1e60ae34b5fdb8a4497df2f748b68c2c"
-  integrity sha512-LYWZWgOtFbJdxAa7/NARUaH48b4VL6iTk7KHeCF97DXqK/xB2vMYpz/gI/6wdpKxk6daGaevqvAI2Y3oQVHCvA==
+react-simple-game-engine@^0.2.92:
+  version "0.2.92"
+  resolved "https://registry.yarnpkg.com/react-simple-game-engine/-/react-simple-game-engine-0.2.92.tgz#3ab2b40a78bb30c2c5fb2b8b173129e7ae892885"
+  integrity sha512-tZmGPVpzj6bA2k7E4zKE0uETMroM9eczzNgg4OyOgUn+yElIz+9r+LQAmJa1mDYnU48CUgyimOAnxXSXXNw86w==
   dependencies:
     "@types/matter-js" "^0.17.7"
     "@types/p5" "^1.4.2"

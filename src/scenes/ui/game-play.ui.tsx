@@ -10,13 +10,17 @@ import {
 } from "react-simple-game-engine/lib/utilities";
 
 import { SettingsPanel } from "components/settings-panel";
+import { BackpackPanel } from "components/backpack-panel";
+
 import { Button } from "components/button";
 import { BlockItem } from "components/block-item";
 import { BasketTool } from "components/basket-tool";
 
 import heart from "assets/images/heart.png";
 import cog from "assets/images/cog.png";
+import cogBag from "assets/images/coin-bag.png";
 import waterBar from "assets/images/water-bar.png";
+import backpack from "assets/images/backpack.png";
 
 import axe from "assets/images/items/tools/axe.png";
 import pickaxe from "assets/images/items/tools/pickaxe.png";
@@ -81,15 +85,27 @@ const ToolStack = styled.div`
   }
 `;
 
+const CoinValue = styled.span`
+  font-size: 0.9rem;
+  line-height: 0.9rem;
+  color: #000;
+`;
+
 export type GamePlayUIProps = {
   scene: Scene;
 };
 
 export function GamePlayUI({ scene }: GamePlayUIProps) {
-  const ref = useRef<RefModalFunctions>();
+  const refSettings = useRef<RefModalFunctions>();
+  const refBackpack = useRef<RefModalFunctions>();
   return (
     <Root>
-      <Modal ref={ref} content={<SettingsPanel scene={scene} />} />
+      <Modal ref={refSettings} content={<SettingsPanel scene={scene} />} />
+      <Modal
+        ref={refBackpack}
+        defaultOpen
+        content={<BackpackPanel scene={scene} />}
+      />
       <HeartStack>
         <Watcher
           names="farmer-hp"
@@ -103,10 +119,17 @@ export function GamePlayUI({ scene }: GamePlayUIProps) {
           }
         </Watcher>
       </HeartStack>
-      <Control top={40} left={10}>
+      <Control alignment="center" orientation="horizontal" top={40} left={10}>
         <WaterBar>
           <img src={waterBar} alt="" />
         </WaterBar>
+        <div style={{ width: 10 }} />
+        <BlockItem
+          onPress={() => refBackpack.current!.open()}
+          background={false}
+          size="small"
+          sprite={backpack}
+        />
       </Control>
       <Control
         bottom={20}
@@ -120,7 +143,7 @@ export function GamePlayUI({ scene }: GamePlayUIProps) {
           <BlockItem sprite={""} />
           <BlockItem sprite={""} />
 
-          <div style={{ width: 23 }} />
+          <div style={{ width: 20 }} />
           <BlockItem highlight sprite={punch} />
         </ToolStack>
       </Control>
@@ -136,7 +159,25 @@ export function GamePlayUI({ scene }: GamePlayUIProps) {
       </Control>
 
       <Control top={20} right={20} yAxisOriginCenter>
-        <Button size="small" onClick={() => ref.current!.open()} src={cog} />
+        <ControlContainer>
+          <Control top={0} right={20 + 20 + 0} yAxisOriginCenter>
+            <ControlContainer>
+              <Control top={0} right={3 + 22} yAxisOriginCenter>
+                <CoinValue>1000</CoinValue>
+              </Control>
+              <Control top={0} right={0} yAxisOriginCenter>
+                <BlockItem sprite={cogBag} size="small" background={false} />
+              </Control>
+            </ControlContainer>
+          </Control>
+          <Control top={0} right={0} yAxisOriginCenter>
+            <Button
+              size="small"
+              onClick={() => refSettings.current!.open()}
+              src={cog}
+            />
+          </Control>
+        </ControlContainer>
       </Control>
     </Root>
   );

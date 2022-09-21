@@ -36,7 +36,7 @@ export function FoodBasket({ list }: FoodBasketProps) {
                 <BlockItem
                   key={j}
                   sprite={cols[j].sprite}
-                  volumn={cols[j].quantity}
+                  volume={cols[j].quantity}
                 />
               ) : (
                 <BlockItem key={j} sprite="" />
