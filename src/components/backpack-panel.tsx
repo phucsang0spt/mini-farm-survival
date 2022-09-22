@@ -13,7 +13,8 @@ import craft from "assets/images/craft.png";
 
 import axe from "assets/images/items/tools/axe.png";
 import pickaxe from "assets/images/items/tools/pickaxe.png";
-import sword from "assets/images/items/weapons/wood-sword.png";
+import sword from "assets/images/items/equip/weapons/wood-sword.png";
+import woodShield from "assets/images/items/equip/wood-shield.png";
 
 enum BackpackTab {
   CRAFT,
@@ -83,12 +84,7 @@ type BackpackPanelProps = {
 };
 
 export function BackpackPanel({ scene, close }: BackpackPanelProps) {
-  const [tab, setTab] = useState(BackpackTab.CRAFT);
-
-  const handlePickCraft = (code: string) => {
-    console.log("code", code);
-  };
-
+  const [tab, setTab] = useState(BackpackTab.EQUIPMENT);
   return (
     <Panel spacing={false} maxWidth={500} close={close}>
       <Root>
@@ -108,75 +104,102 @@ export function BackpackPanel({ scene, close }: BackpackPanelProps) {
             </div>
           </TabStack>
         </div>
-        {tab === BackpackTab.CRAFT ? (
-          <>
-            <div>
-              <ItemGrid
-                onSelect={handlePickCraft}
-                list={[
-                  {
-                    code: "axe",
-                    sprite: axe,
-                    active: true,
-                  },
-                  {
-                    code: "pickaxe",
-                    sprite: pickaxe,
-                  },
-                ]}
-              />
-            </div>
-            <div>
-              <Projector>
-                <CraftTable
-                  onCraft={(target, vol, used) => {
-                    console.log("x", target, vol, used);
-                  }}
-                  source={{
-                    getStuffQty: (code: string) => {
-                      if (code === "ok2") {
-                        return 5;
-                      }
-                      return 1000;
-                    },
-                  }}
-                  target={{ code: "axe", sprite: axe }}
-                  materials={[
-                    {
-                      code: "ok",
-                      sprite: pickaxe,
-                      requireQuantity: 2,
-                    },
-                    {
-                      code: "ok2",
-                      sprite: pickaxe,
-                      requireQuantity: 3,
-                    },
-                  ]}
-                />
-              </Projector>
-            </div>
-          </>
-        ) : (
-          <>
-            <div>
-              <ItemGrid
-                list={[
-                  {
-                    code: "wood-sword",
-                    sprite: sword,
-                  },
-                ]}
-              />
-            </div>
-            <div>
-              <Projector>
-                <div />
-              </Projector>
-            </div>
-          </>
-        )}
+        {tab === BackpackTab.CRAFT ? <CraftTab /> : <EquipmentTab />}
       </Root>
     </Panel>
+  );
+}
+
+const Hanger = styled.div`
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  > div {
+    + div {
+      margin-left: 10px;
+    }
+  }
+`;
+
+function EquipmentTab() {
+  return (
+    <>
+      <div>
+        <ItemGrid
+          list={[
+            {
+              code: "wood-sword",
+              sprite: sword,
+            },
+          ]}
+        />
+      </div>
+      <div>
+        <Projector>
+          <Hanger>
+            <BlockItem sprite={sword} size="large" />
+            <BlockItem sprite={woodShield} size="large" />
+          </Hanger>
+        </Projector>
+      </div>
+    </>
+  );
+}
+
+function CraftTab() {
+  const handlePickCraft = (code: string) => {
+    console.log("code", code);
+  };
+  return (
+    <>
+      <div>
+        <ItemGrid
+          onSelect={handlePickCraft}
+          list={[
+            {
+              code: "axe",
+              sprite: axe,
+              active: true,
+            },
+            {
+              code: "pickaxe",
+              sprite: pickaxe,
+            },
+          ]}
+        />
+      </div>
+      <div>
+        <Projector>
+          <CraftTable
+            onCraft={(target, vol, used) => {
+              console.log("x", target, vol, used);
+            }}
+            source={{
+              getStuffQty: (code: string) => {
+                if (code === "ok2") {
+                  return 5;
+                }
+                return 1000;
+              },
+            }}
+            target={{ code: "axe", sprite: axe }}
+            materials={[
+              {
+                code: "ok",
+                sprite: pickaxe,
+                requireQuantity: 2,
+              },
+              {
+                code: "ok2",
+                sprite: pickaxe,
+                requireQuantity: 3,
+              },
+            ]}
+          />
+        </Projector>
+      </div>
+    </>
   );
 }
