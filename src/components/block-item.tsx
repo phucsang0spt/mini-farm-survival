@@ -2,15 +2,24 @@ import { useLongPress } from "react-simple-game-engine/lib/utilities";
 import styled, { css } from "styled-components";
 
 const Root = styled.div<{
-  highlight: boolean;
-  size: "medium" | "default" | "small";
+  dark: boolean;
+  size: "medium" | "default" | "small" | "large";
   rounded: boolean;
   background: boolean;
   sprite: string;
+  primary: boolean;
+  secondary: boolean;
+  highlight: boolean;
   hasVolume: boolean;
 }>`
   ${({ size }) =>
-    size === "default"
+    size === "large"
+      ? css`
+          width: 62px;
+          height: 62px;
+          padding: 5px;
+        `
+      : size === "default"
       ? css`
           width: 32px;
           height: 32px;
@@ -37,12 +46,76 @@ const Root = styled.div<{
           border-radius: 2px;
         `}
 
-  ${({ background }) =>
+  ${({ background, dark, highlight, primary, secondary }) =>
     background &&
-    css`
-      border: 1px solid #0000005b;
-      background-color: #ffffff4f;
-    `}
+    (primary
+      ? css`
+          border: 1px solid #957f5b;
+          background-color: #b79962;
+
+          ${highlight &&
+          css`
+            border: 1px solid #f1d9b4;
+          `}
+
+          ${dark &&
+          css`
+            &::before {
+              content: "";
+              position: absolute;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              background-color: #0000003b;
+            }
+          `}
+        `
+      : secondary
+      ? css`
+          border: 1px solid #957f5b;
+          background-color: #c8ae7d;
+
+          ${highlight &&
+          css`
+            border: 1px solid #f1d9b4;
+          `}
+
+          ${dark &&
+          css`
+            &::before {
+              content: "";
+              position: absolute;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              background-color: #0000003b;
+            }
+          `}
+        `
+      : css`
+          border: 1px solid #0000005b;
+          background-color: #ffffff4f;
+
+          ${highlight &&
+          css`
+            border: 1px solid #e2e2e2;
+          `}
+
+          ${dark &&
+          css`
+            &::before {
+              content: "";
+              position: absolute;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              background-color: #0000003b;
+            }
+          `}
+        `)}
 
   overflow: hidden;
   position: relative;
@@ -88,37 +161,40 @@ const Root = styled.div<{
     color: #000;
     z-index: 2;
   }
-
-  ${({ highlight }) =>
-    highlight &&
-    css`
-      background-color: #5e9fc070;
-    `}
 `;
 
 type BlockItemProps = {
   background?: boolean;
   sprite: string;
+  dark?: boolean;
   highlight?: boolean;
-  size?: "medium" | "default" | "small";
+  size?: "medium" | "default" | "small" | "large";
   rounded?: boolean;
   volume?: number;
   onPress?: () => void;
   onLongPress?: () => void;
+  primary?: boolean;
+  secondary?: boolean;
 };
 
 export function BlockItem({
+  primary = false,
+  secondary = false,
   onPress,
   onLongPress,
   rounded = false,
   background = true,
   size = "default",
   sprite,
+  dark = false,
   highlight = false,
   volume,
 }: BlockItemProps) {
   return (
     <Root
+      highlight={highlight}
+      secondary={secondary}
+      primary={primary}
       hasVolume={!!volume}
       sprite={sprite}
       background={background}
@@ -126,7 +202,7 @@ export function BlockItem({
       {...useLongPress(onLongPress, 500, { onPress })}
       rounded={rounded}
       size={size}
-      highlight={highlight}
+      dark={dark}
     >
       {sprite && (
         <div>

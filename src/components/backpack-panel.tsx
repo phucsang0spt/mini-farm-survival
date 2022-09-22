@@ -3,14 +3,16 @@ import { Scene } from "react-simple-game-engine";
 import styled from "styled-components";
 
 import { Panel } from "./panel";
-import { ItemGrid } from "./items-grid";
+import { ItemGrid } from "./item-grid";
 import { Projector } from "./projector";
 import { BlockItem } from "./block-item";
+import { CraftTable } from "./craft-table";
 
 import equipment from "assets/images/equipment.png";
 import craft from "assets/images/craft.png";
 
 import axe from "assets/images/items/tools/axe.png";
+import pickaxe from "assets/images/items/tools/pickaxe.png";
 import sword from "assets/images/items/weapons/wood-sword.png";
 
 enum BackpackTab {
@@ -82,6 +84,11 @@ type BackpackPanelProps = {
 
 export function BackpackPanel({ scene, close }: BackpackPanelProps) {
   const [tab, setTab] = useState(BackpackTab.CRAFT);
+
+  const handlePickCraft = (code: string) => {
+    console.log("code", code);
+  };
+
   return (
     <Panel spacing={false} maxWidth={500} close={close}>
       <Root>
@@ -105,16 +112,49 @@ export function BackpackPanel({ scene, close }: BackpackPanelProps) {
           <>
             <div>
               <ItemGrid
+                onSelect={handlePickCraft}
                 list={[
                   {
                     code: "axe",
                     sprite: axe,
+                    active: true,
+                  },
+                  {
+                    code: "pickaxe",
+                    sprite: pickaxe,
                   },
                 ]}
               />
             </div>
             <div>
-              <Projector />
+              <Projector>
+                <CraftTable
+                  onCraft={(target, vol, used) => {
+                    console.log("x", target, vol, used);
+                  }}
+                  source={{
+                    getStuffQty: (code: string) => {
+                      if (code === "ok2") {
+                        return 5;
+                      }
+                      return 1000;
+                    },
+                  }}
+                  target={{ code: "axe", sprite: axe }}
+                  materials={[
+                    {
+                      code: "ok",
+                      sprite: pickaxe,
+                      requireQuantity: 2,
+                    },
+                    {
+                      code: "ok2",
+                      sprite: pickaxe,
+                      requireQuantity: 3,
+                    },
+                  ]}
+                />
+              </Projector>
             </div>
           </>
         ) : (
@@ -130,7 +170,9 @@ export function BackpackPanel({ scene, close }: BackpackPanelProps) {
               />
             </div>
             <div>
-              <Projector />
+              <Projector>
+                <div />
+              </Projector>
             </div>
           </>
         )}

@@ -50,36 +50,22 @@ const Root = styled.div<{
     + div {
       margin-top: var(--gap);
     }
-    > div {
-      border: 1px solid #957f5b;
-      position: relative;
-
-      &:not([data-active="true"]) {
-        &::before {
-          content: "";
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background-color: #0000003b;
-        }
-      }
-    }
   }
 `;
 
 const AMOUNT_PER_ROW = 5;
 
 type ItemGridProps = {
+  onSelect?: (code: string) => void;
   list: {
     code: string;
     sprite: string;
+    active?: boolean;
   }[];
   rowAmount?: number;
 };
 
-export function ItemGrid({ rowAmount = 8, list }: ItemGridProps) {
+export function ItemGrid({ rowAmount = 8, list, onSelect }: ItemGridProps) {
   const rows = paginatedList(list, AMOUNT_PER_ROW);
   return (
     <Root amountCol={AMOUNT_PER_ROW}>
@@ -89,13 +75,15 @@ export function ItemGrid({ rowAmount = 8, list }: ItemGridProps) {
           <div key={i}>
             {Array.from({ length: AMOUNT_PER_ROW }).map((_, j) => {
               return cols?.[j] ? (
-                <div key={j} data-active={j === 0 && i === 0}>
-                  <BlockItem sprite={cols[j].sprite} background={false} />
-                </div>
+                <BlockItem
+                  key={j}
+                  primary
+                  onPress={() => onSelect?.(cols[j].code)}
+                  dark={!cols[j].active}
+                  sprite={cols[j].sprite}
+                />
               ) : (
-                <div key={j}>
-                  <BlockItem sprite="" background={false} />
-                </div>
+                <BlockItem key={j} primary dark sprite={""} />
               );
             })}
           </div>

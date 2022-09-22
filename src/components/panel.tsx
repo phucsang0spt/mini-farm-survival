@@ -9,7 +9,7 @@ import { ReactNode } from "react";
 const Root = styled.div<{
   width: number;
   maxWidth: number;
-  spacing: boolean;
+  haveSpacing: boolean;
 }>`
   width: ${({ width }) => width}px;
   max-width: ${({ maxWidth }) => maxWidth}px;
@@ -19,8 +19,8 @@ const Root = styled.div<{
   position: relative;
   border-radius: 4px;
 
-  ${({ spacing }) =>
-    spacing &&
+  ${({ haveSpacing }) =>
+    haveSpacing &&
     css`
       padding: 10px;
     `}
@@ -41,7 +41,7 @@ export function Panel({
 }: PanelProps) {
   return (
     <Root
-      spacing={spacing}
+      haveSpacing={spacing}
       maxWidth={maxWidth}
       width={Renderer.scaler.screenSizeUI.width}
     >

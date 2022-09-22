@@ -1,3 +1,4 @@
+import { ReactElement } from "react";
 import styled from "styled-components";
 
 const Root = styled.div`
@@ -9,6 +10,9 @@ const Root = styled.div`
   border-radius: 2px;
 `;
 
-export function Projector() {
-  return <Root />;
+type ProjectorProps = {
+  children: ReactElement;
+};
+export function Projector({ children }: ProjectorProps) {
+  return <Root>{children}</Root>;
 }
