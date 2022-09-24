@@ -72,27 +72,38 @@ const Track = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
+
+  padding-bottom: calc(0.8rem + 4px);
 
   span {
-    margin-top: 4px;
     display: block;
     font-size: 0.8rem;
     line-height: 0.8rem;
     color: #000;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
   }
+`;
+
+const EmptyTarget = styled.span`
+  font-size: 20px;
+  line-height: 20px;
+  color: #393939;
+`;
+
+const LabelTarget = styled.span`
+  font-size: 20px;
+  line-height: 20px;
+  color: #393939;
+  margin-bottom: 5px;
 `;
 
 type CraftTableProps = {
   source: any; //todo
-  target: {
-    code: string;
-    sprite: string;
-  };
-  materials: {
-    requireQuantity: number;
-    code: string;
-    sprite: string;
-  }[];
+  target?: CraftItem;
   onCraft?: (
     target: { code: string; sprite: string },
     vol: number,
@@ -100,21 +111,27 @@ type CraftTableProps = {
   ) => void;
 };
 
-export function CraftTable({
-  source,
-  target,
-  materials,
-  onCraft,
-}: CraftTableProps) {
-  const initial = useMemo(
-    () => materials.map((mar) => ({ ...mar, iQty: 0 })),
-    [materials]
+export function CraftTable({ source, target, onCraft }: CraftTableProps) {
+  return (
+    <CraftTableLogic
+      key={target?.code || "empty"}
+      source={source}
+      target={target}
+      onCraft={onCraft}
+    />
   );
-  const [info, setInfo] = useState(initial);
+}
+
+function CraftTableLogic({ source, target, onCraft }: CraftTableProps) {
+  const initialMaterials = useMemo(
+    () => target?.materials.map((mar) => ({ ...mar, iQty: 0 })) || [],
+    [target]
+  );
+  const [materialsInfo, setInfo] = useState(initialMaterials);
   const [vol, setVol] = useState(0);
 
   const handleIns = () => {
-    const nextInfo = info.map((item) => {
+    const nextInfo = materialsInfo.map((item) => {
       const totalAvalQty = source.getStuffQty(item.code);
       const remainQty = Math.abs(item.iQty - totalAvalQty);
       const expectNextQty = item.iQty + item.requireQuantity;
@@ -136,7 +153,7 @@ export function CraftTable({
   };
 
   const handleDes = () => {
-    const nextInfo = info.map((item) => {
+    const nextInfo = materialsInfo.map((item) => {
       const nextQty = item.iQty - item.requireQuantity;
       return {
         ...item,
@@ -154,12 +171,12 @@ export function CraftTable({
   const handleCraft = () => {
     if (onCraft) {
       // reset track
-      setInfo([...initial]);
+      setInfo([...materialsInfo]);
       setVol(0);
       onCraft(
         target,
         vol,
-        info.map((info) => ({
+        materialsInfo.map((info) => ({
           code: info.code,
           used: info.requireQuantity * vol,
         }))
@@ -169,35 +186,46 @@ export function CraftTable({
 
   return (
     <Root>
-      <BlockItem primary sprite={target.sprite} size="large" />
-      <MaterialStack>
-        {Array.from({ length: 5 }).map((_, i) => (
-          <Track key={i}>
-            {info[i] ? (
-              <>
-                <BlockItem
-                  highlight={info[i].iQty >= info[i].requireQuantity}
-                  secondary
-                  sprite={info[i].sprite}
-                />
-                <span>
-                  {info[i].iQty}/{info[i].requireQuantity}
-                </span>
-              </>
-            ) : (
-              <>
-                <BlockItem secondary sprite="" />
-                <span>-/-</span>
-              </>
-            )}
-          </Track>
-        ))}
-      </MaterialStack>
-      <InscreaseButton>
-        <span onClick={handleDes}>&mdash;</span>
-        <span>{vol}</span>
-        <span onClick={handleIns}>&#9547;</span>
-      </InscreaseButton>
+      {target ? (
+        <>
+          <LabelTarget>{target.label}</LabelTarget>
+          <BlockItem primary sprite={target.sprite} size="large" />
+          <MaterialStack>
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Track key={i}>
+                {materialsInfo[i] ? (
+                  <>
+                    <BlockItem
+                      highlight={
+                        materialsInfo[i].iQty >=
+                        materialsInfo[i].requireQuantity
+                      }
+                      secondary
+                      sprite={materialsInfo[i].sprite}
+                    />
+                    <span>
+                      {materialsInfo[i].iQty}/{materialsInfo[i].requireQuantity}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <BlockItem secondary sprite="" />
+                    <span>-/-</span>
+                  </>
+                )}
+              </Track>
+            ))}
+          </MaterialStack>
+          <InscreaseButton>
+            <span onClick={handleDes}>&mdash;</span>
+            <span>{vol}</span>
+            <span onClick={handleIns}>&#9547;</span>
+          </InscreaseButton>
+        </>
+      ) : (
+        <EmptyTarget>Choose item to craft</EmptyTarget>
+      )}
+
       <button onClick={handleCraft} disabled={vol < 1}>
         Craft
       </button>

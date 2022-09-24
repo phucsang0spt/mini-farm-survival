@@ -10,13 +10,16 @@ import { CraftTable } from "./craft-table";
 
 import equipment from "assets/images/equipment.png";
 import craft from "assets/images/craft.png";
+import chest from "assets/images/chest.png";
 
-import axe from "assets/images/items/tools/axe.png";
-import pickaxe from "assets/images/items/tools/pickaxe.png";
 import sword from "assets/images/items/equip/weapons/wood-sword.png";
 import woodShield from "assets/images/items/equip/wood-shield.png";
 
+import { craftItemList } from "data/craft-items";
+import { itemHash } from "data/item-list";
+
 enum BackpackTab {
+  STORAGE,
   CRAFT,
   EQUIPMENT,
 }
@@ -60,12 +63,12 @@ const TabStack = styled.div<{
 
   > div {
     width: 30px;
-    height: 50%;
+    height: calc(100% / 3);
     display: flex;
     align-items: center;
     justify-content: center;
     border-right: 5px solid #907341;
-    transition: border-right 100ms ease-in-out;
+    transition: border-right 50ms ease-in-out;
 
     &:first-child {
       border-bottom: 1px solid #907341;
@@ -84,12 +87,18 @@ type BackpackPanelProps = {
 };
 
 export function BackpackPanel({ scene, close }: BackpackPanelProps) {
-  const [tab, setTab] = useState(BackpackTab.EQUIPMENT);
+  const [tab, setTab] = useState(BackpackTab.CRAFT);
   return (
     <Panel spacing={false} maxWidth={500} close={close}>
       <Root>
         <div>
           <TabStack active={tab}>
+            <div
+              data-active={tab === BackpackTab.STORAGE}
+              onClick={() => setTab(BackpackTab.STORAGE)}
+            >
+              <BlockItem size="small" background={false} sprite={chest} />
+            </div>
             <div
               data-active={tab === BackpackTab.CRAFT}
               onClick={() => setTab(BackpackTab.CRAFT)}
@@ -104,7 +113,13 @@ export function BackpackPanel({ scene, close }: BackpackPanelProps) {
             </div>
           </TabStack>
         </div>
-        {tab === BackpackTab.CRAFT ? <CraftTab /> : <EquipmentTab />}
+        {tab === BackpackTab.STORAGE ? (
+          <StorageTab />
+        ) : tab === BackpackTab.CRAFT ? (
+          <CraftTab />
+        ) : (
+          <EquipmentTab />
+        )}
       </Root>
     </Panel>
   );
@@ -122,6 +137,21 @@ const Hanger = styled.div`
     }
   }
 `;
+
+function StorageTab() {
+  return (
+    <>
+      <div>
+        <ItemGrid list={[]} />
+      </div>
+      <div>
+        <Projector>
+          <div />
+        </Projector>
+      </div>
+    </>
+  );
+}
 
 function EquipmentTab() {
   return (
@@ -149,26 +179,29 @@ function EquipmentTab() {
 }
 
 function CraftTab() {
+  const [selectedItem, selectItem] = useState<CraftItem["code"]>(null);
   const handlePickCraft = (code: string) => {
-    console.log("code", code);
+    selectItem(code);
   };
+
+  const craftList = craftItemList.map((item) => {
+    return {
+      ...item,
+      ...itemHash[item.code],
+      active: item.code === selectedItem,
+      materials: item.materials.map((mart: Item) => ({
+        ...mart,
+        sprite: itemHash[mart.code].sprite,
+      })),
+    } as CraftItem;
+  });
+
+  const selectedTarget = craftList.find((item) => item.code === selectedItem);
+
   return (
     <>
       <div>
-        <ItemGrid
-          onSelect={handlePickCraft}
-          list={[
-            {
-              code: "axe",
-              sprite: axe,
-              active: true,
-            },
-            {
-              code: "pickaxe",
-              sprite: pickaxe,
-            },
-          ]}
-        />
+        <ItemGrid onSelect={handlePickCraft} list={craftList} />
       </div>
       <div>
         <Projector>
@@ -184,19 +217,7 @@ function CraftTab() {
                 return 1000;
               },
             }}
-            target={{ code: "axe", sprite: axe }}
-            materials={[
-              {
-                code: "ok",
-                sprite: pickaxe,
-                requireQuantity: 2,
-              },
-              {
-                code: "ok2",
-                sprite: pickaxe,
-                requireQuantity: 3,
-              },
-            ]}
+            target={selectedTarget}
           />
         </Projector>
       </div>

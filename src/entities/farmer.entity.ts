@@ -125,33 +125,45 @@ export class Farmer extends RectEntity<Props> {
 
     if (this.lastMove.vector.x > 0) {
       if (this.simpleCamera.x < this.position.x) {
-        this.simpleCamera.x = Renderer.constrainMax(nextX, this.position.x);
+        this.simpleCamera.x = this.renderer.constrainMax(
+          nextX,
+          this.position.x
+        );
       }
     } else if (this.lastMove.vector.x < 0) {
       if (this.simpleCamera.x > this.position.x) {
-        this.simpleCamera.x = Renderer.constrainMin(nextX, this.position.x);
+        this.simpleCamera.x = this.renderer.constrainMin(
+          nextX,
+          this.position.x
+        );
       }
     }
 
     if (this.lastMove.vector.y > 0) {
       if (this.simpleCamera.y < this.position.y) {
-        this.simpleCamera.y = Renderer.constrainMax(nextY, this.position.y);
+        this.simpleCamera.y = this.renderer.constrainMax(
+          nextY,
+          this.position.y
+        );
       }
     } else if (this.lastMove.vector.y < 0) {
       if (this.simpleCamera.y > this.position.y) {
-        this.simpleCamera.y = Renderer.constrainMin(nextY, this.position.y);
+        this.simpleCamera.y = this.renderer.constrainMin(
+          nextY,
+          this.position.y
+        );
       }
     }
 
-    this.simpleCamera.x = Renderer.constrain(
+    this.simpleCamera.x = this.renderer.constrain(
       this.simpleCamera.x,
-      edge.left + Renderer.scaler.viewport.width / 2,
-      edge.right - Renderer.scaler.viewport.width / 2
+      edge.left + this.renderer.scaler.viewport.width / 2,
+      edge.right - this.renderer.scaler.viewport.width / 2
     );
-    this.simpleCamera.y = Renderer.constrain(
+    this.simpleCamera.y = this.renderer.constrain(
       this.simpleCamera.y,
-      edge.top + Renderer.scaler.viewport.height / 2,
-      edge.bottom - Renderer.scaler.viewport.height / 2
+      edge.top + this.renderer.scaler.viewport.height / 2,
+      edge.bottom - this.renderer.scaler.viewport.height / 2
     );
   }
 
@@ -160,12 +172,12 @@ export class Farmer extends RectEntity<Props> {
       x: this.position.x + this.lastMove!.vector.x,
       y: this.position.y + this.lastMove!.vector.y,
     };
-    nextPosition.x = Renderer.constrain(
+    nextPosition.x = this.renderer.constrain(
       nextPosition.x,
       edge.left + this.width / 2,
       edge.right - this.width / 2
     );
-    nextPosition.y = Renderer.constrain(
+    nextPosition.y = this.renderer.constrain(
       nextPosition.y,
       edge.top + this.height / 2,
       edge.bottom - this.height / 2

@@ -26,7 +26,7 @@ import axe from "assets/images/items/tools/axe.png";
 import pickaxe from "assets/images/items/tools/pickaxe.png";
 import rod from "assets/images/items/tools/fishing-rod.png";
 
-import hand from "assets/images/items/hand.png";
+import hand from "assets/images/hand.png";
 import punch from "assets/images/items/punch.png";
 
 const Root = styled.div`
