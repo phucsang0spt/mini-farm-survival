@@ -32,161 +32,210 @@ import fire from "assets/images/items/fire.png";
 
 import rawFish from "assets/images/items/foods/raw-fish.png";
 import cookedFish from "assets/images/items/foods/fish.png";
+import { EquipmentShape } from "enums";
 
 export const punchItem: Item = {
+  type: "equipment",
   label: "Super Punch",
   code: "punch",
   sprite: punch,
+  shape: EquipmentShape.SWORD,
 };
+
+export const equipmentItemList: Item[] = [
+  punchItem,
+  {
+    type: "equipment",
+    label: "Wood shield",
+    code: "wood-shield",
+    sprite: woodShield,
+    shape: EquipmentShape.SHIELD,
+  },
+  {
+    type: "equipment",
+    label: "Wood shield (rare)",
+    code: "wood-shield-rare",
+    sprite: woodShieldRare,
+    shape: EquipmentShape.SHIELD,
+  },
+  {
+    type: "equipment",
+    label: "Steel shield",
+    code: "steel-shield",
+    sprite: steelShield,
+    shape: EquipmentShape.SHIELD,
+  },
+  // sword
+  {
+    type: "equipment",
+    label: "Wood sword",
+    code: "wood-sword",
+    sprite: woodSword,
+    shape: EquipmentShape.SWORD,
+  },
+  {
+    type: "equipment",
+    label: "Metal sword",
+    code: "metal-sword",
+    sprite: metalSword,
+    shape: EquipmentShape.SWORD,
+  },
+  {
+    type: "equipment",
+    label: "Iron sword",
+    code: "iron-sword",
+    sprite: ironSword,
+    shape: EquipmentShape.SWORD,
+  },
+  {
+    type: "equipment",
+    label: "Steel sword",
+    code: "steel-sword",
+    sprite: steelSword,
+    shape: EquipmentShape.SWORD,
+  },
+  {
+    type: "equipment",
+    label: "Super sword",
+    code: "super-sword",
+    sprite: superSword,
+    shape: EquipmentShape.SWORD,
+  },
+  {
+    type: "equipment",
+    label: "Knife sword",
+    code: "knife-sword",
+    sprite: knifeSword,
+    shape: EquipmentShape.SWORD,
+  },
+  {
+    type: "equipment",
+    label: "Twin sword",
+    code: "twin-sword",
+    sprite: twinSword,
+    shape: EquipmentShape.SWORD,
+  },
+  {
+    type: "equipment",
+    label: "Heaven sword",
+    code: "heaven-sword",
+    sprite: heavenSword,
+    shape: EquipmentShape.SWORD,
+  },
+  {
+    type: "equipment",
+    label: "Hell sword",
+    code: "hell-sword",
+    sprite: hellSword,
+    shape: EquipmentShape.SWORD,
+  },
+  {
+    type: "equipment",
+    label: "Weapon of God",
+    code: "weapon-of-god",
+    sprite: weaponOfGod,
+    shape: EquipmentShape.SWORD,
+  },
+];
 
 export const itemList: Item[] = [
   {
+    type: "food",
     label: "Cooked Fish",
     code: "cooked-fish",
     sprite: cookedFish,
   },
   {
+    type: "food",
     label: "Raw Fish",
     code: "raw-fish",
     sprite: rawFish,
   },
   {
+    type: "stuff",
     label: "Fire",
     code: "fire",
     sprite: fire,
   },
   {
+    type: "stuff",
     label: "Coin",
     code: "coin",
     sprite: coin,
   },
   {
+    type: "stuff",
     label: "Mystic chest",
     code: "mystic-chest",
     sprite: mysticChest,
   },
   {
+    type: "stuff",
     label: "Clew",
     code: "clew",
     sprite: clew,
   },
   {
+    type: "stuff",
     label: "Wood Plate",
     code: "wood-plate",
     sprite: woodPlate,
   },
   {
+    type: "stuff",
     label: "Metal Ore",
     code: "metal-ore",
     sprite: metalOre,
   },
   {
+    type: "stuff",
     label: "Steel Ore",
     code: "steel-ore",
     sprite: steelOre,
   },
   {
+    type: "stuff",
     label: "Iron Ore",
     code: "iron-ore",
     sprite: ironOre,
   },
   {
+    type: "stuff",
     label: "Stone",
     code: "stone",
     sprite: stone,
   },
   {
+    type: "stuff",
     label: "Wood",
     code: "wood",
     sprite: wood,
   },
   {
+    type: "stuff",
     label: "Worm",
     code: "worm",
     sprite: worm,
   },
   {
+    type: "tool",
     label: "Axe",
     code: "axe",
     sprite: axe,
   },
   {
+    type: "tool",
     label: "Pickaxe",
     code: "pickaxe",
     sprite: pickaxe,
   },
   {
+    type: "tool",
     label: "Fishing rod",
     code: "fishing-rod",
     sprite: fishingRod,
   },
-  //shield
-  {
-    label: "Wood shield",
-    code: "wood-shield",
-    sprite: woodShield,
-  },
-  {
-    label: "Wood shield (rare)",
-    code: "wood-shield-rare",
-    sprite: woodShieldRare,
-  },
-  {
-    label: "Steel shield",
-    code: "steel-shield",
-    sprite: steelShield,
-  },
-  // sword
-  {
-    label: "Wood sword",
-    code: "wood-sword",
-    sprite: woodSword,
-  },
-  {
-    label: "Metal sword",
-    code: "metal-sword",
-    sprite: metalSword,
-  },
-  {
-    label: "Iron sword",
-    code: "iron-sword",
-    sprite: ironSword,
-  },
-  {
-    label: "Steel sword",
-    code: "steel-sword",
-    sprite: steelSword,
-  },
-  {
-    label: "Super sword",
-    code: "super-sword",
-    sprite: superSword,
-  },
-  {
-    label: "Knife sword",
-    code: "knife-sword",
-    sprite: knifeSword,
-  },
-  {
-    label: "Twin sword",
-    code: "twin-sword",
-    sprite: twinSword,
-  },
-  {
-    label: "Heaven sword",
-    code: "heaven-sword",
-    sprite: heavenSword,
-  },
-  {
-    label: "Hell sword",
-    code: "hell-sword",
-    sprite: hellSword,
-  },
-  {
-    label: "Weapon of God",
-    code: "weapon-of-god",
-    sprite: weaponOfGod,
-  },
+  ...equipmentItemList,
 ];
 
 export const itemHash: Record<string, Item> = itemList.reduce(

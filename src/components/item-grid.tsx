@@ -56,11 +56,13 @@ const Root = styled.div<{
 const AMOUNT_PER_ROW = 5;
 
 type ItemGridProps = {
-  onSelect?: (code: string) => void;
+  onSelect?: (code: string, item: any) => void;
   list: {
     code: string;
     sprite: string;
     active?: boolean;
+    highlight?: boolean;
+    volume?: number;
   }[];
   rowAmount?: number;
 };
@@ -78,9 +80,11 @@ export function ItemGrid({ rowAmount = 8, list, onSelect }: ItemGridProps) {
                 <BlockItem
                   key={j}
                   primary
-                  onPress={() => onSelect?.(cols[j].code)}
+                  onPress={() => onSelect?.(cols[j].code, cols[j])}
                   dark={!cols[j].active}
                   sprite={cols[j].sprite}
+                  highlight={cols[j].highlight}
+                  volume={cols[j].volume}
                 />
               ) : (
                 <BlockItem key={j} primary dark sprite={""} />

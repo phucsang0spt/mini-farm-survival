@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { useLongPress } from "react-simple-game-engine/lib/utilities";
 import styled, { css } from "styled-components";
 
@@ -177,7 +178,7 @@ type BlockItemProps = {
   secondary?: boolean;
 };
 
-export function BlockItem({
+export const BlockItem = memo(function ({
   primary = false,
   secondary = false,
   onPress,
@@ -212,4 +213,4 @@ export function BlockItem({
       {volume != null ? <span>{volume}</span> : null}
     </Root>
   );
-}
+});

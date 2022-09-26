@@ -1,3 +1,4 @@
+import { Farmer } from "entities/farmer.entity";
 import { useMemo, useState } from "react";
 import styled from "styled-components";
 import { BlockItem } from "./block-item";
@@ -102,12 +103,12 @@ const LabelTarget = styled.span`
 `;
 
 type CraftTableProps = {
-  source: any; //todo
+  source: Farmer;
   target?: CraftItem;
   onCraft?: (
     target: { code: string; sprite: string },
     vol: number,
-    used: { code: string; used: number }[]
+    used: { code: string; usedQty: number }[]
   ) => void;
 };
 
@@ -132,7 +133,7 @@ function CraftTableLogic({ source, target, onCraft }: CraftTableProps) {
 
   const handleIns = () => {
     const nextInfo = materialsInfo.map((item) => {
-      const totalAvalQty = source.getStuffQty(item.code);
+      const totalAvalQty = source.getItemQuantity(item.code);
       const remainQty = Math.abs(item.iQty - totalAvalQty);
       const expectNextQty = item.iQty + item.requireQuantity;
       const nextQty =
@@ -171,14 +172,14 @@ function CraftTableLogic({ source, target, onCraft }: CraftTableProps) {
   const handleCraft = () => {
     if (onCraft) {
       // reset track
-      setInfo([...materialsInfo]);
+      setInfo([...initialMaterials]);
       setVol(0);
       onCraft(
         target,
         vol,
         materialsInfo.map((info) => ({
           code: info.code,
-          used: info.requireQuantity * vol,
+          usedQty: info.requireQuantity * vol,
         }))
       );
     }

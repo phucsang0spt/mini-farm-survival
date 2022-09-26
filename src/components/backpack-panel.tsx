@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Scene } from "react-simple-game-engine";
 import styled from "styled-components";
 
@@ -12,11 +12,12 @@ import equipment from "assets/images/equipment.png";
 import craft from "assets/images/craft.png";
 import chest from "assets/images/chest.png";
 
-import sword from "assets/images/items/equip/weapons/wood-sword.png";
-import woodShield from "assets/images/items/equip/wood-shield.png";
-
 import { craftItemList } from "data/craft-items";
 import { itemHash } from "data/item-list";
+import { Farmer } from "entities/farmer.entity";
+import { useWatcher } from "react-simple-game-engine/lib/utilities";
+import { EquipmentShape } from "enums";
+import { EquipTable } from "./equip-table";
 
 enum BackpackTab {
   STORAGE,
@@ -87,6 +88,9 @@ type BackpackPanelProps = {
 };
 
 export function BackpackPanel({ scene, close }: BackpackPanelProps) {
+  const farmer = useMemo(() => {
+    return scene.worldManagement.getEntity(Farmer);
+  }, [scene]);
   const [tab, setTab] = useState(BackpackTab.CRAFT);
   return (
     <Panel spacing={false} maxWidth={500} close={close}>
@@ -114,35 +118,37 @@ export function BackpackPanel({ scene, close }: BackpackPanelProps) {
           </TabStack>
         </div>
         {tab === BackpackTab.STORAGE ? (
-          <StorageTab />
+          <StorageTab scene={scene} farmer={farmer} />
         ) : tab === BackpackTab.CRAFT ? (
-          <CraftTab />
+          <CraftTab scene={scene} farmer={farmer} />
         ) : (
-          <EquipmentTab />
+          <EquipmentTab scene={scene} farmer={farmer} />
         )}
       </Root>
     </Panel>
   );
 }
 
-const Hanger = styled.div`
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+type TabCommonProps = {
+  scene: Scene;
+  farmer: Farmer;
+};
 
-  > div {
-    + div {
-      margin-left: 10px;
-    }
-  }
-`;
+function StorageTab({ scene, farmer }: TabCommonProps) {
+  const {
+    "own-items": { group: groupOwnItems },
+  } = useWatcher(scene, "own-items", {
+    "own-items": { list: farmer.ownItems, group: farmer.groupOwnItems },
+  });
 
-function StorageTab() {
+  const storageList = Object.keys(groupOwnItems).map((code) => ({
+    ...itemHash[code],
+    volume: groupOwnItems[code].reduce((s, item) => s + item.qty, 0),
+  }));
   return (
     <>
       <div>
-        <ItemGrid list={[]} />
+        <ItemGrid list={storageList} />
       </div>
       <div>
         <Projector>
@@ -153,32 +159,64 @@ function StorageTab() {
   );
 }
 
-function EquipmentTab() {
+function EquipmentTab({ scene, farmer }: TabCommonProps) {
+  const {
+    "own-items": { list: ownItems },
+    "active-sword": activeSword,
+    "active-shield": activeShield,
+  } = useWatcher(scene, ["own-items", "active-sword", "active-shield"], {
+    "own-items": { list: farmer.ownItems },
+    "active-sword": farmer.activeSword,
+    "active-shield": farmer.activeShield,
+  });
+  const [selectedShape, setSelectedShape] = useState<EquipmentShape>();
+
+  const handleSelectEquipment = (code: Item["code"], item: OwnItem & Item) => {
+    if (item.shape === selectedShape) {
+      setSelectedShape(undefined);
+      if (selectedShape === EquipmentShape.SWORD) {
+        farmer.activeSword = { code, id: item.id };
+      } else {
+        farmer.activeShield = { code, id: item.id };
+      }
+    }
+  };
+  const list = ownItems
+    .flatMap((item) =>
+      itemHash[item.code].type === "equipment"
+        ? Array.from({ length: item.qty }).map((_, i) => {
+            const active =
+              item.id === activeSword?.id || item.id === activeShield?.id;
+            return {
+              ...item,
+              ...itemHash[item.code],
+              highlight: !active && itemHash[item.code].shape === selectedShape,
+              active,
+            };
+          })
+        : null
+    )
+    .filter(Boolean);
+
   return (
     <>
       <div>
-        <ItemGrid
-          list={[
-            {
-              code: "wood-sword",
-              sprite: sword,
-            },
-          ]}
-        />
+        <ItemGrid onSelect={handleSelectEquipment} list={list} />
       </div>
       <div>
         <Projector>
-          <Hanger>
-            <BlockItem sprite={sword} size="large" />
-            <BlockItem sprite={woodShield} size="large" />
-          </Hanger>
+          <EquipTable
+            activeSword={activeSword && itemHash[activeSword.code].sprite}
+            activeShield={activeShield && itemHash[activeShield.code].sprite}
+            onSelectedShape={setSelectedShape}
+          />
         </Projector>
       </div>
     </>
   );
 }
 
-function CraftTab() {
+function CraftTab({ farmer }: TabCommonProps) {
   const [selectedItem, selectItem] = useState<CraftItem["code"]>(null);
   const handlePickCraft = (code: string) => {
     selectItem(code);
@@ -207,16 +245,9 @@ function CraftTab() {
         <Projector>
           <CraftTable
             onCraft={(target, vol, used) => {
-              console.log("x", target, vol, used);
+              farmer.craftItem({ code: target.code, qty: vol }, used);
             }}
-            source={{
-              getStuffQty: (code: string) => {
-                if (code === "ok2") {
-                  return 5;
-                }
-                return 1000;
-              },
-            }}
+            source={farmer}
             target={selectedTarget}
           />
         </Projector>

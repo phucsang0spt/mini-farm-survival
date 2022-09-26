@@ -1,3 +1,4 @@
+import { itemHash } from "data/item-list";
 import {
   Animator,
   AvatarAnimationSprite,
@@ -5,6 +6,7 @@ import {
   LogicComponent,
   Matter,
   RectEntity,
+  Saver,
 } from "react-simple-game-engine";
 import {
   JoystickActionType,
@@ -17,6 +19,7 @@ import {
   EntityPrepare,
   Vector,
 } from "react-simple-game-engine/lib/export-types";
+import { genId } from "utils";
 import { Background } from "./background.entity";
 
 type Props = {
@@ -28,12 +31,129 @@ enum MovementState {
   DOWN,
   UP,
   LEFT,
-  RGIHT,
+  RIGHT,
 }
 
 export class Farmer extends RectEntity<Props> {
   private lastMove?: { vector: Vector; direction: JoystickDirection };
+  private _ownItems: OwnItem[] = [];
+  private _groupOwnItems: Record<OwnItem["code"], OwnItem[]> = {};
+  private _activeSword: ActiveItem = Saver.get("active-sword");
+  private _activeShield: ActiveItem = Saver.get("active-shield");
+
+  set activeShield(_activeShield: ActiveItem) {
+    this._activeShield = _activeShield;
+    this.scene.emitEntityPropsChange("active-shield", _activeShield);
+    Saver.set("active-shield", _activeShield);
+  }
+
+  set activeSword(_activeSword: ActiveItem) {
+    this._activeSword = _activeSword;
+    this.scene.emitEntityPropsChange("active-sword", _activeSword);
+    Saver.set("active-sword", _activeSword);
+  }
+
+  get activeSword() {
+    return this._activeSword;
+  }
+
+  get activeShield() {
+    return this._activeShield;
+  }
+
+  get ownItems() {
+    return this._ownItems;
+  }
+
+  get groupOwnItems() {
+    return this._groupOwnItems;
+  }
+
+  private addItem(code: Item["code"], qty: number, id?: OwnItem["id"]) {
+    const itemClass = itemHash[code];
+    if (itemClass.type === "equipment") {
+      Array.from({ length: qty }).forEach(() => {
+        this._ownItems.push({
+          code,
+          qty: 1,
+          id: id ?? genId(),
+        });
+      });
+    } else {
+      const item = this._groupOwnItems[code]?.[0];
+      if (item) {
+        item.qty += qty;
+      } else {
+        this._ownItems.push({
+          code,
+          qty,
+          id: id ?? genId(),
+        });
+      }
+    }
+    this._groupOwnItems = this._ownItems.reduce(
+      (obj: Record<OwnItem["code"], OwnItem[]>, item) => {
+        obj[item.code] = obj[item.code] || [];
+        obj[item.code].push(item);
+        return obj;
+      },
+      {}
+    );
+  }
+
+  getItemQuantity(code: Item["code"]) {
+    const items = this._groupOwnItems[code] || [];
+    return items.reduce((s, item) => s + item.qty, 0);
+  }
+
+  craftItem(
+    target: { code: Item["code"]; qty: number },
+    materials: { code: Item["code"]; usedQty: number }[]
+  ) {
+    for (const material of materials) {
+      const delIndexes = [];
+      const items = this._groupOwnItems[material.code] || [];
+      for (const item of items) {
+        let remainMaterialQty = material.usedQty - item.qty;
+        item.qty -= material.usedQty;
+        if (remainMaterialQty < 0) {
+          material.usedQty = 0;
+        } else {
+          material.usedQty = remainMaterialQty;
+        }
+        if (item.qty <= 0) {
+          delIndexes.push(
+            this._ownItems.findIndex((_item) => _item.id === item.id)
+          );
+        }
+      }
+      for (const delIndex of delIndexes) {
+        this._ownItems.splice(delIndex, 1);
+      }
+    }
+    this.addItem(target.code, target.qty);
+    Saver.set("own-items", this.ownItems);
+    this.scene.emitEntityPropsChange("own-items", {
+      list: this._ownItems,
+      group: this._groupOwnItems,
+    });
+  }
+
   protected onPrepare(): EntityPrepare<this> {
+    const initialOwnItems = Saver.getWithDefault("own-items", [
+      {
+        code: "wood",
+        qty: 100,
+      },
+      {
+        code: "stone",
+        qty: 10,
+      },
+    ]) as OwnItem[];
+    for (const item of initialOwnItems) {
+      this.addItem(item.code, item.qty, item.id);
+    }
+
     return {
       sprite: new LogicComponent([
         AvatarSprite,
@@ -87,7 +207,7 @@ export class Farmer extends RectEntity<Props> {
                     timePerFrame: 100,
                   },
                 ]).output(),
-                [MovementState.RGIHT]: new LogicComponent([
+                [MovementState.RIGHT]: new LogicComponent([
                   AvatarAnimationSprite,
                   {
                     x: 0,
@@ -123,6 +243,7 @@ export class Farmer extends RectEntity<Props> {
       this.simpleCamera.y +
       (this.lastMove!.vector.y + CAMERA_BOOT * this.lastMove!.vector.y);
 
+    // when the farmer move right
     if (this.lastMove.vector.x > 0) {
       if (this.simpleCamera.x < this.position.x) {
         this.simpleCamera.x = this.renderer.constrainMax(
@@ -130,7 +251,9 @@ export class Farmer extends RectEntity<Props> {
           this.position.x
         );
       }
-    } else if (this.lastMove.vector.x < 0) {
+    }
+    // when the farmer move left
+    else if (this.lastMove.vector.x < 0) {
       if (this.simpleCamera.x > this.position.x) {
         this.simpleCamera.x = this.renderer.constrainMin(
           nextX,
@@ -139,6 +262,7 @@ export class Farmer extends RectEntity<Props> {
       }
     }
 
+    // when the farmer move down
     if (this.lastMove.vector.y > 0) {
       if (this.simpleCamera.y < this.position.y) {
         this.simpleCamera.y = this.renderer.constrainMax(
@@ -146,7 +270,9 @@ export class Farmer extends RectEntity<Props> {
           this.position.y
         );
       }
-    } else if (this.lastMove.vector.y < 0) {
+    }
+    // when the farmer move up
+    else if (this.lastMove.vector.y < 0) {
       if (this.simpleCamera.y > this.position.y) {
         this.simpleCamera.y = this.renderer.constrainMin(
           nextY,
@@ -195,7 +321,7 @@ export class Farmer extends RectEntity<Props> {
       } else if (this.lastMove.direction === JoystickDirection.LEFT) {
         (this.sprite.animation as Animator).state = MovementState.LEFT;
       } else if (this.lastMove.direction === JoystickDirection.RIGHT) {
-        (this.sprite.animation as Animator).state = MovementState.RGIHT;
+        (this.sprite.animation as Animator).state = MovementState.RIGHT;
       } else if (this.lastMove.direction === JoystickDirection.FORWARD) {
         (this.sprite.animation as Animator).state = MovementState.UP;
       }
