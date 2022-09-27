@@ -31,7 +31,7 @@ export function paginatedList<I = any>(list: I[], pageSize: number) {
   });
 }
 
-export function genId(length = 8) {
+export function genId(length = 12) {
   let result = "";
   const characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";

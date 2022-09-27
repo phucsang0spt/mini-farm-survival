@@ -137,8 +137,6 @@ type TabCommonProps = {
 function StorageTab({ scene, farmer }: TabCommonProps) {
   const {
     "own-items": { group: groupOwnItems },
-    "active-sword": activeSword,
-    "active-shield": activeShield,
   } = useWatcher(scene, ["own-items", "active-sword", "active-shield"], {
     "active-sword": farmer.activeSword,
     "active-shield": farmer.activeShield,
@@ -149,9 +147,11 @@ function StorageTab({ scene, farmer }: TabCommonProps) {
     .map((code) => ({
       ...itemHash[code],
       volume: groupOwnItems[code]
-        .filter(
-          (item) => item.id !== activeSword?.id && item.id !== activeShield?.id
-        )
+
+        .filter((item) => {
+          // if item used then no take slot for it
+          return !farmer.isUsing(item.id);
+        })
         .reduce((s, item) => s + item.qty, 0),
     }))
     .filter((item) => !!item.volume);
@@ -182,7 +182,7 @@ function EquipmentTab({ scene, farmer }: TabCommonProps) {
   const [selectedShape, setSelectedShape] = useState<EquipmentShape>();
 
   const handleSelectEquipment = (code: Item["code"], item: OwnItem & Item) => {
-    if (item.shape === selectedShape) {
+    if (item.format.shape === selectedShape) {
       setSelectedShape(undefined);
       if (selectedShape === EquipmentShape.SWORD) {
         farmer.activeSword = { code, id: item.id };
@@ -192,20 +192,19 @@ function EquipmentTab({ scene, farmer }: TabCommonProps) {
     }
   };
   const list = ownItems
-    .flatMap((item) =>
-      itemHash[item.code].type === "equipment"
-        ? Array.from({ length: item.qty }).map(() => {
-            const active =
-              item.id === activeSword?.id || item.id === activeShield?.id;
-            return {
-              ...item,
-              ...itemHash[item.code],
-              highlight: !active && itemHash[item.code].shape === selectedShape,
-              active,
-            };
-          })
-        : null
-    )
+    .map((item) => {
+      const active =
+        item.id === activeSword?.id || item.id === activeShield?.id;
+      return itemHash[item.code].type === "equipment"
+        ? {
+            ...item,
+            ...itemHash[item.code],
+            highlight:
+              !active && itemHash[item.code].format.shape === selectedShape,
+            active,
+          }
+        : null;
+    })
     .filter(Boolean);
 
   return (

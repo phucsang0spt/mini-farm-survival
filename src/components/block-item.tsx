@@ -56,7 +56,7 @@ const Root = styled.div<{
 
           ${highlight &&
           css`
-            border: 1px solid #f1d9b4;
+            border: 1px solid #e3c9a3;
           `}
 
           ${dark &&
@@ -79,7 +79,7 @@ const Root = styled.div<{
 
           ${highlight &&
           css`
-            border: 1px solid #f1d9b4;
+            border: 1px solid #e3c9a3;
           `}
 
           ${dark &&

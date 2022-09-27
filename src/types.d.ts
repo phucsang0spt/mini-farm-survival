@@ -10,12 +10,20 @@ type Item = {
   sprite: string;
 } & (
   | {
-      type: "stuff" | "food" | "tool";
-      shape?: never;
+      type: "stuff" | "food";
+      format?: never;
+    }
+  | {
+      type: "tool";
+      format: {
+        shape: import("enums").ToolShape;
+      };
     }
   | {
       type: "equipment";
-      shape: import("enums").EquipmentShape;
+      format: {
+        shape: import("enums").EquipmentShape;
+      };
     }
 );
 

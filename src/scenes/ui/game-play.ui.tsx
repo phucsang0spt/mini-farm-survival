@@ -22,9 +22,6 @@ import cogBag from "assets/images/coin-bag.png";
 import waterBar from "assets/images/water-bar.png";
 import backpack from "assets/images/backpack.png";
 
-import axe from "assets/images/items/tools/axe.png";
-import pickaxe from "assets/images/items/tools/pickaxe.png";
-import rod from "assets/images/items/tools/fishing-rod.png";
 import hand from "assets/images/hand.png";
 
 import { Farmer } from "entities/farmer.entity";
@@ -137,30 +134,39 @@ export function GamePlayUI({ scene }: GamePlayUIProps) {
         left={scene.renderer.scaler.screenSizeUI.width / 2}
         xAxisOriginCenter
       >
-        <ToolStack>
-          <BlockItem sprite={axe} />
-          <BlockItem sprite={pickaxe} />
-          <BlockItem sprite={rod} />
-          <BlockItem sprite={""} />
-          <BlockItem sprite={""} />
+        <Watcher
+          scene={scene}
+          names={["active-sword", "active-tools"]}
+          initialValues={{
+            "active-sword": scene.worldManagement.getEntity(Farmer).activeSword,
+            "active-tools": scene.worldManagement.getEntity(Farmer).activeTools,
+          }}
+        >
+          {({ "active-sword": activeSword, "active-tools": activeTools }) => (
+            <ToolStack>
+              <BlockItem
+                sprite={itemHash[activeTools.axe?.code]?.sprite || ""}
+              />
+              <BlockItem
+                sprite={itemHash[activeTools.pickaxe?.code]?.sprite || ""}
+              />
+              <BlockItem
+                sprite={
+                  itemHash[activeTools["fishing-rod"]?.code]?.sprite || ""
+                }
+              />
+              <BlockItem sprite={""} />
+              <BlockItem sprite={""} />
 
-          <div style={{ width: 20 }} />
-          <Watcher
-            scene={scene}
-            names="active-sword"
-            initialValues={{
-              "active-sword":
-                scene.worldManagement.getEntity(Farmer).activeSword,
-            }}
-          >
-            {({ "active-sword": activeSword }) => (
+              <div style={{ width: 20 }} />
+
               <BlockItem
                 highlight
                 sprite={itemHash[activeSword?.code || "punch"].sprite}
               />
-            )}
-          </Watcher>
-        </ToolStack>
+            </ToolStack>
+          )}
+        </Watcher>
       </Control>
       <Control bottom={20} right={20}>
         <ControlContainer>

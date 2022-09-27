@@ -1,4 +1,5 @@
 import { itemHash } from "data/item-list";
+import { ToolShape } from "enums";
 import {
   Animator,
   AvatarAnimationSprite,
@@ -40,6 +41,10 @@ export class Farmer extends RectEntity<Props> {
   private _groupOwnItems: Record<OwnItem["code"], OwnItem[]> = {};
   private _activeSword: ActiveItem = Saver.get("active-sword");
   private _activeShield: ActiveItem = Saver.get("active-shield");
+  private _activeTools: Record<ToolShape, ActiveItem> = Saver.getWithDefault(
+    "active-tools",
+    {}
+  );
 
   set activeShield(_activeShield: ActiveItem) {
     this._activeShield = _activeShield;
@@ -53,12 +58,22 @@ export class Farmer extends RectEntity<Props> {
     Saver.set("active-sword", _activeSword);
   }
 
+  set activeTools(_activeTools: Record<ToolShape, ActiveItem>) {
+    this._activeTools = _activeTools;
+    this.scene.emitEntityPropsChange("active-tools", _activeTools);
+    Saver.set("active-tools", _activeTools);
+  }
+
   get activeSword() {
     return this._activeSword;
   }
 
   get activeShield() {
     return this._activeShield;
+  }
+
+  get activeTools() {
+    return this._activeTools;
   }
 
   get ownItems() {
@@ -69,15 +84,35 @@ export class Farmer extends RectEntity<Props> {
     return this._groupOwnItems;
   }
 
+  private updateGroupOwnItems() {
+    this._groupOwnItems = this._ownItems.reduce(
+      (obj: Record<OwnItem["code"], OwnItem[]>, item) => {
+        obj[item.code] = obj[item.code] || [];
+        obj[item.code].push(item);
+        return obj;
+      },
+      {}
+    );
+  }
+
   private addItem(code: Item["code"], qty: number, id?: OwnItem["id"]) {
     const itemClass = itemHash[code];
-    if (itemClass.type === "equipment") {
+    if (itemClass.type === "equipment" || itemClass.type === "tool") {
       Array.from({ length: qty }).forEach(() => {
+        const _id = id ?? genId();
         this._ownItems.push({
           code,
           qty: 1,
-          id: id ?? genId(),
+          id: _id,
         });
+        if (itemClass.type === "tool") {
+          if (!this._activeTools[itemClass.format.shape]) {
+            this.activeTools = {
+              ...this._activeTools,
+              [itemClass.format.shape]: { code, id: _id },
+            };
+          }
+        }
       });
     } else {
       const item = this._groupOwnItems[code]?.[0];
@@ -91,14 +126,43 @@ export class Farmer extends RectEntity<Props> {
         });
       }
     }
-    this._groupOwnItems = this._ownItems.reduce(
-      (obj: Record<OwnItem["code"], OwnItem[]>, item) => {
-        obj[item.code] = obj[item.code] || [];
-        obj[item.code].push(item);
-        return obj;
-      },
-      {}
-    );
+    this.updateGroupOwnItems();
+  }
+
+  private cleanActiveItems() {
+    // sword no-exist anymore
+    if (this._activeSword && !this.getItemQuantity(this._activeSword.code)) {
+      this.activeSword = null;
+    }
+
+    // shield no-exist anymore
+    if (this._activeShield && !this.getItemQuantity(this._activeShield.code)) {
+      this.activeShield = null;
+    }
+
+    for (const shape in this._activeTools) {
+      if (this._activeTools.hasOwnProperty(shape)) {
+        const { code } = this._activeTools[shape as ToolShape];
+        if (!this.getItemQuantity(code)) {
+          delete this._activeTools[shape as ToolShape];
+        }
+      }
+    }
+    this.activeTools = { ...this._activeTools };
+  }
+
+  isUsing(id: string) {
+    if (id === this._activeShield?.id || id === this._activeSword?.id) {
+      return true;
+    }
+    for (const shape in this._activeTools) {
+      if (this._activeTools.hasOwnProperty(shape)) {
+        if (this._activeTools[shape as ToolShape].id === id) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   getItemQuantity(code: Item["code"]) {
@@ -131,7 +195,13 @@ export class Farmer extends RectEntity<Props> {
         this._ownItems.splice(delIndex, 1);
       }
     }
+
+    this.updateGroupOwnItems();
+
+    this.cleanActiveItems();
+
     this.addItem(target.code, target.qty);
+
     Saver.set("own-items", this.ownItems);
     this.scene.emitEntityPropsChange("own-items", {
       list: this._ownItems,
@@ -147,7 +217,19 @@ export class Farmer extends RectEntity<Props> {
       },
       {
         code: "stone",
-        qty: 10,
+        qty: 20,
+      },
+      {
+        code: "metal-ore",
+        qty: 20,
+      },
+      {
+        code: "iron-ore",
+        qty: 20,
+      },
+      {
+        code: "clew",
+        qty: 20,
       },
     ]) as OwnItem[];
     for (const item of initialOwnItems) {
