@@ -137,14 +137,24 @@ type TabCommonProps = {
 function StorageTab({ scene, farmer }: TabCommonProps) {
   const {
     "own-items": { group: groupOwnItems },
-  } = useWatcher(scene, "own-items", {
+    "active-sword": activeSword,
+    "active-shield": activeShield,
+  } = useWatcher(scene, ["own-items", "active-sword", "active-shield"], {
+    "active-sword": farmer.activeSword,
+    "active-shield": farmer.activeShield,
     "own-items": { list: farmer.ownItems, group: farmer.groupOwnItems },
   });
 
-  const storageList = Object.keys(groupOwnItems).map((code) => ({
-    ...itemHash[code],
-    volume: groupOwnItems[code].reduce((s, item) => s + item.qty, 0),
-  }));
+  const storageList = Object.keys(groupOwnItems)
+    .map((code) => ({
+      ...itemHash[code],
+      volume: groupOwnItems[code]
+        .filter(
+          (item) => item.id !== activeSword?.id && item.id !== activeShield?.id
+        )
+        .reduce((s, item) => s + item.qty, 0),
+    }))
+    .filter((item) => !!item.volume);
   return (
     <>
       <div>
@@ -184,7 +194,7 @@ function EquipmentTab({ scene, farmer }: TabCommonProps) {
   const list = ownItems
     .flatMap((item) =>
       itemHash[item.code].type === "equipment"
-        ? Array.from({ length: item.qty }).map((_, i) => {
+        ? Array.from({ length: item.qty }).map(() => {
             const active =
               item.id === activeSword?.id || item.id === activeShield?.id;
             return {
