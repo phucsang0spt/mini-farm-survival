@@ -23,40 +23,38 @@ export class Generator extends RectEntity<Props> {
     };
   }
 
-  onActive() {
+  onBootstrapCompleted() {
     const background = this.worldManagement.getEntity(Background);
-    setTimeout(() => {
-      const { invisibleWallOffsets } = this.props;
-      let rowIndex = 0;
-      for (
-        let i = 0;
-        i < invisibleWallOffsets.length;
-        i += MAP_TILED_SIZE.width
-      ) {
-        const columns = invisibleWallOffsets.slice(i, MAP_TILED_SIZE.width + i);
+    const { invisibleWallOffsets } = this.props;
+    let rowIndex = 0;
+    for (
+      let i = 0;
+      i < invisibleWallOffsets.length;
+      i += MAP_TILED_SIZE.width
+    ) {
+      const columns = invisibleWallOffsets.slice(i, MAP_TILED_SIZE.width + i);
 
-        for (let j = 0; j < columns.length; j++) {
-          const value = columns[j];
-          if (value) {
-            const mapX = TILE_SIZE * j;
-            const mapY = TILE_SIZE * rowIndex;
+      for (let j = 0; j < columns.length; j++) {
+        const value = columns[j];
+        if (value) {
+          const mapX = TILE_SIZE * j;
+          const mapY = TILE_SIZE * rowIndex;
 
-            const canvasX = mapX + TILE_SIZE / 2 - background.sprite.width / 2;
-            const canvasY = mapY + TILE_SIZE / 2 - background.sprite.height / 2;
+          const canvasX = mapX + TILE_SIZE / 2 - background.sprite.width / 2;
+          const canvasY = mapY + TILE_SIZE / 2 - background.sprite.height / 2;
 
-            const wall = this.scene.getPrefab(InvisibleWallPrefab).output({
-              transform: {
-                x: canvasX,
-                y: canvasY,
-                width: TILE_SIZE,
-                height: TILE_SIZE,
-              },
-            });
-            this.addChild(wall);
-          }
+          const wall = this.scene.getPrefab(InvisibleWallPrefab).output({
+            transform: {
+              x: canvasX,
+              y: canvasY,
+              width: TILE_SIZE,
+              height: TILE_SIZE,
+            },
+          });
+          this.addChild(wall);
         }
-        rowIndex++;
       }
-    }, 0);
+      rowIndex++;
+    }
   }
 }

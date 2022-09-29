@@ -29,8 +29,6 @@ export class InvisibleWall extends RectEntity<InvisibleWallProps> {
       },
     };
   }
-
-  onActive(): void {}
 }
 
 export class InvisibleWallPrefab extends Prefab<InvisibleWall> {

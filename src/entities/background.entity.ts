@@ -36,7 +36,7 @@ export class Background extends RectEntity<Props> {
     };
   }
 
-  onActive() {
+  onBootstrapCompleted() {
     this.props.backgroundMusic.play();
     this.scene.onSoundBackgroundOptionsChange(({ canPlay }) => {
       if (canPlay) {

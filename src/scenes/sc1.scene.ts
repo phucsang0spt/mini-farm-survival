@@ -29,12 +29,15 @@ import background from "assets/images/survival-farm-map.png";
 import forground from "assets/images/survival-farm-map-forground.png";
 import invisibleWall from "assets/images/invisible-wall.jpg";
 import farmer from "assets/images/farmer.png";
+// import smallChick from "assets/images/items/animals/small-chick.png";
+import chicken from "assets/images/items/animals/chicken.png";
 
 import backgroundMusic from "assets/sounds/music.wav";
 
 import invisibleWallOffsets from "data/invisible-wall-offsets.json";
 
 import { GamePlayUI } from "./ui/game-play.ui";
+import { Chicken } from "entities/chicken.entity";
 
 @SceneTag("scene-1")
 @SceneUI(GamePlayUI)
@@ -50,6 +53,12 @@ export class Scene1 extends Scene {
 
   @SpriteFrom(farmer)
   farmerSprite!: Avatar;
+
+  // @SpriteFrom(smallChick)
+  // smallChickSprite!: Avatar;
+
+  @SpriteFrom(chicken)
+  chickSprite!: Avatar;
 
   @SoundFrom({ src: backgroundMusic, volume: 0.05 }, SoundType.BACKGROUND)
   backgroundMusic!: Sound;
@@ -113,12 +122,19 @@ export class Scene1 extends Scene {
           },
         },
       ]),
-
       new LogicComponent([
         Farmer,
         {
           props: {
             farmerSprite: this.farmerSprite,
+          },
+        },
+      ]),
+      new LogicComponent([
+        Chicken,
+        {
+          props: {
+            chickSprite: this.chickSprite,
           },
         },
       ]),

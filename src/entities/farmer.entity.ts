@@ -212,6 +212,22 @@ export class Farmer extends RectEntity<Props> {
   protected onPrepare(): EntityPrepare<this> {
     const initialOwnItems = Saver.getWithDefault("own-items", [
       {
+        code: "apple",
+        qty: 100,
+      },
+      {
+        code: "banana",
+        qty: 100,
+      },
+      {
+        code: "raw-fish",
+        qty: 100,
+      },
+      {
+        code: "raw-chicken",
+        qty: 100,
+      },
+      {
         code: "wood",
         qty: 100,
       },
@@ -399,20 +415,20 @@ export class Farmer extends RectEntity<Props> {
   private movement() {
     if (this.lastMove) {
       if (this.lastMove.direction === JoystickDirection.BACKWARD) {
-        (this.sprite.animation as Animator).state = MovementState.DOWN;
+        this.sprite.animator.state = MovementState.DOWN;
       } else if (this.lastMove.direction === JoystickDirection.LEFT) {
-        (this.sprite.animation as Animator).state = MovementState.LEFT;
+        this.sprite.animator.state = MovementState.LEFT;
       } else if (this.lastMove.direction === JoystickDirection.RIGHT) {
-        (this.sprite.animation as Animator).state = MovementState.RIGHT;
+        this.sprite.animator.state = MovementState.RIGHT;
       } else if (this.lastMove.direction === JoystickDirection.FORWARD) {
-        (this.sprite.animation as Animator).state = MovementState.UP;
+        this.sprite.animator.state = MovementState.UP;
       }
       const edge = this.worldManagement.getEntity(Background).edge;
 
       this.moveCamera(edge);
       this.moveFarmer(edge);
     } else {
-      (this.sprite.animation as Animator).state = MovementState.STAND;
+      this.sprite.animator.state = MovementState.STAND;
     }
   }
 
@@ -420,7 +436,7 @@ export class Farmer extends RectEntity<Props> {
     this.movement();
   }
 
-  onActive() {
+  onBootstrapCompleted() {
     this.scene.onJoystickAction((data) => {
       if (data.type === JoystickActionType.MOVE) {
         this.lastMove = {

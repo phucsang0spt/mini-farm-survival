@@ -93,8 +93,8 @@ export function GameContainer() {
       <GameBootstrap
         // logPopup={process.env.NODE_ENV !== "production"}
         scenes={[Menu, Scene1]}
-        width={1280}
-        height={720}
+        width={1280 * 1.2}
+        height={720 * 1.2}
         joystick
         assetsLoader={
           <AssetsLoader bg={LoadingBG}>
