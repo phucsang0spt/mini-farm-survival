@@ -27,10 +27,7 @@ export class Forground extends RectEntity<Props> {
         width: this.props.forgroundSprite.width,
         height: this.props.forgroundSprite.height,
       },
-      bodyOptions: {
-        isSensor: true,
-        isStatic: true,
-      },
+      enabledPhysicBody: false,
     };
   }
 }

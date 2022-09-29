@@ -29,10 +29,7 @@ export class Background extends RectEntity<Props> {
         width: this.props.backgroundSprite.width,
         height: this.props.backgroundSprite.height,
       },
-      bodyOptions: {
-        isSensor: true,
-        isStatic: true,
-      },
+      enabledPhysicBody: false,
     };
   }
 

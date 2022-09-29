@@ -3,10 +3,12 @@ import {
   AvatarAnimationSprite,
   AvatarSprite,
   LogicComponent,
+  Prefab,
   RectEntity,
 } from "react-simple-game-engine/lib";
 import {
   Avatar,
+  Configation,
   EntityPrepare,
 } from "react-simple-game-engine/lib/export-types";
 
@@ -57,13 +59,7 @@ export class Chicken extends RectEntity<Props> {
           ]),
         },
       ]),
-      transform: {
-        x: 803,
-        y: -961,
-        width: 32,
-        height: 32,
-      },
-      enabledGravity: false,
+      enabledPhysicBody: false,
     };
   }
 
@@ -71,5 +67,11 @@ export class Chicken extends RectEntity<Props> {
     this.onTimer(this.growTime, () => {
       this.sprite.animator.state = ChickenState.MATURE;
     });
+  }
+}
+
+export class ChickenPrefab extends Prefab<Chicken> {
+  constructor(config: Configation<Chicken>) {
+    super([Chicken, config]);
   }
 }

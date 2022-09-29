@@ -24,20 +24,20 @@ import { Farmer } from "entities/farmer.entity";
 import { Generator } from "entities/generator.entity";
 import { InvisibleWallPrefab } from "entities/invisible-wall.entity";
 import { Forground } from "entities/forground.entity";
+import { ChickenPrefab } from "entities/chicken.entity";
 
 import background from "assets/images/survival-farm-map.png";
 import forground from "assets/images/survival-farm-map-forground.png";
 import invisibleWall from "assets/images/invisible-wall.jpg";
 import farmer from "assets/images/farmer.png";
-// import smallChick from "assets/images/items/animals/small-chick.png";
 import chicken from "assets/images/items/animals/chicken.png";
 
 import backgroundMusic from "assets/sounds/music.wav";
 
-import invisibleWallOffsets from "data/invisible-wall-offsets.json";
+import boundaryOffsets from "data/boundary-offsets.json";
+import breadPlaceOffsets from "data/bread-place-offsets.json";
 
 import { GamePlayUI } from "./ui/game-play.ui";
-import { Chicken } from "entities/chicken.entity";
 
 @SceneTag("scene-1")
 @SceneUI(GamePlayUI)
@@ -114,11 +114,17 @@ export class Scene1 extends Scene {
           sprite: this.invisibleWallSprite,
         },
       }),
+      new ChickenPrefab({
+        props: {
+          chickSprite: this.chickSprite,
+        },
+      }),
       new LogicComponent([
         Generator,
         {
           props: {
-            invisibleWallOffsets: invisibleWallOffsets as any[],
+            boundaryOffsets: boundaryOffsets as (1 | 0)[],
+            breadPlaceOffsets: breadPlaceOffsets as (1 | 0)[],
           },
         },
       ]),
@@ -127,14 +133,6 @@ export class Scene1 extends Scene {
         {
           props: {
             farmerSprite: this.farmerSprite,
-          },
-        },
-      ]),
-      new LogicComponent([
-        Chicken,
-        {
-          props: {
-            chickSprite: this.chickSprite,
           },
         },
       ]),

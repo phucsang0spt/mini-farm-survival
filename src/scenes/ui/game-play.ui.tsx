@@ -101,7 +101,7 @@ export function GamePlayUI({ scene }: GamePlayUIProps) {
   return (
     <Root>
       <Modal ref={refSettings} content={<SettingsPanel scene={scene} />} />
-      <Modal ref={refBackpack} defaultOpen content={<BackpackPanel />} />
+      <Modal ref={refBackpack} content={<BackpackPanel />} />
       <HeartStack>
         <Watcher
           names="farmer-hp"
