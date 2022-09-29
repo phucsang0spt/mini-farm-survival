@@ -3,7 +3,6 @@ import { BlockItem } from "./block-item";
 
 import shieldHolder from "assets/images/shield-holder.png";
 import swordHolder from "assets/images/sword-holder.png";
-import { EquipmentShape } from "enums";
 
 const Root = styled.div`
   height: 100%;
@@ -41,28 +40,15 @@ const Title = styled.span`
 type EquipTableProps = {
   activeSword?: Item["sprite"];
   activeShield?: Item["sprite"];
-  onSelectedShape: (shape: EquipmentShape) => void;
 };
 
-export function EquipTable({
-  activeSword,
-  activeShield,
-  onSelectedShape,
-}: EquipTableProps) {
+export function EquipTable({ activeSword, activeShield }: EquipTableProps) {
   return (
     <Root>
       <Title>Choose equipment type:</Title>
       <Hanger>
-        <BlockItem
-          onPress={() => onSelectedShape(EquipmentShape.SWORD)}
-          sprite={activeSword ?? swordHolder}
-          size="large"
-        />
-        <BlockItem
-          onPress={() => onSelectedShape(EquipmentShape.SHIELD)}
-          sprite={activeShield ?? shieldHolder}
-          size="large"
-        />
+        <BlockItem sprite={activeSword ?? swordHolder} size="large" />
+        <BlockItem sprite={activeShield ?? shieldHolder} size="large" />
       </Hanger>
     </Root>
   );

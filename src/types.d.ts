@@ -4,26 +4,40 @@ declare interface Window {
 
 declare var Renderer: Window["Renderer"];
 
+type StuffItemFormat = {};
+type FoodItemFormat = {
+  hp: number;
+  water: number;
+};
+type ToolItemFormat = {
+  shape: import("enums").ToolShape;
+};
+type EquipmentItemFormat = {
+  shape: import("enums").EquipmentShape;
+  power: number;
+  defend: number;
+  speed: number;
+};
 type Item = {
   label: string;
   code: string;
   sprite: string;
 } & (
   | {
-      type: "stuff" | "food";
+      type: "stuff";
       format?: never;
     }
   | {
+      type: "food";
+      format: FoodItemFormat;
+    }
+  | {
       type: "tool";
-      format: {
-        shape: import("enums").ToolShape;
-      };
+      format: ToolItemFormat;
     }
   | {
       type: "equipment";
-      format: {
-        shape: import("enums").EquipmentShape;
-      };
+      format: EquipmentItemFormat;
     }
 );
 

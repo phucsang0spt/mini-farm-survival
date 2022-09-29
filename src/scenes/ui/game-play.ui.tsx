@@ -6,6 +6,7 @@ import {
   ControlContainer,
   Modal,
   RefModalFunctions,
+  useEntity,
   Watcher,
 } from "react-simple-game-engine/lib/utilities";
 
@@ -96,6 +97,7 @@ export type GamePlayUIProps = {
 export function GamePlayUI({ scene }: GamePlayUIProps) {
   const refSettings = useRef<RefModalFunctions>();
   const refBackpack = useRef<RefModalFunctions>();
+  const [farmer] = useEntity(Farmer);
   return (
     <Root>
       <Modal ref={refSettings} content={<SettingsPanel scene={scene} />} />
@@ -138,8 +140,8 @@ export function GamePlayUI({ scene }: GamePlayUIProps) {
           scene={scene}
           names={["active-sword", "active-tools"]}
           initialValues={{
-            "active-sword": scene.worldManagement.getEntity(Farmer).activeSword,
-            "active-tools": scene.worldManagement.getEntity(Farmer).activeTools,
+            "active-sword": farmer.activeSword,
+            "active-tools": farmer.activeTools,
           }}
         >
           {({ "active-sword": activeSword, "active-tools": activeTools }) => (
