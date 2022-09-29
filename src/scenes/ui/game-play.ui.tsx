@@ -101,11 +101,7 @@ export function GamePlayUI({ scene }: GamePlayUIProps) {
   return (
     <Root>
       <Modal ref={refSettings} content={<SettingsPanel scene={scene} />} />
-      <Modal
-        ref={refBackpack}
-        defaultOpen
-        content={<BackpackPanel scene={scene} />}
-      />
+      <Modal ref={refBackpack} defaultOpen content={<BackpackPanel />} />
       <HeartStack>
         <Watcher
           names="farmer-hp"
@@ -138,13 +134,18 @@ export function GamePlayUI({ scene }: GamePlayUIProps) {
       >
         <Watcher
           scene={scene}
-          names={["active-sword", "active-tools"]}
+          names={["active-sword", "active-shield", "active-tools"]}
           initialValues={{
             "active-sword": farmer.activeSword,
+            "active-shield": farmer.activeShield,
             "active-tools": farmer.activeTools,
           }}
         >
-          {({ "active-sword": activeSword, "active-tools": activeTools }) => (
+          {({
+            "active-sword": activeSword,
+            "active-shield": activeShield,
+            "active-tools": activeTools,
+          }) => (
             <ToolStack>
               <BlockItem
                 sprite={itemHash[activeTools.axe?.code]?.sprite || ""}
@@ -165,6 +166,10 @@ export function GamePlayUI({ scene }: GamePlayUIProps) {
               <BlockItem
                 highlight
                 sprite={itemHash[activeSword?.code || "punch"].sprite}
+              />
+              <BlockItem
+                highlight
+                sprite={itemHash[activeShield?.code]?.sprite || ""}
               />
             </ToolStack>
           )}

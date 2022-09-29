@@ -31,6 +31,32 @@ export const craftItemList: any[] = [
     ],
   },
   {
+    code: "cooked-chicken",
+    materials: [
+      {
+        code: "fire",
+        requireQuantity: 1,
+      },
+      {
+        code: "raw-chicken",
+        requireQuantity: 1,
+      },
+    ],
+  },
+  {
+    code: "cooked-beast-meat",
+    materials: [
+      {
+        code: "fire",
+        requireQuantity: 1,
+      },
+      {
+        code: "raw-beast-meat",
+        requireQuantity: 1,
+      },
+    ],
+  },
+  {
     code: "axe",
     materials: [
       {

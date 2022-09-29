@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Scene } from "react-simple-game-engine";
 import styled from "styled-components";
 
 import { Panel } from "./panel";
@@ -85,10 +84,9 @@ const TabStack = styled.div<{
 
 type BackpackPanelProps = {
   close?: () => void;
-  scene: Scene;
 };
 
-export function BackpackPanel({ scene, close }: BackpackPanelProps) {
+export function BackpackPanel({ close }: BackpackPanelProps) {
   const [farmer] = useEntity(Farmer);
   const [tab, setTab] = useState(BackpackTab.CRAFT);
   return (
@@ -117,11 +115,11 @@ export function BackpackPanel({ scene, close }: BackpackPanelProps) {
           </TabStack>
         </div>
         {tab === BackpackTab.STORAGE ? (
-          <StorageTab scene={scene} farmer={farmer} />
+          <StorageTab farmer={farmer} />
         ) : tab === BackpackTab.CRAFT ? (
-          <CraftTab scene={scene} farmer={farmer} />
+          <CraftTab farmer={farmer} />
         ) : (
-          <EquipmentTab scene={scene} farmer={farmer} />
+          <EquipmentTab farmer={farmer} />
         )}
       </Root>
     </Panel>
@@ -129,11 +127,10 @@ export function BackpackPanel({ scene, close }: BackpackPanelProps) {
 }
 
 type TabCommonProps = {
-  scene: Scene;
   farmer: Farmer;
 };
 
-function StorageTab({ scene, farmer }: TabCommonProps) {
+function StorageTab({ farmer }: TabCommonProps) {
   const [previewItem, setPreviewItem] = useState<
     Item & { ids: OwnItem["id"][] }
   >(null);
@@ -248,7 +245,7 @@ function CraftTab({ farmer }: TabCommonProps) {
   );
 }
 
-function EquipmentTab({ scene, farmer }: TabCommonProps) {
+function EquipmentTab({ farmer }: TabCommonProps) {
   const {
     "own-items": { list: ownItems },
     "active-sword": activeSword,

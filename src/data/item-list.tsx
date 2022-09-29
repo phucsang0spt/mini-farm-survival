@@ -30,8 +30,25 @@ import wood from "assets/images/items/wood.png";
 import worm from "assets/images/items/worm.png";
 import fire from "assets/images/items/fire.png";
 
+import apple from "assets/images/items/foods/apple.png";
+import banana from "assets/images/items/foods/banana.png";
+import bread from "assets/images/items/foods/bread.png";
+import carrot from "assets/images/items/foods/carrot.png";
+import chili from "assets/images/items/foods/chili.png";
+import egg from "assets/images/items/foods/egg.png";
+import gourd from "assets/images/items/foods/gourd.png";
+import grape from "assets/images/items/foods/grape.png";
+import lime from "assets/images/items/foods/lime.png";
+import mushroom from "assets/images/items/foods/mushroom.png";
+import strawberry from "assets/images/items/foods/strawberry.png";
+import tomato from "assets/images/items/foods/tomato.png";
+import rawChicken from "assets/images/items/foods/raw-chicken.png";
+import cookedChicken from "assets/images/items/foods/cooked-chicken.png";
+import cookedBeastMeat from "assets/images/items/foods/beast-meat.png";
+import rawBeastMeat from "assets/images/items/foods/raw-beast-meat.png";
 import rawFish from "assets/images/items/foods/raw-fish.png";
 import cookedFish from "assets/images/items/foods/fish.png";
+
 import { EquipmentShape, ToolShape } from "enums";
 
 export const punchItem: Item = {
@@ -46,14 +63,14 @@ export const equipmentItemList: Item[] = [
   punchItem,
   {
     type: "equipment",
-    label: "Wood shield",
+    label: "Wood Shield",
     code: "wood-shield",
     sprite: woodShield,
     format: { shape: EquipmentShape.SHIELD, power: 0, speed: 0, defend: 166 },
   },
   {
     type: "equipment",
-    label: "Wood shield (rare)",
+    label: "Wood Shield (Rare)",
     code: "wood-shield-rare",
     sprite: woodShieldRare,
     format: {
@@ -65,7 +82,7 @@ export const equipmentItemList: Item[] = [
   },
   {
     type: "equipment",
-    label: "Steel shield",
+    label: "Steel Shield",
     code: "steel-shield",
     sprite: steelShield,
     format: {
@@ -78,63 +95,63 @@ export const equipmentItemList: Item[] = [
   // sword
   {
     type: "equipment",
-    label: "Wood sword",
+    label: "Wood Sword",
     code: "wood-sword",
     sprite: woodSword,
     format: { shape: EquipmentShape.SWORD, power: 50, speed: 0, defend: 0 },
   },
   {
     type: "equipment",
-    label: "Metal sword",
+    label: "Metal Sword",
     code: "metal-sword",
     sprite: metalSword,
     format: { shape: EquipmentShape.SWORD, power: 50 * 2, speed: 0, defend: 0 },
   },
   {
     type: "equipment",
-    label: "Iron sword",
+    label: "Iron Sword",
     code: "iron-sword",
     sprite: ironSword,
     format: { shape: EquipmentShape.SWORD, power: 50 * 3, speed: 0, defend: 0 },
   },
   {
     type: "equipment",
-    label: "Steel sword",
+    label: "Steel Sword",
     code: "steel-sword",
     sprite: steelSword,
     format: { shape: EquipmentShape.SWORD, power: 50 * 4, speed: 0, defend: 0 },
   },
   {
     type: "equipment",
-    label: "Super sword",
+    label: "Super Sword",
     code: "super-sword",
     sprite: superSword,
     format: { shape: EquipmentShape.SWORD, power: 50 * 5, speed: 0, defend: 0 },
   },
   {
     type: "equipment",
-    label: "Knife sword",
+    label: "Knife Sword",
     code: "knife-sword",
     sprite: knifeSword,
     format: { shape: EquipmentShape.SWORD, power: 50 * 6, speed: 0, defend: 0 },
   },
   {
     type: "equipment",
-    label: "Twin sword",
+    label: "Twin Sword",
     code: "twin-sword",
     sprite: twinSword,
     format: { shape: EquipmentShape.SWORD, power: 50 * 7, speed: 0, defend: 0 },
   },
   {
     type: "equipment",
-    label: "Heaven sword",
+    label: "Heaven Sword",
     code: "heaven-sword",
     sprite: heavenSword,
     format: { shape: EquipmentShape.SWORD, power: 50 * 8, speed: 0, defend: 0 },
   },
   {
     type: "equipment",
-    label: "Hell sword",
+    label: "Hell Sword",
     code: "hell-sword",
     sprite: hellSword,
     format: { shape: EquipmentShape.SWORD, power: 50 * 9, speed: 0, defend: 0 },
@@ -153,21 +170,166 @@ export const equipmentItemList: Item[] = [
   },
 ];
 
-export const itemList: Item[] = [
+export const foodItemList: Item[] = [
   {
     type: "food",
-    label: "Cooked Fish",
-    code: "cooked-fish",
-    sprite: cookedFish,
-    format: { hp: 10, water: 0 },
+    label: "Chili",
+    code: "chili",
+    sprite: chili,
+    format: { hp: 10, water: -5 },
+  },
+  {
+    type: "food",
+    label: "Banana",
+    code: "banana",
+    sprite: banana,
+    format: { hp: 10 * 2, water: 2 },
+  },
+  {
+    type: "food",
+    label: "Bread",
+    code: "bread",
+    sprite: bread,
+    format: { hp: 10 * 3, water: -1 },
+  },
+  {
+    type: "food",
+    label: "Carrot",
+    code: "carrot",
+    sprite: carrot,
+    format: { hp: 10 * 4, water: 0 },
+  },
+  {
+    type: "food",
+    label: "Lime",
+    code: "lime",
+    sprite: lime,
+    format: { hp: 10 * 5, water: 3 },
+  },
+  {
+    type: "food",
+    label: "Gourd",
+    code: "gourd",
+    sprite: gourd,
+    format: { hp: 10 * 6, water: 0 },
+  },
+  {
+    type: "food",
+    label: "Tomato",
+    code: "tomato",
+    sprite: tomato,
+    format: { hp: 10 * 7, water: 5 },
+  },
+  {
+    type: "food",
+    label: "Grape",
+    code: "grape",
+    sprite: grape,
+    format: { hp: 10 * 8, water: 20 },
+  },
+  {
+    type: "food",
+    label: "Mushroom",
+    code: "mushroom",
+    sprite: mushroom,
+    format: { hp: -5, water: 2 },
+  },
+  {
+    type: "food",
+    label: "Strawberry",
+    code: "strawberry",
+    sprite: strawberry,
+    format: { hp: 10 * 9, water: 10 },
+  },
+  {
+    type: "food",
+    label: "Apple",
+    code: "apple",
+    sprite: apple,
+    format: { hp: 10 * 10, water: 2 },
+  },
+  {
+    type: "food",
+    label: "Egg",
+    code: "egg",
+    sprite: egg,
+    format: { hp: 10 * 11, water: 2 },
+  },
+  {
+    type: "food",
+    label: "Raw Beast Meat",
+    code: "raw-beast-meat",
+    sprite: rawBeastMeat,
+    format: { hp: 10 * 12, water: 2 },
+  },
+  {
+    type: "food",
+    label: "Cooked Beast Meat",
+    code: "cooked-beast-meat",
+    sprite: cookedBeastMeat,
+    format: { hp: 10 * 13, water: 0 },
   },
   {
     type: "food",
     label: "Raw Fish",
     code: "raw-fish",
     sprite: rawFish,
-    format: { hp: 10, water: 0 },
+    format: { hp: 10 * 14, water: 5 },
   },
+  {
+    type: "food",
+    label: "Cooked Fish",
+    code: "cooked-fish",
+    sprite: cookedFish,
+    format: { hp: 10 * 15, water: 0 },
+  },
+  {
+    type: "food",
+    label: "Raw Chicken",
+    code: "raw-chicken",
+    sprite: rawChicken,
+    format: { hp: 10 * 16, water: 2 },
+  },
+  {
+    type: "food",
+    label: "Cooked Chicken",
+    code: "cooked-chicken",
+    sprite: cookedChicken,
+    format: { hp: 10 * 17, water: 0 },
+  },
+];
+
+export const toolItemList: Item[] = [
+  {
+    type: "tool",
+    label: "Axe",
+    code: "axe",
+    sprite: axe,
+    format: {
+      shape: ToolShape.AXE,
+    },
+  },
+  {
+    type: "tool",
+    label: "Pickaxe",
+    code: "pickaxe",
+    sprite: pickaxe,
+    format: {
+      shape: ToolShape.PICKAXE,
+    },
+  },
+  {
+    type: "tool",
+    label: "Fishing rod",
+    code: "fishing-rod",
+    sprite: fishingRod,
+    format: {
+      shape: ToolShape.FISHING_ROD,
+    },
+  },
+];
+
+export const itemList: Item[] = [
   {
     type: "stuff",
     label: "Fire",
@@ -234,33 +396,8 @@ export const itemList: Item[] = [
     code: "worm",
     sprite: worm,
   },
-  {
-    type: "tool",
-    label: "Axe",
-    code: "axe",
-    sprite: axe,
-    format: {
-      shape: ToolShape.AXE,
-    },
-  },
-  {
-    type: "tool",
-    label: "Pickaxe",
-    code: "pickaxe",
-    sprite: pickaxe,
-    format: {
-      shape: ToolShape.PICKAXE,
-    },
-  },
-  {
-    type: "tool",
-    label: "Fishing rod",
-    code: "fishing-rod",
-    sprite: fishingRod,
-    format: {
-      shape: ToolShape.FISHING_ROD,
-    },
-  },
+  ...toolItemList,
+  ...foodItemList,
   ...equipmentItemList,
 ];
 
