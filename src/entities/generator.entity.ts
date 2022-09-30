@@ -138,6 +138,6 @@ export class Generator extends RectEntity<Props> {
     this.chickenPlaceOffsets = this.generate2DOffset(breadPlaceOffsets, pivot);
     this.restoreExistChickens();
 
-    // (window as any).test = this.addChickens.bind(this);
+    (window as any).test = this.addChickens.bind(this);
   }
 }

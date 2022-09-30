@@ -23,7 +23,7 @@ enum ChickenState {
 }
 
 export class Chicken extends RectEntity<Props> {
-  private growTime = 100;
+  private growTime = 10 * 60;
   protected onPrepare(): EntityPrepare<this> {
     return {
       sprite: new LogicComponent([
@@ -65,13 +65,13 @@ export class Chicken extends RectEntity<Props> {
   }
 
   onActive() {
-    const clearTimer = this.onTimer(
+    this.onTimer(
       this.growTime,
       () => {
         this.sprite.animator.state = ChickenState.MATURE;
-        clearTimer();
       },
       {
+        once: true,
         startFrom: Saver.get(`chicken::${this.name}-born-time`),
         onRegisterDone: (time) => {
           Saver.set(`chicken::${this.name}-born-time`, time);
