@@ -30,7 +30,7 @@ import background from "assets/images/survival-farm-map.png";
 import forground from "assets/images/survival-farm-map-forground.png";
 import invisibleWall from "assets/images/invisible-wall.jpg";
 import farmer from "assets/images/farmer.png";
-import chicken from "assets/images/items/animals/chicken.png";
+import chickenSheet from "assets/images/items/animals/chicken-sheet.png";
 
 import backgroundMusic from "assets/sounds/music.wav";
 
@@ -57,7 +57,7 @@ export class Scene1 extends Scene {
   // @SpriteFrom(smallChick)
   // smallChickSprite!: Avatar;
 
-  @SpriteFrom(chicken)
+  @SpriteFrom(chickenSheet)
   chickSprite!: Avatar;
 
   @SoundFrom({ src: backgroundMusic, volume: 0.05 }, SoundType.BACKGROUND)

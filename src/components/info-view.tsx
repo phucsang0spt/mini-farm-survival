@@ -1,5 +1,6 @@
-import styled from "styled-components";
-import { paginatedList } from "utils";
+import { ReactElement } from "react";
+import styled, { css } from "styled-components";
+import { paginatedList, valueToAlpha } from "utils";
 import { BlockItem } from "./block-item";
 
 const Root = styled.div`
@@ -23,41 +24,48 @@ const Title = styled.span`
   margin-bottom: 10px;
 `;
 
-type InfoViewProps = {
-  item: Item | null;
+const ExtendEl = styled.div`
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+`;
+
+export type InfoViewItem = Omit<Item, "format"> & {
+  info: { label: string; value: string }[];
 };
 
-export function InfoView({ item }: InfoViewProps) {
+type InfoViewProps = {
+  item?: InfoViewItem | null;
+  extendEl?: ReactElement;
+};
+
+export function InfoView({ item, extendEl }: InfoViewProps) {
   return (
     <Root>
       <Title>{item ? item.label : "Choose item to view"}</Title>
       <BlockItem size="large" sprite={item?.sprite || ""} />
-      {item && (
-        <PropertyStack
-          infos={Object.keys(item.format || {})
-            .map((k) =>
-              k === "shape"
-                ? null
-                : {
-                    label: k.toUpperCase(),
-                    value: (item.format as any)[k],
-                  }
-            )
-            .filter(Boolean)}
-        />
-      )}
+      {item && <PropertyStack infos={item.info} />}
+      {extendEl && <ExtendEl>{extendEl}</ExtendEl>}
     </Root>
   );
 }
 
-const PropertyStackRoot = styled.table`
+const PropertyStackRoot = styled.table<{
+  isOnlyOneInfo: boolean;
+}>`
   margin-top: 5px;
 
-  td[data-tag="main-col"] {
-    &:first-child {
-      padding-right: 10px;
-    }
-  }
+  ${({ isOnlyOneInfo }) =>
+    !isOnlyOneInfo &&
+    css`
+      td[data-tag="main-col"] {
+        &:first-child {
+          padding-right: 10px;
+        }
+      }
+    `}
 
   td[data-tag="value-col"] {
     max-width: 42px;
@@ -85,33 +93,42 @@ const PropertyStackRoot = styled.table`
 `;
 
 type PropertyStackProps = {
-  infos: { label: string; value: string }[];
+  infos: { label: string; value: string | number }[];
 };
 function PropertyStack({ infos }: PropertyStackProps) {
   const rows = paginatedList(infos, 2);
+
+  const isOnlyOneInfo = infos.length === 1;
   return (
-    <PropertyStackRoot>
+    <PropertyStackRoot isOnlyOneInfo={isOnlyOneInfo}>
       <tbody>
         <tr>
-          {Array.from({ length: 2 }).map((_, colIndex) => (
+          {Array.from({ length: isOnlyOneInfo ? 1 : 2 }).map((_, colIndex) => (
             <td key={colIndex} data-tag="main-col">
               <table>
                 <tbody>
-                  {rows.map((cols, rowIndex) => (
-                    <tr key={rowIndex}>
-                      {cols[colIndex] ? (
-                        <>
-                          <td>{cols[colIndex].label}:</td>
-                          <td data-tag="value-col">{cols[colIndex].value}</td>
-                        </>
-                      ) : (
-                        <>
-                          <td>&nbsp;</td>
-                          <td>&nbsp;</td>
-                        </>
-                      )}
-                    </tr>
-                  ))}
+                  {rows.map((cols, rowIndex) => {
+                    const col = cols[colIndex];
+                    return (
+                      <tr key={rowIndex}>
+                        {col ? (
+                          <>
+                            <td>{col.label}:</td>
+                            <td data-tag="value-col">
+                              {typeof col.value === "number"
+                                ? valueToAlpha(col.value as number)
+                                : col.value}
+                            </td>
+                          </>
+                        ) : (
+                          <>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                          </>
+                        )}
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </td>

@@ -29,6 +29,7 @@ import steelOre from "assets/images/items/steel-ore.png";
 import wood from "assets/images/items/wood.png";
 import worm from "assets/images/items/worm.png";
 import fire from "assets/images/items/fire.png";
+import chicken from "assets/images/items/animals/chicken.png";
 
 import apple from "assets/images/items/foods/apple.png";
 import banana from "assets/images/items/foods/banana.png";
@@ -389,6 +390,12 @@ export const itemList: Item[] = [
     label: "Wood",
     code: "wood",
     sprite: wood,
+  },
+  {
+    type: "stuff",
+    label: "Chicken",
+    code: "chicken",
+    sprite: chicken,
   },
   {
     type: "stuff",

@@ -22,6 +22,7 @@ import {
 } from "react-simple-game-engine/lib/export-types";
 import { genId } from "utils";
 import { Background } from "./background.entity";
+import { Generator } from "./generator.entity";
 
 type Props = {
   farmerSprite: Avatar;
@@ -45,6 +46,16 @@ export class Farmer extends RectEntity<Props> {
     "active-tools",
     {}
   );
+  private _money: number = 10_005;
+
+  get money() {
+    return this._money;
+  }
+
+  set money(_money: number) {
+    this._money = _money;
+    this.scene.emitEntityPropsChange("money", _money);
+  }
 
   set activeShield(_activeShield: ActiveItem) {
     this._activeShield = _activeShield;
@@ -207,6 +218,22 @@ export class Farmer extends RectEntity<Props> {
       list: this._ownItems,
       group: this._groupOwnItems,
     });
+  }
+
+  buyItem(
+    item: Item,
+    { qty, totalPrice }: { qty: number; totalPrice: number }
+  ) {
+    if (item.type === "stuff") {
+      if (item.code === "chicken") {
+        this.worldManagement.getEntity(Generator).addChickens(qty);
+        this.money = this._money - totalPrice;
+        return;
+      }
+      console.log("//TODO");
+      return;
+    }
+    console.log("//TODO");
   }
 
   protected onPrepare(): EntityPrepare<this> {

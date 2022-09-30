@@ -55,15 +55,17 @@ const Root = styled.div<{
 
 const AMOUNT_PER_ROW = 5;
 
-type ItemGridProps = {
+export type ItemGridItem = {
+  code: string;
+  sprite: string;
+  active?: boolean;
+  highlight?: boolean;
+  volume?: number;
+} & Record<string, any>;
+
+export type ItemGridProps = {
   onSelect?: (code: string, item: any) => void;
-  list: {
-    code: string;
-    sprite: string;
-    active?: boolean;
-    highlight?: boolean;
-    volume?: number;
-  }[];
+  list: ItemGridItem[];
   rowAmount?: number;
 };
 

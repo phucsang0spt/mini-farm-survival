@@ -41,3 +41,35 @@ export function genId(length = 12) {
   }
   return result;
 }
+
+function getBaseOf(num: number, div: number) {
+  return Math.floor(Math.log(num) / Math.log(div));
+}
+
+function isDecimalOK(num: number) {
+  const decimal = num - Math.floor(num);
+  return decimal * 100 >= 1;
+}
+
+const AlphaHash = {
+  1: "K",
+  4: "M",
+  7: "B",
+  10: "T",
+  13: "A",
+};
+
+export function valueToAlpha(num: number, withCurrency = false) {
+  const suffix = withCurrency ? " $" : "";
+  if (num < 1000) {
+    return `${isDecimalOK(num) ? num.toFixed(2) : Math.round(num)}` + suffix;
+  }
+  const baseOfThousand = getBaseOf(num, 1000);
+  const valueWithBase = Math.pow(1000, baseOfThousand);
+
+  const value = num / valueWithBase;
+
+  return `${isDecimalOK(value) ? value.toFixed(2) : Math.round(value)}${
+    (AlphaHash as any)[baseOfThousand] || AlphaHash["13"]
+  }${suffix}`;
+}

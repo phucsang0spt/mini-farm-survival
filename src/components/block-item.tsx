@@ -1,6 +1,7 @@
 import { memo } from "react";
 import { useLongPress } from "react-simple-game-engine/lib/utilities";
 import styled, { css } from "styled-components";
+import { valueToAlpha } from "utils";
 
 const Root = styled.div<{
   dark: boolean;
@@ -210,7 +211,7 @@ export const BlockItem = memo(function ({
           <div />
         </div>
       )}
-      {volume != null ? <span>{volume}</span> : null}
+      {volume != null ? <span>{valueToAlpha(volume)}</span> : null}
     </Root>
   );
 });

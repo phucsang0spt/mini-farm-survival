@@ -1,7 +1,10 @@
 import { Farmer } from "entities/farmer.entity";
 import { useMemo, useState } from "react";
 import styled from "styled-components";
+import { valueToAlpha } from "utils";
 import { BlockItem } from "./block-item";
+import { PanelButton } from "./panel-button";
+import { QuantityControl } from "./quantity-control";
 
 const Root = styled.div`
   height: 100%;
@@ -18,19 +21,6 @@ const Root = styled.div`
 
   button {
     margin-top: 10px;
-
-    background: #957f5b;
-    border-radius: 4px;
-    border: 1px solid #b79962;
-    padding: 5px 12px;
-    font-size: 1rem;
-    line-height: 1rem;
-    color: #dcdcdc;
-    font-weight: bold;
-
-    &:disabled {
-      color: #393939;
-    }
   }
 `;
 
@@ -42,30 +32,6 @@ const MaterialStack = styled.div`
     + div {
       margin-left: 5px;
     }
-  }
-`;
-
-const InscreaseButton = styled.div`
-  display: flex;
-  align-items: center;
-
-  span {
-    display: block;
-
-    color: #000;
-  }
-
-  span:first-child,
-  span:last-child {
-    font-weight: bold;
-    font-size: 1.2rem;
-    line-height: 1.2rem;
-  }
-
-  span:nth-child(2) {
-    font-size: 1.5rem;
-    line-height: 1.5rem;
-    margin: 0 30px;
   }
 `;
 
@@ -205,7 +171,8 @@ function CraftTableLogic({ source, target, onCraft }: CraftTableProps) {
                       sprite={materialsInfo[i].sprite}
                     />
                     <span>
-                      {materialsInfo[i].iQty}/{materialsInfo[i].requireQuantity}
+                      {valueToAlpha(materialsInfo[i].iQty)}/
+                      {valueToAlpha(materialsInfo[i].requireQuantity)}
                     </span>
                   </>
                 ) : (
@@ -217,19 +184,14 @@ function CraftTableLogic({ source, target, onCraft }: CraftTableProps) {
               </Track>
             ))}
           </MaterialStack>
-          <InscreaseButton>
-            <span onClick={handleDes}>&mdash;</span>
-            <span>{vol}</span>
-            <span onClick={handleIns}>&#9547;</span>
-          </InscreaseButton>
+          <QuantityControl qty={vol} onUp={handleIns} onDown={handleDes} />
         </>
       ) : (
         <EmptyTarget>Choose item to craft</EmptyTarget>
       )}
-
-      <button onClick={handleCraft} disabled={vol < 1}>
+      <PanelButton onClick={handleCraft} disabled={vol < 1}>
         Craft
-      </button>
+      </PanelButton>
     </Root>
   );
 }

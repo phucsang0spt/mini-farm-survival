@@ -1,10 +1,10 @@
+import { ReactNode } from "react";
 import { Control } from "react-simple-game-engine/lib/utilities";
 import styled, { css } from "styled-components";
 
 import close from "assets/images/close.png";
 
 import { Button } from "./button";
-import { ReactNode } from "react";
 
 const Root = styled.div<{
   width: number;
@@ -27,7 +27,6 @@ const Root = styled.div<{
 `;
 
 type PanelProps = {
-  close: () => void;
   children: ReactNode;
   maxWidth?: number;
   spacing?: boolean;
@@ -36,7 +35,6 @@ type PanelProps = {
 export function Panel({
   spacing = true,
   maxWidth = 400,
-  close: closeModal,
   children,
 }: PanelProps) {
   return (
@@ -46,7 +44,7 @@ export function Panel({
       width={Renderer.scaler.screenSizeUI.width}
     >
       <Control top={0} right={0} xAxisOriginCenter yAxisOriginCenter>
-        <Button size="small" onClick={closeModal} src={close} />
+        <Button size="small" data-role="close" src={close} />
       </Control>
       <div>{children}</div>
     </Root>

@@ -36,13 +36,12 @@ const ButtonStack = styled.div`
 `;
 
 type SettingsPanelProps = {
-  close?: () => void;
   scene: Scene;
 };
 
-export function SettingsPanel({ scene, close }: SettingsPanelProps) {
+export function SettingsPanel({ scene }: SettingsPanelProps) {
   return (
-    <Panel close={close}>
+    <Panel>
       <ButtonStack>
         <SoundStack>
           <SoundBackgroundWatcher>

@@ -17,13 +17,19 @@ type ButtonProps = {
   onClick?: () => void;
 };
 
-export function Button({ onClick, size = "default", src }: ButtonProps) {
+export function Button({
+  onClick,
+  size = "default",
+  src,
+  ...props
+}: ButtonProps) {
   return (
     <Root
       onClick={onClick}
       size={size === "default" ? 30 : 20}
       alt=""
       src={src}
+      {...props}
     />
   );
 }

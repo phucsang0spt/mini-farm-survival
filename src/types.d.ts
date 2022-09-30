@@ -4,10 +4,11 @@ declare interface Window {
 
 declare var Renderer: Window["Renderer"];
 
-type StuffItemFormat = {};
+type StuffItemFormat = never;
 type FoodItemFormat = {
   hp: number;
   water: number;
+  shape?: never;
 };
 type ToolItemFormat = {
   shape: import("enums").ToolShape;
@@ -25,7 +26,7 @@ type Item = {
 } & (
   | {
       type: "stuff";
-      format?: never;
+      format?: StuffItemFormat;
     }
   | {
       type: "food";
@@ -50,6 +51,11 @@ type OwnItem = {
 type ActiveItem = {
   id: OwnItem["id"];
   code: OwnItem["code"];
+};
+
+type ShopItem = {
+  code: string;
+  price: number;
 };
 
 type CraftItem = Item & {

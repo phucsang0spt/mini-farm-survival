@@ -22,11 +22,14 @@ import cog from "assets/images/cog.png";
 import cogBag from "assets/images/coin-bag.png";
 import waterBar from "assets/images/water-bar.png";
 import backpack from "assets/images/backpack.png";
+import cart from "assets/images/cart.png";
 
 import hand from "assets/images/hand.png";
 
 import { Farmer } from "entities/farmer.entity";
 import { itemHash } from "data/item-list";
+import { ShopPanel } from "components/shop-panel";
+import { valueToAlpha } from "utils";
 
 const Root = styled.div`
   width: 100%;
@@ -87,7 +90,8 @@ const ToolStack = styled.div`
 const CoinValue = styled.span`
   font-size: 0.9rem;
   line-height: 0.9rem;
-  color: #000;
+  font-weight: bold;
+  color: #fee03c;
 `;
 
 export type GamePlayUIProps = {
@@ -96,12 +100,14 @@ export type GamePlayUIProps = {
 
 export function GamePlayUI({ scene }: GamePlayUIProps) {
   const refSettings = useRef<RefModalFunctions>();
+  const refShop = useRef<RefModalFunctions>();
   const refBackpack = useRef<RefModalFunctions>();
   const [farmer] = useEntity(Farmer);
   return (
     <Root>
       <Modal ref={refSettings} content={<SettingsPanel scene={scene} />} />
       <Modal ref={refBackpack} content={<BackpackPanel />} />
+      <Modal ref={refShop} defaultOpen content={<ShopPanel />} />
       <HeartStack>
         <Watcher names="farmer-hp" initialValues={{ "farmer-hp": 15 }}>
           {({ "farmer-hp": hp }) =>
@@ -121,6 +127,13 @@ export function GamePlayUI({ scene }: GamePlayUIProps) {
           background={false}
           size="small"
           sprite={backpack}
+        />
+        <div style={{ width: 10 }} />
+        <BlockItem
+          onPress={() => refShop.current!.open()}
+          background={false}
+          size="small"
+          sprite={cart}
         />
       </Control>
       <Control
@@ -186,7 +199,9 @@ export function GamePlayUI({ scene }: GamePlayUIProps) {
           <Control top={0} right={20 + 20 + 0} yAxisOriginCenter>
             <ControlContainer>
               <Control top={0} right={3 + 22} yAxisOriginCenter>
-                <CoinValue>1000</CoinValue>
+                <Watcher names="money" initialValues={{ money: farmer.money }}>
+                  {({ money }) => <CoinValue>{valueToAlpha(money)}</CoinValue>}
+                </Watcher>
               </Control>
               <Control top={0} right={0} yAxisOriginCenter>
                 <BlockItem sprite={cogBag} size="small" background={false} />

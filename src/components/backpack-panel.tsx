@@ -1,23 +1,22 @@
-import { useState } from "react";
-import styled from "styled-components";
-
-import { Panel } from "./panel";
-import { ItemGrid } from "./item-grid";
-import { Projector } from "./projector";
-import { BlockItem } from "./block-item";
-import { CraftTable } from "./craft-table";
-
-import equipment from "assets/images/equipment.png";
-import craft from "assets/images/craft.png";
-import chest from "assets/images/chest.png";
-
-import { craftItemList } from "data/craft-items";
-import { itemHash } from "data/item-list";
-import { Farmer } from "entities/farmer.entity";
+import { useMemo, useState } from "react";
 import { useEntity, useWatcher } from "react-simple-game-engine/lib/utilities";
+
 import { EquipmentShape } from "enums";
+
+import { CraftTable } from "./craft-table";
 import { EquipTable } from "./equip-table";
 import { InfoView } from "./info-view";
+import { StackPanelLayout, StackPanelLayoutProps } from "./stack-panel-layout";
+
+import chest from "assets/images/chest.png";
+import craft from "assets/images/craft.png";
+import equipment from "assets/images/equipment.png";
+
+import { craftList } from "data/craft-list";
+import { itemHash } from "data/item-list";
+
+import { Farmer } from "entities/farmer.entity";
+import { ItemGridItem } from "./item-grid";
 
 enum BackpackTab {
   STORAGE,
@@ -25,116 +24,62 @@ enum BackpackTab {
   EQUIPMENT,
 }
 
-const Root = styled.div`
-  display: flex;
-  height: 300px;
-
-  > div {
-    height: 100%;
-
-    &:first-child {
-      margin-right: 5px;
-    }
-
-    &:nth-child(2) {
-      border-top: 2px solid #00000000;
-      border-bottom: 2px solid #00000000;
-      padding-top: 10px;
-      padding-bottom: 10px;
-    }
-
-    &:last-child {
-      margin-left: 2px;
-      flex-grow: 1;
-      flex-shrink: 1;
-      padding-right: 10px;
-      padding-top: 10px;
-      padding-bottom: 10px;
-    }
-  }
-`;
-
-const TabStack = styled.div<{
-  active: BackpackTab;
-}>`
-  width: 30px;
-  height: 100%;
-  background-color: #9f7f48;
-  border-right: 1px solid #9f7f48;
-
-  > div {
-    width: 30px;
-    height: calc(100% / 3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-right: 5px solid #907341;
-    transition: border-right 50ms ease-in-out;
-
-    &:first-child {
-      border-bottom: 1px solid #907341;
-    }
-
-    background-color: #9f7f48;
-    &[data-active="true"] {
-      border-right: 1px solid #907341;
-    }
-  }
-`;
-
-type BackpackPanelProps = {
-  close?: () => void;
-};
-
-export function BackpackPanel({ close }: BackpackPanelProps) {
+export function BackpackPanel() {
   const [farmer] = useEntity(Farmer);
-  const [tab, setTab] = useState(BackpackTab.CRAFT);
-  return (
-    <Panel spacing={false} maxWidth={500} close={close}>
-      <Root>
-        <div>
-          <TabStack active={tab}>
-            <div
-              data-active={tab === BackpackTab.STORAGE}
-              onClick={() => setTab(BackpackTab.STORAGE)}
-            >
-              <BlockItem size="small" background={false} sprite={chest} />
-            </div>
-            <div
-              data-active={tab === BackpackTab.CRAFT}
-              onClick={() => setTab(BackpackTab.CRAFT)}
-            >
-              <BlockItem size="small" background={false} sprite={craft} />
-            </div>
-            <div
-              data-active={tab === BackpackTab.EQUIPMENT}
-              onClick={() => setTab(BackpackTab.EQUIPMENT)}
-            >
-              <BlockItem size="small" background={false} sprite={equipment} />
-            </div>
-          </TabStack>
-        </div>
-        {tab === BackpackTab.STORAGE ? (
-          <StorageTab farmer={farmer} />
-        ) : tab === BackpackTab.CRAFT ? (
-          <CraftTab farmer={farmer} />
-        ) : (
-          <EquipmentTab farmer={farmer} />
-        )}
-      </Root>
-    </Panel>
-  );
+
+  const tabs = [
+    {
+      code: BackpackTab.STORAGE,
+      sprite: chest,
+      hook: useStorageTab({ farmer }),
+    },
+    {
+      code: BackpackTab.CRAFT,
+      sprite: craft,
+      hook: useCraftTab({ farmer }),
+    },
+    {
+      code: BackpackTab.EQUIPMENT,
+      sprite: equipment,
+      hook: useEquipmentTab({ farmer }),
+    },
+  ] as StackPanelLayoutProps<BackpackTab>["tabs"];
+
+  return <StackPanelLayout tabs={tabs} defaultActive={BackpackTab.CRAFT} />;
 }
 
 type TabCommonProps = {
   farmer: Farmer;
 };
 
-function StorageTab({ farmer }: TabCommonProps) {
+function useStorageTab({ farmer }: TabCommonProps) {
   const [previewItem, setPreviewItem] = useState<
-    Item & { ids: OwnItem["id"][] }
+    ItemGridItem & Item & { ids: OwnItem["id"][] }
   >(null);
-  const { ids: selectdIDs = [], ..._previewItem } = previewItem || {};
+
+  const { selectedIDs = [], itemForView } = useMemo(() => {
+    if (previewItem) {
+      let {
+        ids = [],
+        format: { shape, ...format } = {},
+        ...itemForView
+      } = previewItem;
+      return {
+        selectedIDs: ids,
+        itemForView: {
+          ...itemForView,
+          info: Object.keys(format || {}).map((k) => ({
+            label: k.toUpperCase(),
+            value: (format as any)[k],
+          })),
+        },
+      };
+    }
+    return {
+      selectedIDs: [],
+      itemForView: undefined,
+    };
+  }, [previewItem]);
 
   const {
     "own-items": { group: groupOwnItems },
@@ -145,12 +90,12 @@ function StorageTab({ farmer }: TabCommonProps) {
   });
 
   const pickUsing: any[] = [];
-  let storageList = Object.keys(groupOwnItems)
+  let list = Object.keys(groupOwnItems)
     .map((code) => {
       const ids = groupOwnItems[code]
         .map((item) => item.id)
         .filter((id) => !farmer.isUsing(id));
-      const activeInGroup = ids.join(",") === selectdIDs.join(",");
+      const activeInGroup = ids.join(",") === selectedIDs.join(",");
       return {
         ...itemHash[code],
         active: activeInGroup,
@@ -160,7 +105,7 @@ function StorageTab({ farmer }: TabCommonProps) {
             if (isUsing) {
               pickUsing.push({
                 ...itemHash[code],
-                active: selectdIDs.includes(item.id),
+                active: selectedIDs.includes(item.id),
                 volume: 1,
                 highlight: true,
                 ids: [item.id],
@@ -174,44 +119,29 @@ function StorageTab({ farmer }: TabCommonProps) {
     })
     .filter((item) => !!item.volume);
 
-  storageList = [...storageList, ...pickUsing];
+  list = [...list, ...pickUsing];
 
   const handleSelectItem = (
     _: any,
-    {
-      volume,
-      active,
-      ...item
-    }: Item & { active: true; volume: number; ids: OwnItem["id"][] }
+    { volume, active, ...item }: ItemGridItem & Item & { ids: OwnItem["id"][] }
   ) => {
     setPreviewItem(item);
   };
 
-  return (
-    <>
-      <div>
-        <ItemGrid list={storageList} onSelect={handleSelectItem} />
-      </div>
-      <div>
-        <Projector>
-          <InfoView
-            item={
-              Object.keys(_previewItem).length ? (_previewItem as Item) : null
-            }
-          />
-        </Projector>
-      </div>
-    </>
-  );
+  return {
+    list,
+    onSelect: handleSelectItem,
+    projector: <InfoView item={itemForView} />,
+  };
 }
 
-function CraftTab({ farmer }: TabCommonProps) {
+function useCraftTab({ farmer }: TabCommonProps) {
   const [selectedItem, selectItem] = useState<CraftItem["code"]>(null);
   const handlePickCraft = (code: string) => {
     selectItem(code);
   };
 
-  const craftList = craftItemList.map((item) => {
+  const list = craftList.map((item) => {
     return {
       ...item,
       ...itemHash[item.code],
@@ -223,29 +153,24 @@ function CraftTab({ farmer }: TabCommonProps) {
     } as CraftItem;
   });
 
-  const selectedTarget = craftList.find((item) => item.code === selectedItem);
+  const selectedTarget = list.find((item) => item.code === selectedItem);
 
-  return (
-    <>
-      <div>
-        <ItemGrid onSelect={handlePickCraft} list={craftList} />
-      </div>
-      <div>
-        <Projector>
-          <CraftTable
-            onCraft={(target, vol, used) => {
-              farmer.craftItem({ code: target.code, qty: vol }, used);
-            }}
-            source={farmer}
-            target={selectedTarget}
-          />
-        </Projector>
-      </div>
-    </>
-  );
+  return {
+    list,
+    onSelect: handlePickCraft,
+    projector: (
+      <CraftTable
+        onCraft={(target, vol, used) => {
+          farmer.craftItem({ code: target.code, qty: vol }, used);
+        }}
+        source={farmer}
+        target={selectedTarget}
+      />
+    ),
+  };
 }
 
-function EquipmentTab({ farmer }: TabCommonProps) {
+function useEquipmentTab({ farmer }: TabCommonProps) {
   const {
     "own-items": { list: ownItems },
     "active-sword": activeSword,
@@ -278,19 +203,14 @@ function EquipmentTab({ farmer }: TabCommonProps) {
     })
     .filter(Boolean);
 
-  return (
-    <>
-      <div>
-        <ItemGrid onSelect={handleSelectEquipment} list={list} />
-      </div>
-      <div>
-        <Projector>
-          <EquipTable
-            activeSword={activeSword && itemHash[activeSword.code].sprite}
-            activeShield={activeShield && itemHash[activeShield.code].sprite}
-          />
-        </Projector>
-      </div>
-    </>
-  );
+  return {
+    list,
+    onSelect: handleSelectEquipment,
+    projector: (
+      <EquipTable
+        activeSword={activeSword && itemHash[activeSword.code].sprite}
+        activeShield={activeShield && itemHash[activeShield.code].sprite}
+      />
+    ),
+  };
 }
