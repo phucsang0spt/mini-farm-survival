@@ -103,6 +103,8 @@ function InfoViewExtend({ item, source, onBuy }: InfoViewExtendProps) {
   const [qty, setQty] = useState(MIN_QTY);
 
   const totalPrice = item.price * qty;
+
+  const isOverloadChickenPlace = source.generator.isOverloadChickenPlace(qty);
   return (
     <>
       <div style={{ height: 10 }} />
@@ -121,9 +123,13 @@ function InfoViewExtend({ item, source, onBuy }: InfoViewExtendProps) {
           onBuy(item, { qty, totalPrice });
           setQty(MIN_QTY);
         }}
-        disabled={qty < MIN_QTY || totalPrice > source.money}
+        disabled={
+          qty < MIN_QTY || totalPrice > source.money || isOverloadChickenPlace
+        }
       >
-        {`Buy ${valueToAlpha(totalPrice, true)}`}
+        {isOverloadChickenPlace
+          ? `Overload`
+          : `Buy ${valueToAlpha(totalPrice, true)}`}
       </PanelButton>
     </>
   );

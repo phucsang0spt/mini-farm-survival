@@ -60,7 +60,9 @@ export class Chicken extends RectEntity<Props> {
           ]),
         },
       ]),
-      enabledPhysicBody: false,
+      bodyOptions: {
+        isStatic: true,
+      },
     };
   }
 

@@ -47,10 +47,16 @@ export class Farmer extends RectEntity<Props> {
     {}
   );
   private _money: number = 10_005;
+  private _generator: Generator;
 
   get money() {
     return this._money;
   }
+
+  get generator() {
+    return this._generator;
+  }
+
 
   set money(_money: number) {
     this._money = _money;
@@ -226,7 +232,7 @@ export class Farmer extends RectEntity<Props> {
   ) {
     if (item.type === "stuff") {
       if (item.code === "chicken") {
-        this.worldManagement.getEntity(Generator).addChickens(qty);
+        this._generator.addChickens(qty);
         this.money = this._money - totalPrice;
         return;
       }
@@ -464,6 +470,7 @@ export class Farmer extends RectEntity<Props> {
   }
 
   onBootstrapCompleted() {
+    this._generator = this.worldManagement.getEntity(Generator);
     this.scene.onJoystickAction((data) => {
       if (data.type === JoystickActionType.MOVE) {
         this.lastMove = {

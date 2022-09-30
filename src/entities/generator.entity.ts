@@ -29,6 +29,14 @@ export class Generator extends RectEntity<Props> {
   private chickenPlaceOffsets: (Point & { width: number; height: number })[] =
     [];
 
+  isOverloadChickenPlace(commingQty: number) {
+    const chickenStorage = Saver.getWithDefault(
+      "chicken-storage",
+      []
+    ) as ChickenStorageItem[];
+    return chickenStorage.length + commingQty > this.chickenPlaceOffsets.length;
+  }
+
   protected onPrepare(): EntityPrepare<this> {
     return {
       enabledPhysicBody: false,
