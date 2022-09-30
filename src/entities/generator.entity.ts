@@ -113,10 +113,17 @@ export class Generator extends RectEntity<Props> {
   }
 
   private restoreExistChickens() {
-    const chickenStorage = Saver.getWithDefault(
-      "chicken-storage",
-      []
-    ) as ChickenStorageItem[];
+    let chickenStorage = Saver.get("chicken-storage") as ChickenStorageItem[];
+    if (!chickenStorage) {
+      // bố thí
+      const firstChicken = {
+        name: genId(),
+        index: 0,
+      };
+      Saver.set(`chicken::${firstChicken.name}-born-time`, 0);
+      chickenStorage = [firstChicken];
+      Saver.set("chicken-storage", chickenStorage);
+    }
     for (const { name, index } of chickenStorage) {
       this.addChicken(name, index);
     }

@@ -1,14 +1,11 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
-
-import apple from "assets/images/items/foods/apple.png";
-import banana from "assets/images/items/foods/banana.png";
-import carrot from "assets/images/items/foods/carrot.png";
-import egg from "assets/images/items/foods/egg.png";
-import bread from "assets/images/items/foods/bread.png";
 
 import { BlockItem } from "./block-item";
 import { FoodBasket } from "./food-basket";
+import { useEntity, useWatcher } from "react-simple-game-engine/lib/utilities";
+import { Farmer } from "entities/farmer.entity";
+import { itemHash } from "data/item-list";
 
 const Root = styled.div`
   display: flex;
@@ -17,33 +14,47 @@ const Root = styled.div`
 `;
 
 export function BasketTool() {
+  const [farmer] = useEntity(Farmer);
+  useWatcher("own-items", {
+    "own-items": { list: farmer.ownItems, group: farmer.groupOwnItems },
+  });
+
+  const last9Foods = useMemo(() => {
+    return farmer.ownFoodItems.slice(0, 9).map((own) => ({
+      ...itemHash[own.code],
+      ...own,
+    }));
+  }, [farmer.ownFoodItems]);
+
   const [showBasket, setShow] = useState(false);
+  const [activeFood, setActiveFood] = useState<{
+    code: Item["code"];
+    sprite: string;
+  }>(last9Foods[0]);
+
+  useEffect(() => {
+    if (!activeFood) {
+      setActiveFood(last9Foods[0]);
+    }
+  }, [activeFood, last9Foods]);
+
+  useEffect(() => {
+    if (activeFood) {
+      if (!last9Foods.find((food) => food.code === activeFood.code)) {
+        // reset active food
+        setActiveFood(last9Foods[0]);
+      }
+    }
+  }, [last9Foods, activeFood]);
+
   return (
     <Root>
       {showBasket && (
         <FoodBasket
-          list={[
-            {
-              sprite: apple,
-              quantity: 1,
-            },
-            {
-              sprite: banana,
-              quantity: 1,
-            },
-            {
-              sprite: carrot,
-              quantity: 1,
-            },
-            {
-              sprite: egg,
-              quantity: 1,
-            },
-            {
-              sprite: bread,
-              quantity: 1,
-            },
-          ]}
+          list={last9Foods}
+          onSelect={(_, item) => {
+            setActiveFood(item);
+          }}
         />
       )}
 
@@ -52,14 +63,14 @@ export function BasketTool() {
         onPress={() => {
           if (showBasket) {
             setShow(false);
-          } else {
-            // do other
-            console.log("todo: ///");
+          }
+          if (activeFood) {
+            farmer.eatFood(activeFood.code);
           }
         }}
         onLongPress={() => setShow(true)}
         size="medium"
-        sprite={apple}
+        sprite={activeFood?.sprite || ""}
       />
     </Root>
   );

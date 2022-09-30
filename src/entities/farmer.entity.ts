@@ -46,7 +46,7 @@ export class Farmer extends RectEntity<Props> {
     "active-tools",
     {}
   );
-  private _money: number = 10_005;
+  private _money: number = Saver.getWithDefault("money", 5);
   private _generator: Generator;
 
   get money() {
@@ -59,6 +59,7 @@ export class Farmer extends RectEntity<Props> {
 
   set money(_money: number) {
     this._money = _money;
+    Saver.set("money", _money);
     this.scene.emitEntityPropsChange("money", _money);
   }
 
@@ -94,6 +95,10 @@ export class Farmer extends RectEntity<Props> {
 
   get ownItems() {
     return this._ownItems;
+  }
+
+  get ownFoodItems() {
+    return this._ownItems.filter((item) => itemHash[item.code].type === "food");
   }
 
   get groupOwnItems() {
@@ -186,34 +191,40 @@ export class Farmer extends RectEntity<Props> {
     return items.reduce((s, item) => s + item.qty, 0);
   }
 
+  private reduceItem(code: Item["code"], qty: number) {
+    const delIndexes = [];
+    const items = this._groupOwnItems[code] || [];
+    let remainQty = qty;
+    for (const item of items) {
+      let remainMaterialQty = remainQty - item.qty;
+      item.qty -= remainQty;
+      if (remainMaterialQty < 0) {
+        remainQty = 0;
+      } else {
+        remainQty = remainMaterialQty;
+      }
+      if (item.qty <= 0) {
+        delIndexes.push(
+          this._ownItems.findIndex((_item) => _item.id === item.id)
+        );
+      }
+    }
+    for (const delIndex of delIndexes) {
+      this._ownItems.splice(delIndex, 1);
+    }
+
+    return remainQty;
+  }
+
   craftItem(
     target: { code: Item["code"]; qty: number },
     materials: { code: Item["code"]; usedQty: number }[]
   ) {
     for (const material of materials) {
-      const delIndexes = [];
-      const items = this._groupOwnItems[material.code] || [];
-      for (const item of items) {
-        let remainMaterialQty = material.usedQty - item.qty;
-        item.qty -= material.usedQty;
-        if (remainMaterialQty < 0) {
-          material.usedQty = 0;
-        } else {
-          material.usedQty = remainMaterialQty;
-        }
-        if (item.qty <= 0) {
-          delIndexes.push(
-            this._ownItems.findIndex((_item) => _item.id === item.id)
-          );
-        }
-      }
-      for (const delIndex of delIndexes) {
-        this._ownItems.splice(delIndex, 1);
-      }
+      material.usedQty = this.reduceItem(material.code, material.usedQty);
     }
 
     this.updateGroupOwnItems();
-
     this.cleanActiveItems();
 
     this.addItem(target.code, target.qty);
@@ -237,46 +248,40 @@ export class Farmer extends RectEntity<Props> {
       }
     }
     this.addItem(item.code, qty);
+    Saver.set("own-items", this.ownItems);
+    this.scene.emitEntityPropsChange("own-items", {
+      list: this._ownItems,
+      group: this._groupOwnItems,
+    });
+
     this.money = this._money - totalPrice;
+  }
+
+  eatFood(code: Item["code"]) {
+    this.reduceItem(code, 1);
+    this.updateGroupOwnItems();
+    this.cleanActiveItems();
+    Saver.set("own-items", this.ownItems);
+    this.scene.emitEntityPropsChange("own-items", {
+      list: this._ownItems,
+      group: this._groupOwnItems,
+    });
+    // todo: up health, up water
   }
 
   protected onPrepare(): EntityPrepare<this> {
     const initialOwnItems = Saver.getWithDefault("own-items", [
       {
-        code: "apple",
-        qty: 100,
-      },
-      {
-        code: "banana",
-        qty: 100,
-      },
-      {
-        code: "raw-fish",
-        qty: 100,
-      },
-      {
-        code: "raw-chicken",
-        qty: 100,
-      },
-      {
         code: "wood",
-        qty: 100,
+        qty: 10,
       },
       {
         code: "stone",
-        qty: 20,
+        qty: 5,
       },
       {
         code: "metal-ore",
-        qty: 20,
-      },
-      {
-        code: "iron-ore",
-        qty: 20,
-      },
-      {
-        code: "clew",
-        qty: 20,
+        qty: 1,
       },
     ]) as OwnItem[];
     for (const item of initialOwnItems) {

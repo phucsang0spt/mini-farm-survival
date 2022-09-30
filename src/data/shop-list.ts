@@ -12,6 +12,10 @@ export const shopList: ShopItem[] = [
     price: 2,
   },
   {
+    code: "egg",
+    price: (10 * 11) / 2,
+  },
+  {
     code: "chicken",
     price: (10 * 16) / 3,
   },

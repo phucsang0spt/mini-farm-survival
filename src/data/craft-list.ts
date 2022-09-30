@@ -65,6 +65,10 @@ export const craftList: any[] = [
       },
       {
         code: "stone",
+        requireQuantity: 5,
+      },
+      {
+        code: "metal-ore",
         requireQuantity: 1,
       },
     ],
@@ -77,7 +81,7 @@ export const craftList: any[] = [
         requireQuantity: 20,
       },
       {
-        code: "iron-ore",
+        code: "metal-ore",
         requireQuantity: 5,
       },
     ],

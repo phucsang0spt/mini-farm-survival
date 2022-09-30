@@ -20,11 +20,18 @@ const Root = styled.div`
   }
 `;
 
+type FoodBasketItem = {
+  code: Item["code"];
+  sprite: string;
+  qty: number;
+} & Record<string, any>;
+
 type FoodBasketProps = {
-  list: { sprite: string; quantity: number }[];
+  list: FoodBasketItem[];
+  onSelect?: (code: string, item: FoodBasketItem) => void;
 };
 
-export function FoodBasket({ list }: FoodBasketProps) {
+export function FoodBasket({ list, onSelect }: FoodBasketProps) {
   return (
     <Root>
       {Array.from({ length: 3 }).map((_, i) => {
@@ -35,8 +42,9 @@ export function FoodBasket({ list }: FoodBasketProps) {
               cols[j] ? (
                 <BlockItem
                   key={j}
+                  onPress={() => onSelect?.(cols[j].code, cols[j])}
                   sprite={cols[j].sprite}
-                  volume={cols[j].quantity}
+                  volume={cols[j].qty}
                 />
               ) : (
                 <BlockItem key={j} sprite="" />

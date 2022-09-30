@@ -23,7 +23,7 @@ enum ChickenState {
 }
 
 export class Chicken extends RectEntity<Props> {
-  private growTime = 10 * 60;
+  private growTime = 5 * 60;
   protected onPrepare(): EntityPrepare<this> {
     return {
       sprite: new LogicComponent([
