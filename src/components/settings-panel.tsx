@@ -45,12 +45,12 @@ export function SettingsPanel({ scene, close }: SettingsPanelProps) {
     <Panel close={close}>
       <ButtonStack>
         <SoundStack>
-          <SoundBackgroundWatcher scene={scene}>
+          <SoundBackgroundWatcher>
             {({ canPlay, toggle }) => (
               <SoundButton type="music" on={canPlay} onToggle={toggle} />
             )}
           </SoundBackgroundWatcher>
-          <SoundOnceWatcher scene={scene}>
+          <SoundOnceWatcher>
             {({ canPlay, toggle }) => (
               <SoundButton onToggle={toggle} type="vol" on={canPlay} />
             )}

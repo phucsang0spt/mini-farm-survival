@@ -103,11 +103,7 @@ export function GamePlayUI({ scene }: GamePlayUIProps) {
       <Modal ref={refSettings} content={<SettingsPanel scene={scene} />} />
       <Modal ref={refBackpack} content={<BackpackPanel />} />
       <HeartStack>
-        <Watcher
-          names="farmer-hp"
-          scene={scene}
-          initialValues={{ "farmer-hp": 15 }}
-        >
+        <Watcher names="farmer-hp" initialValues={{ "farmer-hp": 15 }}>
           {({ "farmer-hp": hp }) =>
             Array.from({ length: hp }).map((_, i) => (
               <img key={i} src={heart} alt="" />
@@ -133,7 +129,6 @@ export function GamePlayUI({ scene }: GamePlayUIProps) {
         xAxisOriginCenter
       >
         <Watcher
-          scene={scene}
           names={["active-sword", "active-shield", "active-tools"]}
           initialValues={{
             "active-sword": farmer.activeSword,

@@ -4,7 +4,6 @@ import {
   SoundBackgroundWatcher,
   SoundOnceWatcher,
 } from "react-simple-game-engine/lib/utilities";
-import { Scene } from "react-simple-game-engine";
 
 import { SoundButton } from "components/sound-button";
 import { Button } from "components/button";
@@ -58,21 +57,20 @@ const ButtonStack = styled.div`
 
 export type MenuUIProps = {
   onStart: () => void;
-  scene: Scene;
 };
 
-export function MenuUI({ onStart, scene }: MenuUIProps) {
+export function MenuUI({ onStart }: MenuUIProps) {
   return (
     <Root>
       <img src={title} alt="" />
       <ButtonStack>
         <SoundStack>
-          <SoundBackgroundWatcher scene={scene}>
+          <SoundBackgroundWatcher>
             {({ canPlay, toggle }) => (
               <SoundButton type="music" on={canPlay} onToggle={toggle} />
             )}
           </SoundBackgroundWatcher>
-          <SoundOnceWatcher scene={scene}>
+          <SoundOnceWatcher>
             {({ canPlay, toggle }) => (
               <SoundButton onToggle={toggle} type="vol" on={canPlay} />
             )}
