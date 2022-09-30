@@ -104,7 +104,10 @@ function InfoViewExtend({ item, source, onBuy }: InfoViewExtendProps) {
 
   const totalPrice = item.price * qty;
 
-  const isOverloadChickenPlace = source.generator.isOverloadChickenPlace(qty);
+  const isOverloadChickenPlace =
+    item.code === "chicken"
+      ? source.generator.isOverloadChickenPlace(qty)
+      : false;
   return (
     <>
       <div style={{ height: 10 }} />

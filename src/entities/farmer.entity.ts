@@ -57,7 +57,6 @@ export class Farmer extends RectEntity<Props> {
     return this._generator;
   }
 
-
   set money(_money: number) {
     this._money = _money;
     this.scene.emitEntityPropsChange("money", _money);
@@ -236,10 +235,9 @@ export class Farmer extends RectEntity<Props> {
         this.money = this._money - totalPrice;
         return;
       }
-      console.log("//TODO");
-      return;
     }
-    console.log("//TODO");
+    this.addItem(item.code, qty);
+    this.money = this._money - totalPrice;
   }
 
   protected onPrepare(): EntityPrepare<this> {
