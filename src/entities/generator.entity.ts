@@ -13,6 +13,10 @@ type Props = {
   breadPlaceOffsets: (0 | 1)[];
 };
 
+type ChickenStorageItem = {
+  name: string;
+  index: number;
+};
 const MAP_TILED_SIZE = {
   width: 100,
   height: 70,
@@ -101,20 +105,20 @@ export class Generator extends RectEntity<Props> {
   }
 
   private restoreExistChickens() {
-    const chickenStorage = Saver.getWithDefault("chicken-storage", []) as {
-      name: string;
-      index: number;
-    }[];
+    const chickenStorage = Saver.getWithDefault(
+      "chicken-storage",
+      []
+    ) as ChickenStorageItem[];
     for (const { name, index } of chickenStorage) {
       this.addChicken(name, index);
     }
   }
 
   addChickens(qty: number) {
-    const chickenStorage = Saver.getWithDefault("chicken-storage", []) as {
-      name: string;
-      index: number;
-    }[];
+    const chickenStorage = Saver.getWithDefault(
+      "chicken-storage",
+      []
+    ) as ChickenStorageItem[];
     Array.from({ length: qty }).forEach(() => {
       const name = genId();
       const index = this.chickens.length;
