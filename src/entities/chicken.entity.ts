@@ -5,6 +5,7 @@ import {
   LogicComponent,
   Prefab,
   RectEntity,
+  Saver,
 } from "react-simple-game-engine/lib";
 import {
   Avatar,
@@ -22,7 +23,7 @@ enum ChickenState {
 }
 
 export class Chicken extends RectEntity<Props> {
-  private growTime = 10;
+  private growTime = 100;
   protected onPrepare(): EntityPrepare<this> {
     return {
       sprite: new LogicComponent([
@@ -63,10 +64,20 @@ export class Chicken extends RectEntity<Props> {
     };
   }
 
-  onBootstrapCompleted() {
-    this.onTimer(this.growTime, () => {
-      this.sprite.animator.state = ChickenState.MATURE;
-    });
+  onActive() {
+    const clearTimer = this.onTimer(
+      this.growTime,
+      () => {
+        this.sprite.animator.state = ChickenState.MATURE;
+        clearTimer();
+      },
+      {
+        startFrom: Saver.get(`chicken::${this.name}-born-time`),
+        onRegisterDone: (time) => {
+          Saver.set(`chicken::${this.name}-born-time`, time);
+        },
+      }
+    );
   }
 }
 

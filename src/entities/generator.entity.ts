@@ -1,8 +1,12 @@
-import { Prefab, RectEntity } from "react-simple-game-engine/lib";
+import { Prefab, RectEntity, Saver } from "react-simple-game-engine/lib";
 import { InvisibleWallPrefab } from "./invisible-wall.entity";
 import { Background } from "./background.entity";
-import { ChickenPrefab } from "./chicken.entity";
-import { EntityPrepare } from "react-simple-game-engine/lib/export-types";
+import { Chicken, ChickenPrefab } from "./chicken.entity";
+import {
+  EntityPrepare,
+  Point,
+} from "react-simple-game-engine/lib/export-types";
+import { genId } from "utils";
 
 type Props = {
   boundaryOffsets: (0 | 1)[];
@@ -17,6 +21,10 @@ const MAP_TILED_SIZE = {
 const TILE_SIZE = 32;
 
 export class Generator extends RectEntity<Props> {
+  private chickens: Chicken[] = [];
+  private chickenPlaceOffsets: (Point & { width: number; height: number })[] =
+    [];
+
   protected onPrepare(): EntityPrepare<this> {
     return {
       enabledPhysicBody: false,
@@ -79,6 +87,43 @@ export class Generator extends RectEntity<Props> {
     }
   }
 
+  private addChicken(name: string, index: number) {
+    const offset = this.chickenPlaceOffsets[index];
+    const chicken = this.scene.getPrefab(ChickenPrefab).output({
+      name,
+      transform: {
+        ...offset,
+      },
+    });
+    this.chickens.push(chicken);
+    this.addChild(chicken);
+    return name;
+  }
+
+  private restoreExistChickens() {
+    const chickenStorage = Saver.getWithDefault("chicken-storage", []) as {
+      name: string;
+      index: number;
+    }[];
+    for (const { name, index } of chickenStorage) {
+      this.addChicken(name, index);
+    }
+  }
+
+  addChickens(qty: number) {
+    const chickenStorage = Saver.getWithDefault("chicken-storage", []) as {
+      name: string;
+      index: number;
+    }[];
+    Array.from({ length: qty }).forEach(() => {
+      const name = genId();
+      const index = this.chickens.length;
+      this.addChicken(name, index);
+      chickenStorage.push({ name, index });
+    });
+    Saver.set("chicken-storage", chickenStorage);
+  }
+
   onBootstrapCompleted() {
     const background = this.worldManagement.getEntity(Background);
     const { boundaryOffsets, breadPlaceOffsets } = this.props;
@@ -90,14 +135,9 @@ export class Generator extends RectEntity<Props> {
 
     this.generateTile(InvisibleWallPrefab, boundaryOffsets, pivot);
 
-    const chieckOffsets = this.generate2DOffset(breadPlaceOffsets, pivot);
-    for (const offset of chieckOffsets) {
-      const chicken = this.scene.getPrefab(ChickenPrefab).output({
-        transform: {
-          ...offset,
-        },
-      });
-      this.addChild(chicken);
-    }
+    this.chickenPlaceOffsets = this.generate2DOffset(breadPlaceOffsets, pivot);
+    this.restoreExistChickens();
+
+    // (window as any).test = this.addChickens.bind(this);
   }
 }
