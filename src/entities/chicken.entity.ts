@@ -66,6 +66,18 @@ export class Chicken extends RectEntity<Props> {
     };
   }
 
+  onMouseRelease() {
+    const { realMouseX, realMouseY } = this.renderer;
+    if (
+      this.edge.left <= realMouseX &&
+      realMouseX <= this.edge.right &&
+      this.edge.top <= realMouseY &&
+      realMouseY <= this.edge.bottom
+    ) {
+      console.log("Selected");
+    }
+  }
+
   onActive() {
     this.onTimer(
       this.growTime,
