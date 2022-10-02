@@ -116,7 +116,33 @@ export class Farmer extends RectEntity<Props> {
     );
   }
 
-  private addItem(code: Item["code"], qty: number, id?: OwnItem["id"]) {
+  private cleanActiveItems() {
+    // sword no-exist anymore
+    if (this._activeSword && !this.getItemQuantity(this._activeSword.code)) {
+      this.activeSword = null;
+    }
+
+    // shield no-exist anymore
+    if (this._activeShield && !this.getItemQuantity(this._activeShield.code)) {
+      this.activeShield = null;
+    }
+
+    for (const shape in this._activeTools) {
+      if (this._activeTools.hasOwnProperty(shape)) {
+        const { code } = this._activeTools[shape as ToolShape];
+        if (!this.getItemQuantity(code)) {
+          delete this._activeTools[shape as ToolShape];
+        }
+      }
+    }
+    this.activeTools = { ...this._activeTools };
+  }
+
+  addItem(
+    code: Item["code"],
+    qty: number,
+    { id, emit = true }: { id?: OwnItem["id"]; emit?: boolean } = {}
+  ) {
     const itemClass = itemHash[code];
     if (itemClass.type === "equipment" || itemClass.type === "tool") {
       Array.from({ length: qty }).forEach(() => {
@@ -148,28 +174,14 @@ export class Farmer extends RectEntity<Props> {
       }
     }
     this.updateGroupOwnItems();
-  }
 
-  private cleanActiveItems() {
-    // sword no-exist anymore
-    if (this._activeSword && !this.getItemQuantity(this._activeSword.code)) {
-      this.activeSword = null;
+    if (emit) {
+      Saver.set("own-items", this.ownItems);
+      this.scene.emitEntityPropsChange("own-items", {
+        list: this._ownItems,
+        group: this._groupOwnItems,
+      });
     }
-
-    // shield no-exist anymore
-    if (this._activeShield && !this.getItemQuantity(this._activeShield.code)) {
-      this.activeShield = null;
-    }
-
-    for (const shape in this._activeTools) {
-      if (this._activeTools.hasOwnProperty(shape)) {
-        const { code } = this._activeTools[shape as ToolShape];
-        if (!this.getItemQuantity(code)) {
-          delete this._activeTools[shape as ToolShape];
-        }
-      }
-    }
-    this.activeTools = { ...this._activeTools };
   }
 
   isUsing(id: string) {
@@ -228,12 +240,6 @@ export class Farmer extends RectEntity<Props> {
     this.cleanActiveItems();
 
     this.addItem(target.code, target.qty);
-
-    Saver.set("own-items", this.ownItems);
-    this.scene.emitEntityPropsChange("own-items", {
-      list: this._ownItems,
-      group: this._groupOwnItems,
-    });
   }
 
   buyItem(
@@ -248,12 +254,6 @@ export class Farmer extends RectEntity<Props> {
       }
     }
     this.addItem(item.code, qty);
-    Saver.set("own-items", this.ownItems);
-    this.scene.emitEntityPropsChange("own-items", {
-      list: this._ownItems,
-      group: this._groupOwnItems,
-    });
-
     this.money = this._money - totalPrice;
   }
 
@@ -285,7 +285,7 @@ export class Farmer extends RectEntity<Props> {
       },
     ]) as OwnItem[];
     for (const item of initialOwnItems) {
-      this.addItem(item.code, item.qty, item.id);
+      this.addItem(item.code, item.qty, { id: item.id, emit: false });
     }
 
     return {

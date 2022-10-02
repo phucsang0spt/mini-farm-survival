@@ -12,19 +12,41 @@ import {
   Configation,
   EntityPrepare,
 } from "react-simple-game-engine/lib/export-types";
+import { msToTimer } from "utils";
+import { Farmer } from "./farmer.entity";
+import { Generator } from "./generator.entity";
 
 type Props = {
   chickSprite: Avatar;
+  highlightSprite: Avatar;
 };
 
 enum ChickenState {
   BABY,
-  MATURE,
+  ADULT,
 }
 
 export class Chicken extends RectEntity<Props> {
-  private growTime = 5 * 60;
+  private growTime = 5 * 60; //second
+  private highlightAnimation: AvatarAnimationSprite;
+  private bornTime: number;
+  private expectedAdultTime: number;
   protected onPrepare(): EntityPrepare<this> {
+    this.highlightAnimation = new LogicComponent([
+      AvatarAnimationSprite,
+      {
+        source: this.props.highlightSprite,
+        size: {
+          width: 19,
+          height: 20,
+        },
+        width: 23,
+        height: 24,
+        x: 0,
+        y: 0,
+      },
+    ]).output();
+
     return {
       sprite: new LogicComponent([
         AvatarSprite,
@@ -46,7 +68,7 @@ export class Chicken extends RectEntity<Props> {
                     distancePerFrame: 1,
                   },
                 ]).output(),
-                [ChickenState.MATURE]: new LogicComponent([
+                [ChickenState.ADULT]: new LogicComponent([
                   AvatarAnimationSprite,
                   {
                     x: 0,
@@ -66,29 +88,72 @@ export class Chicken extends RectEntity<Props> {
     };
   }
 
+  private remainAdultTime() {
+    const diff = this.expectedAdultTime - new Date().getTime();
+    return msToTimer(diff < 0 ? 0 : diff);
+  }
+
+  onDraw() {
+    if (this.sprite.animator.state === ChickenState.ADULT) {
+      const highlightSprite = this.props.highlightSprite;
+      this.renderer.drawHandle(
+        {
+          x: this.position.x,
+          y: this.position.y - highlightSprite.height / 2 - this.height / 2,
+        },
+        () => {
+          this.highlightAnimation.draw();
+        }
+      );
+    } else {
+      this.renderer.drawHandle(
+        {
+          x: this.position.x,
+          y: this.position.y - this.height / 2,
+        },
+        (renderer) => {
+          renderer.textAlign(renderer.CENTER, renderer.BOTTOM);
+          renderer.fill(255);
+          renderer.textStyle(renderer.BOLD);
+          renderer.text(this.remainAdultTime(), 0, 0);
+        }
+      );
+    }
+  }
+
   onMouseRelease() {
-    const { realMouseX, realMouseY } = this.renderer;
-    if (
-      this.edge.left <= realMouseX &&
-      realMouseX <= this.edge.right &&
-      this.edge.top <= realMouseY &&
-      realMouseY <= this.edge.bottom
-    ) {
-      console.log("Selected");
+    if (this.sprite.animator.state === ChickenState.ADULT) {
+      const { realMouseX, realMouseY } = this.renderer;
+      if (
+        this.edge.left <= realMouseX &&
+        realMouseX <= this.edge.right &&
+        this.edge.top <= realMouseY &&
+        realMouseY <= this.edge.bottom
+      ) {
+        this.worldManagement.getEntity(Farmer).addItem("raw-chicken", 1);
+        this.worldManagement.getEntity(Generator).removeChicken(this.name);
+      }
     }
   }
 
   onActive() {
     this.onTimer(
       this.growTime,
+      //invoke
       () => {
-        this.sprite.animator.state = ChickenState.MATURE;
+        this.sprite.animator.state = ChickenState.ADULT;
       },
       {
         once: true,
-        startFrom: Saver.get(`chicken::${this.name}-born-time`),
+        startFrom: this.renderer.constrainMax(
+          // can't not born in future
+          Saver.get(`chicken::${this.name}-born-time`, Number),
+          new Date().getTime()
+        ),
         onRegisterDone: (time) => {
           Saver.set(`chicken::${this.name}-born-time`, time);
+          this.bornTime = time;
+          this.expectedAdultTime = this.bornTime + this.growTime * 1000;
         },
       }
     );

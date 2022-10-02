@@ -107,7 +107,7 @@ export function GamePlayUI({ scene }: GamePlayUIProps) {
     <Root>
       <Modal ref={refSettings} content={<SettingsPanel scene={scene} />} />
       <Modal ref={refBackpack} content={<BackpackPanel />} />
-      <Modal ref={refShop} defaultOpen content={<ShopPanel />} />
+      <Modal ref={refShop} content={<ShopPanel />} />
       <HeartStack>
         <Watcher names="farmer-hp" initialValues={{ "farmer-hp": 15 }}>
           {({ "farmer-hp": hp }) =>

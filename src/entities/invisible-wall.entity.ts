@@ -8,12 +8,9 @@ import {
 import {
   EntityPrepare,
   Configation,
-  Avatar,
 } from "react-simple-game-engine/lib/export-types";
 
-export type InvisibleWallProps = {
-  sprite: Avatar;
-};
+export type InvisibleWallProps = {};
 
 export class InvisibleWall extends RectEntity<InvisibleWallProps> {
   protected onPrepare(): EntityPrepare<this> {

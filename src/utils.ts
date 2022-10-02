@@ -73,3 +73,18 @@ export function valueToAlpha(num: number, withCurrency = false) {
     (AlphaHash as any)[baseOfThousand] || AlphaHash["13"]
   }${suffix}`;
 }
+
+export function msToTimer(_ms: number) {
+  const ms = _ms / 1000;
+  const hours = Math.floor(ms / 3600);
+  let remainSeconds = ms - hours * 3600;
+  const minutes = Math.floor(remainSeconds / 60);
+  remainSeconds = remainSeconds - minutes * 60;
+
+  return `${padL(hours)}:${padL(minutes)}:${padL(Math.round(remainSeconds))}`;
+}
+
+export function padL(a: number, b = 2) {
+  //string/number,length=2
+  return (new Array(b || 2).join("0") + a).slice(-b);
+}

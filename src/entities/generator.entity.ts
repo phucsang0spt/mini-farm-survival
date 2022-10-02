@@ -112,6 +112,19 @@ export class Generator extends RectEntity<Props> {
     return name;
   }
 
+  removeChicken(name: string) {
+    const chickenStorage = Saver.get("chicken-storage") as ChickenStorageItem[];
+    Saver.remove(`chicken::${name}-born-time`);
+    Saver.set(
+      "chicken-storage",
+      chickenStorage.filter((chick) => chick.name !== name)
+    );
+    const chick = this.chickens.find((c) => c.name === name);
+    if (chick) {
+      this.removeChild(chick);
+    }
+  }
+
   private restoreExistChickens() {
     let chickenStorage = Saver.get("chicken-storage") as ChickenStorageItem[];
     if (!chickenStorage) {

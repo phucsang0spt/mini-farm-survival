@@ -28,8 +28,8 @@ import { ChickenPrefab } from "entities/chicken.entity";
 
 import background from "assets/images/survival-farm-map.png";
 import forground from "assets/images/survival-farm-map-forground.png";
-import invisibleWall from "assets/images/invisible-wall.jpg";
-import farmer from "assets/images/farmer.png";
+import highlightSheet from "assets/images/highlight-sheet.png";
+import farmerSheet from "assets/images/farmer-sheet.png";
 import chickenSheet from "assets/images/items/animals/chicken-sheet.png";
 
 import backgroundMusic from "assets/sounds/music.wav";
@@ -48,17 +48,14 @@ export class Scene1 extends Scene {
   @SpriteFrom(forground)
   forgroundSprite!: Avatar;
 
-  @SpriteFrom(invisibleWall)
-  invisibleWallSprite!: Avatar;
+  @SpriteFrom(farmerSheet)
+  farmerSprite: Avatar;
 
-  @SpriteFrom(farmer)
-  farmerSprite!: Avatar;
-
-  // @SpriteFrom(smallChick)
-  // smallChickSprite!: Avatar;
+  @SpriteFrom(highlightSheet)
+  highlightSprite!: Avatar;
 
   @SpriteFrom(chickenSheet)
-  chickSprite!: Avatar;
+  chickSprite: Avatar;
 
   @SoundFrom({ src: backgroundMusic, volume: 0.05 }, SoundType.BACKGROUND)
   backgroundMusic!: Sound;
@@ -109,14 +106,11 @@ export class Scene1 extends Scene {
           },
         },
       ]),
-      new InvisibleWallPrefab({
-        props: {
-          sprite: this.invisibleWallSprite,
-        },
-      }),
+      new InvisibleWallPrefab({}),
       new ChickenPrefab({
         props: {
           chickSprite: this.chickSprite,
+          highlightSprite: this.highlightSprite,
         },
       }),
       new LogicComponent([
