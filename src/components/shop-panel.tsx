@@ -42,15 +42,15 @@ function useShopTab({ farmer }: TabCommonProps) {
     _: any,
     {
       format: { shape, ...format } = {} as any,
-      price,
+      cost,
       ...item
     }: Item & ShopItem & ItemGridItem
   ) => {
     setPreviewItem({
       ...item,
-      price,
+      cost,
       info: [
-        { label: "PRICE", value: `${valueToAlpha(price, true)}` },
+        { label: "PRICE", value: `${valueToAlpha(cost, true)}` },
         ...Object.keys(format || {}).map((k) => ({
           label: k.toUpperCase(),
           value: (format as any)[k],
@@ -102,7 +102,7 @@ function InfoViewExtend({ item, source, onBuy }: InfoViewExtendProps) {
   const MIN_QTY = 1;
   const [qty, setQty] = useState(MIN_QTY);
 
-  const totalPrice = item.price * qty;
+  const totalPrice = item.cost * qty;
 
   const isOverloadChickenPlace =
     item.code === "chicken"
@@ -127,7 +127,7 @@ function InfoViewExtend({ item, source, onBuy }: InfoViewExtendProps) {
           setQty(MIN_QTY);
         }}
         disabled={
-          qty < MIN_QTY || totalPrice > source.money || isOverloadChickenPlace
+          qty < MIN_QTY || totalPrice > source.cash || isOverloadChickenPlace
         }
       >
         {isOverloadChickenPlace

@@ -46,21 +46,21 @@ export class Farmer extends RectEntity<Props> {
     "active-tools",
     {}
   );
-  private _money: number = Saver.getWithDefault("money", 5);
+  private _cash: number = Saver.getWithDefault("cash", 5);
   private _generator: Generator;
 
-  get money() {
-    return this._money;
+  get cash() {
+    return this._cash;
   }
 
   get generator() {
     return this._generator;
   }
 
-  set money(_money: number) {
-    this._money = _money;
-    Saver.set("money", _money);
-    this.scene.emitEntityPropsChange("money", _money);
+  set cash(_cash: number) {
+    this._cash = _cash;
+    Saver.set("cash", _cash);
+    this.scene.emitEntityPropsChange("cash", _cash);
   }
 
   set activeShield(_activeShield: ActiveItem) {
@@ -249,12 +249,12 @@ export class Farmer extends RectEntity<Props> {
     if (item.type === "stuff") {
       if (item.code === "chicken") {
         this._generator.addChickens(qty);
-        this.money = this._money - totalPrice;
+        this.cash = this._cash - totalPrice;
         return;
       }
     }
     this.addItem(item.code, qty);
-    this.money = this._money - totalPrice;
+    this.cash = this._cash - totalPrice;
   }
 
   eatFood(code: Item["code"]) {

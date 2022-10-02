@@ -199,8 +199,8 @@ export function GamePlayUI({ scene }: GamePlayUIProps) {
           <Control top={0} right={20 + 20 + 0} yAxisOriginCenter>
             <ControlContainer>
               <Control top={0} right={3 + 22} yAxisOriginCenter>
-                <Watcher names="money" initialValues={{ money: farmer.money }}>
-                  {({ money }) => <CoinValue>{valueToAlpha(money)}</CoinValue>}
+                <Watcher names="cash" initialValues={{ cash: farmer.cash }}>
+                  {({ cash }) => <CoinValue>{valueToAlpha(cash)}</CoinValue>}
                 </Watcher>
               </Control>
               <Control top={0} right={0} yAxisOriginCenter>

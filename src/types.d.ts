@@ -55,7 +55,7 @@ type ActiveItem = {
 
 type ShopItem = {
   code: string;
-  price: number;
+  cost: number;
 };
 
 type CraftItem = Item & {
