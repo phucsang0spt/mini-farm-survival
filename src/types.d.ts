@@ -9,6 +9,7 @@ type FoodItemFormat = {
   hp: number;
   water: number;
   shape?: never;
+  price?: number;
 };
 type ToolItemFormat = {
   shape: import("enums").ToolShape;
