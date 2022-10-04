@@ -242,6 +242,21 @@ export class Farmer extends RectEntity<Props> {
     this.addItem(target.code, target.qty);
   }
 
+  sellItem(
+    code: Item["code"],
+    { qty, totalIncome }: { qty: number; totalIncome: number }
+  ) {
+    this.reduceItem(code, qty);
+    this.cash = this._cash + totalIncome;
+    this.updateGroupOwnItems();
+    this.cleanActiveItems();
+    Saver.set("own-items", this.ownItems);
+    this.scene.emitEntityPropsChange("own-items", {
+      list: this._ownItems,
+      group: this._groupOwnItems,
+    });
+  }
+
   buyItem(
     item: Item,
     { qty, totalPrice }: { qty: number; totalPrice: number }

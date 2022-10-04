@@ -1,9 +1,13 @@
 import { useMemo, useState } from "react";
 import { useWatcher } from "react-simple-game-engine/lib/utilities";
 
-import { InfoView } from "components/info-view";
+import { InfoView, InfoViewItem } from "components/info-view";
 import { ItemGridItem } from "components/item-grid";
 import { itemHash } from "data/item-list";
+import { Farmer } from "entities/farmer.entity";
+import { QuantityControl } from "components/quantity-control";
+import { PanelButton } from "components/panel-button";
+import { valueToAlpha } from "utils";
 
 export function useStorageTab({ farmer }: TabCommonProps) {
   const [previewItem, setPreviewItem] = useState<
@@ -81,9 +85,71 @@ export function useStorageTab({ farmer }: TabCommonProps) {
     setPreviewItem(item);
   };
 
+  const handleSell = (
+    code: Item["code"],
+    data: { qty: number; totalIncome: number }
+  ) => {
+    farmer.sellItem(code, data);
+    setPreviewItem(null);
+  };
+
   return {
     list,
     onSelect: handleSelectItem,
-    projector: <InfoView item={itemForView} />,
+    projector: (
+      <InfoView
+        item={itemForView}
+        extendEl={
+          itemForView && (
+            <InfoViewExtend
+              source={farmer}
+              onSell={handleSell}
+              item={itemForView}
+            />
+          )
+        }
+      />
+    ),
   };
+}
+
+type InfoViewExtendProps = {
+  source: Farmer;
+  item: InfoViewItem;
+  onSell: (
+    item: Item["code"],
+    data: { qty: number; totalIncome: number }
+  ) => void;
+};
+
+function InfoViewExtend({ item, source, onSell }: InfoViewExtendProps) {
+  const MIN_QTY = 1;
+  const [qty, setQty] = useState(MIN_QTY);
+
+  const totalIncome = (item.sellPrice || 2) * qty;
+
+  return (
+    <>
+      <div style={{ height: 10 }} />
+      <QuantityControl
+        qty={qty}
+        onDown={() => {
+          setQty((prev) => (prev > MIN_QTY ? prev - 1 : prev));
+        }}
+        onUp={() => {
+          setQty((prev) => prev + 1);
+        }}
+      />
+      <div style={{ height: 10 }} />
+      <PanelButton
+        onClick={() => {
+          onSell(item.code, { qty, totalIncome });
+          setQty(MIN_QTY);
+        }}
+        disabled={qty < MIN_QTY || qty > source.getItemQuantity(item.code)}
+      >
+        {`Sell ${valueToAlpha(totalIncome, true)}`}
+      </PanelButton>
+    </>
+  );
 }

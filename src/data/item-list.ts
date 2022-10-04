@@ -261,7 +261,8 @@ export const foodItemList: Item[] = [
     label: "Raw Beast Meat",
     code: "raw-beast-meat",
     sprite: rawBeastMeat,
-    format: { hp: 10 * 12, water: 2, price: 100 },
+    sellPrice: 100,
+    format: { hp: 10 * 12, water: 2 },
   },
   {
     type: "food",
@@ -275,7 +276,8 @@ export const foodItemList: Item[] = [
     label: "Raw Fish",
     code: "raw-fish",
     sprite: rawFish,
-    format: { hp: 10 * 14, water: 5, price: 25 },
+    sellPrice: 25,
+    format: { hp: 10 * 14, water: 5 },
   },
   {
     type: "food",
@@ -289,7 +291,8 @@ export const foodItemList: Item[] = [
     label: "Raw Chicken",
     code: "raw-chicken",
     sprite: rawChicken,
-    format: { hp: 10 * 16, water: 2, price: 50 },
+    sellPrice: 50,
+    format: { hp: 10 * 16, water: 2 },
   },
   {
     type: "food",

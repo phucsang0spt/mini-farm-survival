@@ -1,7 +1,7 @@
 import { Farmer } from "entities/farmer.entity";
 import { useMemo, useState } from "react";
 import styled from "styled-components";
-import { valueToAlpha } from "utils";
+import { genId, valueToAlpha } from "utils";
 import { BlockItem } from "./block-item";
 import { PanelButton } from "./panel-button";
 import { QuantityControl } from "./quantity-control";
@@ -70,7 +70,11 @@ const LabelTarget = styled.span`
 
 type CraftTableProps = {
   source: Farmer;
-  target?: CraftItem;
+  target?: Item & {
+    materials: ({
+      requireQuantity: number;
+    } & Item)[];
+  };
   onCraft?: (
     target: { code: string; sprite: string },
     vol: number,
@@ -79,9 +83,13 @@ type CraftTableProps = {
 };
 
 export function CraftTable({ source, target, onCraft }: CraftTableProps) {
+  const key = useMemo(() => {
+    return target?.code || `empty-${genId()}`;
+  }, [target?.code]);
+
   return (
     <CraftTableLogic
-      key={target?.code || "empty"}
+      key={key}
       source={source}
       target={target}
       onCraft={onCraft}

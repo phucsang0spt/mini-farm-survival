@@ -60,7 +60,7 @@ const AlphaHash = {
 };
 
 export function valueToAlpha(num: number, withCurrency = false) {
-  const suffix = withCurrency ? " $" : "";
+  const suffix = withCurrency ? "$" : "";
   if (num < 1000) {
     return `${isDecimalOK(num) ? num.toFixed(2) : Math.round(num)}` + suffix;
   }

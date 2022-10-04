@@ -12,14 +12,13 @@ export function useCraftTab({ farmer }: TabCommonProps) {
 
   const list = craftList.map((item) => {
     return {
-      ...item,
       ...itemHash[item.code],
       active: item.code === selectedItem,
-      materials: item.materials.map((mart: Item) => ({
+      materials: item.materials.map((mart) => ({
         ...mart,
-        sprite: itemHash[mart.code].sprite,
+        ...itemHash[mart.code],
       })),
-    } as CraftItem;
+    };
   });
 
   const selectedTarget = list.find((item) => item.code === selectedItem);

@@ -1,4 +1,4 @@
-export const craftList: any[] = [
+export const craftList: CraftItem[] = [
   {
     code: "wood-plate",
     materials: [
