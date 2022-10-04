@@ -13,8 +13,8 @@ import {
   EntityPrepare,
 } from "react-simple-game-engine/lib/export-types";
 import { msToTimer } from "utils";
+import { ChickenGenerator } from "./chicken.generator.entity";
 import { Farmer } from "./farmer.entity";
-import { Generator } from "./generator.entity";
 
 type Props = {
   chickSprite: Avatar;
@@ -131,7 +131,9 @@ export class Chicken extends RectEntity<Props> {
         realMouseY <= this.edge.bottom
       ) {
         this.worldManagement.getEntity(Farmer).addItem("raw-chicken", 1);
-        this.worldManagement.getEntity(Generator).removeChicken(this.name);
+        this.worldManagement
+          .getEntity(ChickenGenerator)
+          .removeChicken(this.name);
       }
     }
   }

@@ -6,7 +6,6 @@ import {
   SceneTag,
   SceneUI,
   SimpleCamera,
-  Matter,
   SoundFrom,
   Sound,
 } from "react-simple-game-engine";
@@ -21,10 +20,10 @@ import {
 
 import { Background } from "entities/background.entity";
 import { Farmer } from "entities/farmer.entity";
-import { Generator } from "entities/generator.entity";
-import { InvisibleWallPrefab } from "entities/invisible-wall.entity";
+import { BoundaryPrefab } from "entities/boundary.entity";
 import { Forground } from "entities/forground.entity";
 import { ChickenPrefab } from "entities/chicken.entity";
+import { BoudaryGenerator } from "entities/boundary.generator.entity";
 
 import background from "assets/images/survival-farm-map.png";
 import forground from "assets/images/survival-farm-map-forground.png";
@@ -38,6 +37,7 @@ import boundaryOffsets from "data/boundary-offsets.json";
 import breadPlaceOffsets from "data/bread-place-offsets.json";
 
 import { GamePlayUI } from "./ui/game-play.ui";
+import { ChickenGenerator } from "entities/chicken.generator.entity";
 
 @SceneTag("scene-1")
 @SceneUI(GamePlayUI)
@@ -88,11 +88,6 @@ export class Scene1 extends Scene {
     camera.y -=
       (this.renderer.height - this.renderer.scaler.viewport.height) / 2;
     camera.x += 130;
-
-    Matter.Body.setPosition(this.worldManagement.getEntity(Farmer).body, {
-      x: camera.x,
-      y: camera.y,
-    });
   }
 
   getComponents() {
@@ -106,7 +101,7 @@ export class Scene1 extends Scene {
           },
         },
       ]),
-      new InvisibleWallPrefab({}),
+      new BoundaryPrefab({}),
       new ChickenPrefab({
         props: {
           chickSprite: this.chickSprite,
@@ -114,10 +109,17 @@ export class Scene1 extends Scene {
         },
       }),
       new LogicComponent([
-        Generator,
+        BoudaryGenerator,
         {
           props: {
             boundaryOffsets: boundaryOffsets as (1 | 0)[],
+          },
+        },
+      ]),
+      new LogicComponent([
+        ChickenGenerator,
+        {
+          props: {
             breadPlaceOffsets: breadPlaceOffsets as (1 | 0)[],
           },
         },

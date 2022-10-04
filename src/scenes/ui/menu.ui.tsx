@@ -20,6 +20,8 @@ const Root = styled.div`
   align-items: center;
   justify-content: center;
   background-image: url("${background}");
+  background-repeat: no-repeat;
+  background-size: contain;
 
   > * {
     translate: 0 -50px;

@@ -1,22 +1,10 @@
-import { Prefab, RectEntity, Saver } from "react-simple-game-engine/lib";
-import { InvisibleWallPrefab } from "./invisible-wall.entity";
+import { Prefab, RectEntity } from "react-simple-game-engine/lib";
 import { Background } from "./background.entity";
-import { Chicken, ChickenPrefab } from "./chicken.entity";
 import {
   EntityPrepare,
   Point,
 } from "react-simple-game-engine/lib/export-types";
-import { genId } from "utils";
 
-type Props = {
-  boundaryOffsets: (0 | 1)[];
-  breadPlaceOffsets: (0 | 1)[];
-};
-
-type ChickenStorageItem = {
-  name: string;
-  index: number;
-};
 const MAP_TILED_SIZE = {
   width: 100,
   height: 70,
@@ -24,29 +12,15 @@ const MAP_TILED_SIZE = {
 
 const TILE_SIZE = 32;
 
-export class Generator extends RectEntity<Props> {
-  private chickens: Chicken[] = [];
-  private chickenPlaceOffsets: (Point & { width: number; height: number })[] =
-    [];
-
-  isOverloadChickenPlace(commingQty: number) {
-    const chickenStorage = Saver.getWithDefault(
-      "chicken-storage",
-      []
-    ) as ChickenStorageItem[];
-    return chickenStorage.length + commingQty > this.chickenPlaceOffsets.length;
-  }
-
+export class Generator<Props> extends RectEntity<Props> {
+  private pivot: Point;
   protected onPrepare(): EntityPrepare<this> {
     return {
       enabledPhysicBody: false,
     };
   }
 
-  private generate2DOffset(
-    tileOffsets: number[],
-    pivot: { x: number; y: number }
-  ) {
+  generate2DOffset(tileOffsets: number[]) {
     const offsets: {
       x: number;
       y: number;
@@ -64,8 +38,8 @@ export class Generator extends RectEntity<Props> {
           const mapX = TILE_SIZE * j;
           const mapY = TILE_SIZE * rowIndex;
 
-          const canvasX = mapX + TILE_SIZE / 2 - pivot.x;
-          const canvasY = mapY + TILE_SIZE / 2 - pivot.y;
+          const canvasX = mapX + TILE_SIZE / 2 - this.pivot.x;
+          const canvasY = mapY + TILE_SIZE / 2 - this.pivot.y;
 
           offsets.push({
             x: canvasX,
@@ -81,13 +55,12 @@ export class Generator extends RectEntity<Props> {
     return offsets;
   }
 
-  private generateTile<E extends RectEntity<any>>(
+  generateTile<E extends RectEntity<any>>(
     prefabClass: { new (...args: any[]): Prefab<E> },
-    tileOffsets: number[],
-    pivot: { x: number; y: number }
+    tileOffsets: number[]
   ) {
-    for (const offset of this.generate2DOffset(tileOffsets, pivot)) {
-      const wall = this.scene.getPrefab(prefabClass).output({
+    for (const offset of this.generate2DOffset(tileOffsets)) {
+      const entity = this.scene.getPrefab(prefabClass).output({
         transform: {
           x: offset.x,
           y: offset.y,
@@ -95,81 +68,17 @@ export class Generator extends RectEntity<Props> {
           height: offset.height,
         },
       });
-      this.addChild(wall);
+      this.addChild(entity);
     }
-  }
-
-  private addChicken(name: string, index: number) {
-    const offset = this.chickenPlaceOffsets[index];
-    const chicken = this.scene.getPrefab(ChickenPrefab).output({
-      name,
-      transform: {
-        ...offset,
-      },
-    });
-    this.chickens.push(chicken);
-    this.addChild(chicken);
-    return name;
-  }
-
-  removeChicken(name: string) {
-    const chickenStorage = Saver.get("chicken-storage") as ChickenStorageItem[];
-    Saver.remove(`chicken::${name}-born-time`);
-    Saver.set(
-      "chicken-storage",
-      chickenStorage.filter((chick) => chick.name !== name)
-    );
-    const chick = this.chickens.find((c) => c.name === name);
-    if (chick) {
-      this.removeChild(chick);
-    }
-  }
-
-  private restoreExistChickens() {
-    let chickenStorage = Saver.get("chicken-storage") as ChickenStorageItem[];
-    if (!chickenStorage) {
-      // bố thí
-      const firstChicken = {
-        name: genId(),
-        index: 0,
-      };
-      Saver.set(`chicken::${firstChicken.name}-born-time`, 0);
-      chickenStorage = [firstChicken];
-      Saver.set("chicken-storage", chickenStorage);
-    }
-    for (const { name, index } of chickenStorage) {
-      this.addChicken(name, index);
-    }
-  }
-
-  addChickens(qty: number) {
-    const chickenStorage = Saver.getWithDefault(
-      "chicken-storage",
-      []
-    ) as ChickenStorageItem[];
-    Array.from({ length: qty }).forEach(() => {
-      const name = genId();
-      const index = this.chickens.length;
-      this.addChicken(name, index);
-      chickenStorage.push({ name, index });
-    });
-    Saver.set("chicken-storage", chickenStorage);
   }
 
   onBootstrapCompleted() {
     const background = this.worldManagement.getEntity(Background);
-    const { boundaryOffsets, breadPlaceOffsets } = this.props;
-
     const pivot = {
       x: background.sprite.width / 2,
       y: background.sprite.height / 2,
     };
 
-    this.generateTile(InvisibleWallPrefab, boundaryOffsets, pivot);
-
-    this.chickenPlaceOffsets = this.generate2DOffset(breadPlaceOffsets, pivot);
-    this.restoreExistChickens();
-
-    (window as any).test = this.addChickens.bind(this);
+    this.pivot = pivot;
   }
 }

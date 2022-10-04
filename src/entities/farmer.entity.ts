@@ -22,7 +22,7 @@ import {
 } from "react-simple-game-engine/lib/export-types";
 import { genId } from "utils";
 import { Background } from "./background.entity";
-import { Generator } from "./generator.entity";
+import { ChickenGenerator } from "./chicken.generator.entity";
 
 type Props = {
   farmerSprite: Avatar;
@@ -47,14 +47,14 @@ export class Farmer extends RectEntity<Props> {
     {}
   );
   private _cash: number = Saver.getWithDefault("cash", 5);
-  private _generator: Generator;
+  private _chickenGenerator: ChickenGenerator;
 
   get cash() {
     return this._cash;
   }
 
-  get generator() {
-    return this._generator;
+  get chickenGenerator() {
+    return this._chickenGenerator;
   }
 
   set cash(_cash: number) {
@@ -263,7 +263,7 @@ export class Farmer extends RectEntity<Props> {
   ) {
     if (item.type === "stuff") {
       if (item.code === "chicken") {
-        this._generator.addChickens(qty);
+        this._chickenGenerator.addChickens(qty);
         this.cash = this._cash - totalPrice;
         return;
       }
@@ -373,8 +373,8 @@ export class Farmer extends RectEntity<Props> {
         },
       ]),
       transform: {
-        x: 0,
-        y: 0,
+        x: 177,
+        y: -812,
         width: 32,
         height: 32,
       },
@@ -488,7 +488,7 @@ export class Farmer extends RectEntity<Props> {
   }
 
   onBootstrapCompleted() {
-    this._generator = this.worldManagement.getEntity(Generator);
+    this._chickenGenerator = this.worldManagement.getEntity(ChickenGenerator);
     this.scene.onJoystickAction((data) => {
       if (data.type === JoystickActionType.MOVE) {
         this.lastMove = {

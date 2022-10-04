@@ -10,9 +10,9 @@ import {
   Configation,
 } from "react-simple-game-engine/lib/export-types";
 
-export type InvisibleWallProps = {};
+export type BoundaryProps = {};
 
-export class InvisibleWall extends RectEntity<InvisibleWallProps> {
+export class Boundary extends RectEntity<BoundaryProps> {
   protected onPrepare(): EntityPrepare<this> {
     return {
       sprite: new LogicComponent([
@@ -28,8 +28,8 @@ export class InvisibleWall extends RectEntity<InvisibleWallProps> {
   }
 }
 
-export class InvisibleWallPrefab extends Prefab<InvisibleWall> {
-  constructor(config: Configation<InvisibleWall>) {
-    super([InvisibleWall, config]);
+export class BoundaryPrefab extends Prefab<Boundary> {
+  constructor(config: Configation<Boundary>) {
+    super([Boundary, config]);
   }
 }
