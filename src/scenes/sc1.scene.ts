@@ -21,6 +21,12 @@ import {
 import { BoundaryPrefab } from "entities/boundary.entity";
 import { ChickenPrefab } from "entities/chicken.entity";
 import { BoudaryGeneratorEntity } from "entities/boundary.generator.entity";
+import { ChickenGeneratorEntity } from "entities/chicken.generator.entity";
+import { BackgroundEntity } from "entities/background.entity";
+import { FarmerEntity } from "entities/farmer.entity";
+import { ForgroundEntity } from "entities/forground.entity";
+import { ItemPrefab } from "entities/item.entity";
+import { ItemGeneratorEntity } from "entities/item.generator.entity";
 
 import background from "assets/images/survival-farm-map.png";
 import forground from "assets/images/survival-farm-map-forground.png";
@@ -28,16 +34,14 @@ import highlightSheet from "assets/images/highlight-sheet.png";
 import farmerSheet from "assets/images/farmer-sheet.png";
 import chickenSheet from "assets/images/items/animals/chicken-sheet.png";
 
+import coin from "assets/images/items/coin.png";
+
 import backgroundMusic from "assets/sounds/music.wav";
 
 import boundaryOffsets from "data/boundary-offsets.json";
 import breadPlaceOffsets from "data/bread-place-offsets.json";
 
 import { GamePlayUI } from "./ui/game-play.ui";
-import { ChickenGeneratorEntity } from "entities/chicken.generator.entity";
-import { BackgroundEntity } from "entities/background.entity";
-import { FarmerEntity } from "entities/farmer.entity";
-import { ForgroundEntity } from "entities/forground.entity";
 
 @SceneTag("scene-1")
 @SceneUI(GamePlayUI)
@@ -56,6 +60,9 @@ export class Scene1 extends Scene {
 
   @SpriteFrom(chickenSheet)
   chickSprite: Avatar;
+
+  @SpriteFrom(coin)
+  coinSprite: Avatar;
 
   @SoundFrom({ src: backgroundMusic, volume: 0.05 }, SoundType.BACKGROUND)
   backgroundMusic!: Sound;
@@ -108,11 +115,24 @@ export class Scene1 extends Scene {
           highlightSprite: this.highlightSprite,
         },
       }),
+      new ItemPrefab({
+        props: {
+          highlightSprite: this.highlightSprite,
+        },
+      }),
       new LogicComponent([
         BoudaryGeneratorEntity,
         {
           props: {
             boundaryOffsets: boundaryOffsets as (1 | 0)[],
+          },
+        },
+      ]),
+      new LogicComponent([
+        ItemGeneratorEntity,
+        {
+          props: {
+            coinSprite: this.coinSprite,
           },
         },
       ]),

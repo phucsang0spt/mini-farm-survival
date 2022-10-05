@@ -47,6 +47,13 @@ export function BasketTool() {
     }
   }, [last9Foods, activeFood]);
 
+  const ownActiveFood = useMemo(() => {
+    if (!activeFood) {
+      return;
+    }
+    return last9Foods.find((food) => food.code === activeFood.code);
+  }, [last9Foods, activeFood]);
+
   return (
     <Root>
       {showBasket && (
@@ -70,6 +77,7 @@ export function BasketTool() {
         }}
         onLongPress={() => setShow(true)}
         size="medium"
+        volume={ownActiveFood != null ? ownActiveFood.qty : undefined}
         sprite={activeFood?.sprite || ""}
       />
     </Root>

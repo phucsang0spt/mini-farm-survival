@@ -36,6 +36,7 @@ enum MovementState {
   RIGHT,
 }
 
+const COIN_VALUE = 100;
 export class FarmerEntity extends RectEntity<Props> {
   private lastMove?: { vector: Vector; direction: JoystickDirection };
   private _ownItems: OwnItem[] = [];
@@ -240,6 +241,14 @@ export class FarmerEntity extends RectEntity<Props> {
     this.cleanActiveItems();
 
     this.addItem(target.code, target.qty);
+  }
+
+  pickItem(code: Item["code"], qty: number) {
+    if (code === "coin") {
+      this.cash = this._cash + COIN_VALUE;
+      return;
+    }
+    this.addItem(code, qty);
   }
 
   sellItem(
@@ -488,7 +497,9 @@ export class FarmerEntity extends RectEntity<Props> {
   }
 
   onBootstrapCompleted() {
-    this._ChickenGeneratorEntity = this.worldManagement.getEntity(ChickenGeneratorEntity);
+    this._ChickenGeneratorEntity = this.worldManagement.getEntity(
+      ChickenGeneratorEntity
+    );
     this.scene.onJoystickAction((data) => {
       if (data.type === JoystickActionType.MOVE) {
         this.lastMove = {

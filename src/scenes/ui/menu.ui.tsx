@@ -21,7 +21,7 @@ const Root = styled.div`
   justify-content: center;
   background-image: url("${background}");
   background-repeat: no-repeat;
-  background-size: contain;
+  background-size: cover;
 
   > * {
     translate: 0 -50px;
