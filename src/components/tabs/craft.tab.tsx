@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { CraftTable } from "components/craft-table";
+
 import { craftList } from "data/craft-list";
 import { itemHash } from "data/item-list";
 

@@ -1,3 +1,3 @@
 type TabCommonProps = {
-  farmer: import("entities/farmer.entity").Farmer;
+  farmer: import("entities/farmer.entity").FarmerEntity;
 };

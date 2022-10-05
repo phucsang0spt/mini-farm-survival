@@ -18,12 +18,9 @@ import {
   SoundType,
 } from "react-simple-game-engine/lib/export-enums";
 
-import { Background } from "entities/background.entity";
-import { Farmer } from "entities/farmer.entity";
 import { BoundaryPrefab } from "entities/boundary.entity";
-import { Forground } from "entities/forground.entity";
 import { ChickenPrefab } from "entities/chicken.entity";
-import { BoudaryGenerator } from "entities/boundary.generator.entity";
+import { BoudaryGeneratorEntity } from "entities/boundary.generator.entity";
 
 import background from "assets/images/survival-farm-map.png";
 import forground from "assets/images/survival-farm-map-forground.png";
@@ -37,7 +34,10 @@ import boundaryOffsets from "data/boundary-offsets.json";
 import breadPlaceOffsets from "data/bread-place-offsets.json";
 
 import { GamePlayUI } from "./ui/game-play.ui";
-import { ChickenGenerator } from "entities/chicken.generator.entity";
+import { ChickenGeneratorEntity } from "entities/chicken.generator.entity";
+import { BackgroundEntity } from "entities/background.entity";
+import { FarmerEntity } from "entities/farmer.entity";
+import { ForgroundEntity } from "entities/forground.entity";
 
 @SceneTag("scene-1")
 @SceneUI(GamePlayUI)
@@ -93,7 +93,7 @@ export class Scene1 extends Scene {
   getComponents() {
     return [
       new LogicComponent([
-        Background,
+        BackgroundEntity,
         {
           props: {
             backgroundSprite: this.backgroundSprite,
@@ -109,7 +109,7 @@ export class Scene1 extends Scene {
         },
       }),
       new LogicComponent([
-        BoudaryGenerator,
+        BoudaryGeneratorEntity,
         {
           props: {
             boundaryOffsets: boundaryOffsets as (1 | 0)[],
@@ -117,7 +117,7 @@ export class Scene1 extends Scene {
         },
       ]),
       new LogicComponent([
-        ChickenGenerator,
+        ChickenGeneratorEntity,
         {
           props: {
             breadPlaceOffsets: breadPlaceOffsets as (1 | 0)[],
@@ -125,7 +125,7 @@ export class Scene1 extends Scene {
         },
       ]),
       new LogicComponent([
-        Farmer,
+        FarmerEntity,
         {
           props: {
             farmerSprite: this.farmerSprite,
@@ -133,7 +133,7 @@ export class Scene1 extends Scene {
         },
       ]),
       new LogicComponent([
-        Forground,
+        ForgroundEntity,
         {
           props: {
             forgroundSprite: this.forgroundSprite,

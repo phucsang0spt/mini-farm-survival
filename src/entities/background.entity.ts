@@ -14,7 +14,7 @@ type Props = {
   backgroundSprite: Avatar;
   backgroundMusic: Sound;
 };
-export class Background extends RectEntity<Props> {
+export class BackgroundEntity extends RectEntity<Props> {
   protected onPrepare(): EntityPrepare<this> {
     return {
       sprite: new LogicComponent([

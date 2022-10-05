@@ -15,7 +15,7 @@ export type HeartProps = {
   sprite: Avatar;
 };
 
-export class Heart extends RectEntity<HeartProps> {
+export class HeartEntity extends RectEntity<HeartProps> {
   protected onPrepare(): EntityPrepare<this> {
     return {
       sprite: new LogicComponent([
@@ -33,8 +33,8 @@ export class Heart extends RectEntity<HeartProps> {
   onActive(): void {}
 }
 
-export class HeartPrefab extends Prefab<Heart> {
-  constructor(config: Configation<Heart>) {
-    super([Heart, config]);
+export class HeartPrefab extends Prefab<HeartEntity> {
+  constructor(config: Configation<HeartEntity>) {
+    super([HeartEntity, config]);
   }
 }

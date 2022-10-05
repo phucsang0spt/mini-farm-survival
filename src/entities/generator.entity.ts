@@ -1,9 +1,9 @@
 import { Prefab, RectEntity } from "react-simple-game-engine/lib";
-import { Background } from "./background.entity";
 import {
   EntityPrepare,
   Point,
 } from "react-simple-game-engine/lib/export-types";
+import { BackgroundEntity } from "./background.entity";
 
 const MAP_TILED_SIZE = {
   width: 100,
@@ -73,7 +73,7 @@ export class Generator<Props> extends RectEntity<Props> {
   }
 
   onBootstrapCompleted() {
-    const background = this.worldManagement.getEntity(Background);
+    const background = this.worldManagement.getEntity(BackgroundEntity);
     const pivot = {
       x: background.sprite.width / 2,
       y: background.sprite.height / 2,

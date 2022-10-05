@@ -21,8 +21,8 @@ import {
   Vector,
 } from "react-simple-game-engine/lib/export-types";
 import { genId } from "utils";
-import { Background } from "./background.entity";
-import { ChickenGenerator } from "./chicken.generator.entity";
+import { BackgroundEntity } from "./background.entity";
+import { ChickenGeneratorEntity } from "./chicken.generator.entity";
 
 type Props = {
   farmerSprite: Avatar;
@@ -36,7 +36,7 @@ enum MovementState {
   RIGHT,
 }
 
-export class Farmer extends RectEntity<Props> {
+export class FarmerEntity extends RectEntity<Props> {
   private lastMove?: { vector: Vector; direction: JoystickDirection };
   private _ownItems: OwnItem[] = [];
   private _groupOwnItems: Record<OwnItem["code"], OwnItem[]> = {};
@@ -47,14 +47,14 @@ export class Farmer extends RectEntity<Props> {
     {}
   );
   private _cash: number = Saver.getWithDefault("cash", 5);
-  private _chickenGenerator: ChickenGenerator;
+  private _ChickenGeneratorEntity: ChickenGeneratorEntity;
 
   get cash() {
     return this._cash;
   }
 
-  get chickenGenerator() {
-    return this._chickenGenerator;
+  get ChickenGeneratorEntity() {
+    return this._ChickenGeneratorEntity;
   }
 
   set cash(_cash: number) {
@@ -263,7 +263,7 @@ export class Farmer extends RectEntity<Props> {
   ) {
     if (item.type === "stuff") {
       if (item.code === "chicken") {
-        this._chickenGenerator.addChickens(qty);
+        this._ChickenGeneratorEntity.addChickens(qty);
         this.cash = this._cash - totalPrice;
         return;
       }
@@ -474,7 +474,7 @@ export class Farmer extends RectEntity<Props> {
       } else if (this.lastMove.direction === JoystickDirection.FORWARD) {
         this.sprite.animator.state = MovementState.UP;
       }
-      const edge = this.worldManagement.getEntity(Background).edge;
+      const edge = this.worldManagement.getEntity(BackgroundEntity).edge;
 
       this.moveCamera(edge);
       this.moveFarmer(edge);
@@ -488,7 +488,7 @@ export class Farmer extends RectEntity<Props> {
   }
 
   onBootstrapCompleted() {
-    this._chickenGenerator = this.worldManagement.getEntity(ChickenGenerator);
+    this._ChickenGeneratorEntity = this.worldManagement.getEntity(ChickenGeneratorEntity);
     this.scene.onJoystickAction((data) => {
       if (data.type === JoystickActionType.MOVE) {
         this.lastMove = {

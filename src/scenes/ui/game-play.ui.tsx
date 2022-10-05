@@ -26,10 +26,10 @@ import cart from "assets/images/cart.png";
 
 import hand from "assets/images/hand.png";
 
-import { Farmer } from "entities/farmer.entity";
 import { itemHash } from "data/item-list";
 import { ShopPanel } from "components/shop-panel";
 import { valueToAlpha } from "utils";
+import { FarmerEntity } from "entities/farmer.entity";
 
 const Root = styled.div`
   width: 100%;
@@ -102,7 +102,7 @@ export function GamePlayUI({ scene }: GamePlayUIProps) {
   const refSettings = useRef<RefModalFunctions>();
   const refShop = useRef<RefModalFunctions>();
   const refBackpack = useRef<RefModalFunctions>();
-  const [farmer] = useEntity(Farmer);
+  const [farmer] = useEntity(FarmerEntity);
   return (
     <Root>
       <Modal ref={refSettings} content={<SettingsPanel scene={scene} />} />

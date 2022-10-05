@@ -4,8 +4,8 @@ import styled from "styled-components";
 import { BlockItem } from "./block-item";
 import { FoodBasket } from "./food-basket";
 import { useEntity, useWatcher } from "react-simple-game-engine/lib/utilities";
-import { Farmer } from "entities/farmer.entity";
 import { itemHash } from "data/item-list";
+import { FarmerEntity } from "entities/farmer.entity";
 
 const Root = styled.div`
   display: flex;
@@ -14,7 +14,7 @@ const Root = styled.div`
 `;
 
 export function BasketTool() {
-  const [farmer] = useEntity(Farmer);
+  const [farmer] = useEntity(FarmerEntity);
   useWatcher("own-items", {
     "own-items": { list: farmer.ownItems, group: farmer.groupOwnItems },
   });

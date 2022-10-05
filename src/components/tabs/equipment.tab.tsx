@@ -1,7 +1,8 @@
+import { useWatcher } from "react-simple-game-engine/lib/utilities";
+
 import { EquipTable } from "components/equip-table";
 import { itemHash } from "data/item-list";
 import { EquipmentShape } from "enums";
-import { useWatcher } from "react-simple-game-engine/lib/utilities";
 
 export function useEquipmentTab({ farmer }: TabCommonProps) {
   const {

@@ -12,7 +12,7 @@ import {
 type Props = {
   forgroundSprite: Avatar;
 };
-export class Forground extends RectEntity<Props> {
+export class ForgroundEntity extends RectEntity<Props> {
   protected onPrepare(): EntityPrepare<this> {
     return {
       sprite: new LogicComponent([

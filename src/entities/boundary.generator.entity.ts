@@ -5,7 +5,7 @@ type Props = {
   boundaryOffsets: (0 | 1)[];
 };
 
-export class BoudaryGenerator extends Generator<Props> {
+export class BoudaryGeneratorEntity extends Generator<Props> {
   onBootstrapCompleted() {
     super.onBootstrapCompleted();
     const { boundaryOffsets } = this.props;

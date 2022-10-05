@@ -12,7 +12,7 @@ import {
 
 export type BoundaryProps = {};
 
-export class Boundary extends RectEntity<BoundaryProps> {
+export class BoundaryEntity extends RectEntity<BoundaryProps> {
   protected onPrepare(): EntityPrepare<this> {
     return {
       sprite: new LogicComponent([
@@ -28,8 +28,8 @@ export class Boundary extends RectEntity<BoundaryProps> {
   }
 }
 
-export class BoundaryPrefab extends Prefab<Boundary> {
-  constructor(config: Configation<Boundary>) {
-    super([Boundary, config]);
+export class BoundaryPrefab extends Prefab<BoundaryEntity> {
+  constructor(config: Configation<BoundaryEntity>) {
+    super([BoundaryEntity, config]);
   }
 }

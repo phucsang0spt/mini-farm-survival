@@ -1,5 +1,5 @@
 import { Saver } from "react-simple-game-engine/lib";
-import { Chicken, ChickenPrefab } from "./chicken.entity";
+import { ChickenEntity, ChickenPrefab } from "./chicken.entity";
 import { Point } from "react-simple-game-engine/lib/export-types";
 import { genId } from "utils";
 import { Generator } from "./generator.entity";
@@ -13,8 +13,8 @@ type ChickenStorageItem = {
   index: number;
 };
 
-export class ChickenGenerator extends Generator<Props> {
-  private chickens: Chicken[] = [];
+export class ChickenGeneratorEntity extends Generator<Props> {
+  private chickens: ChickenEntity[] = [];
   private chickenPlaceOffsets: (Point & { width: number; height: number })[] =
     [];
 

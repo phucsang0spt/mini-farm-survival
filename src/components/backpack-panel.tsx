@@ -6,11 +6,10 @@ import chest from "assets/images/chest.png";
 import craft from "assets/images/craft.png";
 import equipment from "assets/images/equipment.png";
 
-import { Farmer } from "entities/farmer.entity";
-
 import { useStorageTab } from "./tabs/storage.tab";
 import { useCraftTab } from "./tabs/craft.tab";
 import { useEquipmentTab } from "./tabs/equipment.tab";
+import { FarmerEntity } from "entities/farmer.entity";
 
 enum BackpackTab {
   STORAGE,
@@ -19,7 +18,7 @@ enum BackpackTab {
 }
 
 export function BackpackPanel() {
-  const [farmer] = useEntity(Farmer);
+  const [farmer] = useEntity(FarmerEntity);
 
   const tabs = [
     {

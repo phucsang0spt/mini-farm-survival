@@ -13,8 +13,8 @@ import {
   EntityPrepare,
 } from "react-simple-game-engine/lib/export-types";
 import { msToTimer } from "utils";
-import { ChickenGenerator } from "./chicken.generator.entity";
-import { Farmer } from "./farmer.entity";
+import { ChickenGeneratorEntity } from "./chicken.generator.entity";
+import { FarmerEntity } from "./farmer.entity";
 
 type Props = {
   chickSprite: Avatar;
@@ -26,7 +26,7 @@ enum ChickenState {
   ADULT,
 }
 
-export class Chicken extends RectEntity<Props> {
+export class ChickenEntity extends RectEntity<Props> {
   private growTime = 5 * 60; //second
   private highlightAnimation: AvatarAnimationSprite;
   private bornTime: number;
@@ -130,9 +130,9 @@ export class Chicken extends RectEntity<Props> {
         this.edge.top <= realMouseY &&
         realMouseY <= this.edge.bottom
       ) {
-        this.worldManagement.getEntity(Farmer).addItem("raw-chicken", 1);
+        this.worldManagement.getEntity(FarmerEntity).addItem("raw-chicken", 1);
         this.worldManagement
-          .getEntity(ChickenGenerator)
+          .getEntity(ChickenGeneratorEntity)
           .removeChicken(this.name);
       }
     }
@@ -162,8 +162,8 @@ export class Chicken extends RectEntity<Props> {
   }
 }
 
-export class ChickenPrefab extends Prefab<Chicken> {
-  constructor(config: Configation<Chicken>) {
-    super([Chicken, config]);
+export class ChickenPrefab extends Prefab<ChickenEntity> {
+  constructor(config: Configation<ChickenEntity>) {
+    super([ChickenEntity, config]);
   }
 }

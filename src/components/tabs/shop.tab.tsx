@@ -4,7 +4,7 @@ import { PanelButton } from "components/panel-button";
 import { QuantityControl } from "components/quantity-control";
 import { itemHash } from "data/item-list";
 import { shopList } from "data/shop-list";
-import { Farmer } from "entities/farmer.entity";
+import { FarmerEntity } from "entities/farmer.entity";
 import { useState } from "react";
 import { valueToAlpha } from "utils";
 
@@ -65,7 +65,7 @@ export function useShopTab({ farmer }: TabCommonProps) {
 }
 
 type InfoViewExtendProps = {
-  source: Farmer;
+  source: FarmerEntity;
   item: InfoViewItem & ShopItem;
   onBuy: (item: ShopItem, data: { qty: number; totalPrice: number }) => void;
 };
@@ -78,7 +78,7 @@ function InfoViewExtend({ item, source, onBuy }: InfoViewExtendProps) {
 
   const isOverloadChickenPlace =
     item.code === "chicken"
-      ? source.chickenGenerator.isOverloadChickenPlace(qty)
+      ? source.ChickenGeneratorEntity.isOverloadChickenPlace(qty)
       : false;
   return (
     <>

@@ -1,4 +1,4 @@
-import { Farmer } from "entities/farmer.entity";
+import { FarmerEntity } from "entities/farmer.entity";
 import { useMemo, useState } from "react";
 import styled from "styled-components";
 import { genId, valueToAlpha } from "utils";
@@ -69,7 +69,7 @@ const LabelTarget = styled.span`
 `;
 
 type CraftTableProps = {
-  source: Farmer;
+  source: FarmerEntity;
   target?: Item & {
     materials: ({
       requireQuantity: number;

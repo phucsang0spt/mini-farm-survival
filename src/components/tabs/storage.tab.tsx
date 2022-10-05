@@ -3,10 +3,12 @@ import { useWatcher } from "react-simple-game-engine/lib/utilities";
 
 import { InfoView, InfoViewItem } from "components/info-view";
 import { ItemGridItem } from "components/item-grid";
-import { itemHash } from "data/item-list";
-import { Farmer } from "entities/farmer.entity";
 import { QuantityControl } from "components/quantity-control";
 import { PanelButton } from "components/panel-button";
+
+import { itemHash } from "data/item-list";
+import { FarmerEntity } from "entities/farmer.entity";
+
 import { valueToAlpha } from "utils";
 
 export function useStorageTab({ farmer }: TabCommonProps) {
@@ -114,7 +116,7 @@ export function useStorageTab({ farmer }: TabCommonProps) {
 }
 
 type InfoViewExtendProps = {
-  source: Farmer;
+  source: FarmerEntity;
   item: InfoViewItem;
   onSell: (
     item: Item["code"],
