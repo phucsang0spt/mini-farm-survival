@@ -10,7 +10,7 @@ const MAP_TILED_SIZE = {
   height: 70,
 };
 
-const TILE_SIZE = 32;
+export const TILE_SIZE = 32;
 
 export class Generator<Props> extends RectEntity<Props> {
   private pivot: Point;
@@ -57,7 +57,8 @@ export class Generator<Props> extends RectEntity<Props> {
 
   generateTile<E extends RectEntity<any>>(
     prefabClass: { new (...args: any[]): Prefab<E> },
-    tileOffsets: number[]
+    tileOffsets: number[],
+    props?: Partial<E["props"]> & Record<string, any>
   ) {
     for (const offset of this.generate2DOffset(tileOffsets)) {
       const entity = this.scene.getPrefab(prefabClass).output({
@@ -67,6 +68,7 @@ export class Generator<Props> extends RectEntity<Props> {
           width: offset.width,
           height: offset.height,
         },
+        props,
       });
       this.addChild(entity);
     }

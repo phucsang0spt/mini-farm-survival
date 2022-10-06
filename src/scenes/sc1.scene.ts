@@ -27,9 +27,13 @@ import { FarmerEntity } from "entities/farmer.entity";
 import { ForgroundEntity } from "entities/forground.entity";
 import { ItemPrefab } from "entities/item.entity";
 import { ItemGeneratorEntity } from "entities/item.generator.entity";
+import { TreePrefab } from "entities/tree.entity";
+import { TreeGeneratorEntity } from "entities/tree.generator.entity";
 
 import background from "assets/images/survival-farm-map.png";
 import forground from "assets/images/survival-farm-map-forground.png";
+import tree from "assets/images/tree.png";
+import bigTree from "assets/images/big-tree.png";
 import highlightSheet from "assets/images/highlight-sheet.png";
 import farmerSheet from "assets/images/farmer-sheet.png";
 import chickenSheet from "assets/images/items/animals/chicken-sheet.png";
@@ -40,6 +44,8 @@ import backgroundMusic from "assets/sounds/music.wav";
 
 import boundaryOffsets from "data/boundary-offsets.json";
 import breadPlaceOffsets from "data/bread-place-offsets.json";
+import treeOffsets from "data/tree-offsets.json";
+import bigTreeOffsets from "data/big-tree-offsets.json";
 
 import { GamePlayUI } from "./ui/game-play.ui";
 
@@ -51,6 +57,12 @@ export class Scene1 extends Scene {
 
   @SpriteFrom(forground)
   forgroundSprite!: Avatar;
+
+  @SpriteFrom(tree)
+  treeSprite: Avatar;
+
+  @SpriteFrom(bigTree)
+  bigTreeSprite: Avatar;
 
   @SpriteFrom(farmerSheet)
   farmerSprite: Avatar;
@@ -120,11 +132,34 @@ export class Scene1 extends Scene {
           highlightSprite: this.highlightSprite,
         },
       }),
+      new TreePrefab({
+        props: {
+          sprite: this.treeSprite,
+          bigSprite: this.bigTreeSprite,
+        },
+      }),
       new LogicComponent([
         BoudaryGeneratorEntity,
         {
           props: {
             boundaryOffsets: boundaryOffsets as (1 | 0)[],
+          },
+        },
+      ]),
+      new LogicComponent([
+        FarmerEntity,
+        {
+          props: {
+            farmerSprite: this.farmerSprite,
+          },
+        },
+      ]),
+      new LogicComponent([
+        TreeGeneratorEntity,
+        {
+          props: {
+            treeOffsets: treeOffsets as (1 | 0)[],
+            bigTreeOffsets: bigTreeOffsets as (1 | 0)[],
           },
         },
       ]),
@@ -141,14 +176,6 @@ export class Scene1 extends Scene {
         {
           props: {
             breadPlaceOffsets: breadPlaceOffsets as (1 | 0)[],
-          },
-        },
-      ]),
-      new LogicComponent([
-        FarmerEntity,
-        {
-          props: {
-            farmerSprite: this.farmerSprite,
           },
         },
       ]),

@@ -69,11 +69,12 @@ export class ItemEntity extends RectEntity<Props> {
     }
   }
 
-  onCollision(target: FarmerEntity) {
-    target.pickItem(this.props.code, 1);
-
-    // destroy item after pick
-    this.terminate();
+  onCollision(target: any) {
+    if (target instanceof FarmerEntity) {
+      target.pickItem(this.props.code, 1);
+      // destroy item after pick
+      this.terminate();
+    }
   }
 }
 
