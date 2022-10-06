@@ -29,7 +29,10 @@ type Props = {
 };
 
 enum MovementState {
-  STAND,
+  STAND_DOWN,
+  STAND_UP,
+  STAND_LEFT,
+  STAND_RIGHT,
   DOWN,
   UP,
   LEFT,
@@ -320,18 +323,8 @@ export class FarmerEntity extends RectEntity<Props> {
           animation: new LogicComponent([
             Animator,
             {
-              activeKey: MovementState.STAND,
+              activeKey: MovementState.STAND_DOWN,
               states: {
-                [MovementState.STAND]: new LogicComponent([
-                  AvatarAnimationSprite,
-                  {
-                    x: 0,
-                    y: 0,
-                    width: 16,
-                    height: 16,
-                    maxFrame: 1,
-                  },
-                ]).output(),
                 [MovementState.DOWN]: new LogicComponent([
                   AvatarAnimationSprite,
                   {
@@ -343,6 +336,17 @@ export class FarmerEntity extends RectEntity<Props> {
                     timePerFrame: 100,
                   },
                 ]).output(),
+                [MovementState.STAND_DOWN]: new LogicComponent([
+                  AvatarAnimationSprite,
+                  {
+                    x: 0,
+                    y: 0,
+                    width: 16,
+                    height: 16,
+                    maxFrame: 1,
+                  },
+                ]).output(),
+                //
                 [MovementState.UP]: new LogicComponent([
                   AvatarAnimationSprite,
                   {
@@ -354,6 +358,17 @@ export class FarmerEntity extends RectEntity<Props> {
                     timePerFrame: 100,
                   },
                 ]).output(),
+                [MovementState.STAND_UP]: new LogicComponent([
+                  AvatarAnimationSprite,
+                  {
+                    x: 0,
+                    y: (16 + 32) * 1,
+                    width: 16,
+                    height: 16,
+                    maxFrame: 1,
+                  },
+                ]).output(),
+                //
                 [MovementState.LEFT]: new LogicComponent([
                   AvatarAnimationSprite,
                   {
@@ -365,6 +380,17 @@ export class FarmerEntity extends RectEntity<Props> {
                     timePerFrame: 100,
                   },
                 ]).output(),
+                [MovementState.STAND_LEFT]: new LogicComponent([
+                  AvatarAnimationSprite,
+                  {
+                    x: 0,
+                    y: (16 + 32) * 2,
+                    width: 16,
+                    height: 16,
+                    maxFrame: 1,
+                  },
+                ]).output(),
+                //
                 [MovementState.RIGHT]: new LogicComponent([
                   AvatarAnimationSprite,
                   {
@@ -374,6 +400,16 @@ export class FarmerEntity extends RectEntity<Props> {
                     height: 16,
                     distancePerFrame: 32,
                     timePerFrame: 100,
+                  },
+                ]).output(),
+                [MovementState.STAND_RIGHT]: new LogicComponent([
+                  AvatarAnimationSprite,
+                  {
+                    x: 0,
+                    y: (16 + 32) * 3,
+                    width: 16,
+                    height: 16,
+                    maxFrame: 1,
                   },
                 ]).output(),
               },
@@ -488,7 +524,15 @@ export class FarmerEntity extends RectEntity<Props> {
       this.moveCamera(edge);
       this.moveFarmer(edge);
     } else {
-      this.sprite.animator.state = MovementState.STAND;
+      if (this.sprite.animator.state === MovementState.DOWN) {
+        this.sprite.animator.state = MovementState.STAND_DOWN;
+      } else if (this.sprite.animator.state === MovementState.UP) {
+        this.sprite.animator.state = MovementState.STAND_UP;
+      } else if (this.sprite.animator.state === MovementState.LEFT) {
+        this.sprite.animator.state = MovementState.STAND_LEFT;
+      } else if (this.sprite.animator.state === MovementState.RIGHT) {
+        this.sprite.animator.state = MovementState.STAND_RIGHT;
+      }
     }
   }
 
