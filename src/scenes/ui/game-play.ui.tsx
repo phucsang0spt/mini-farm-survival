@@ -189,7 +189,14 @@ export function GamePlayUI({ scene }: GamePlayUIProps) {
             <BasketTool />
           </Control>
           <Control right={0} bottom={0}>
-            <BlockItem rounded size="medium" sprite={hand} />
+            <BlockItem
+              rounded
+              size="medium"
+              onPress={() => {
+                farmer.chopTree();
+              }}
+              sprite={hand}
+            />
           </Control>
         </ControlContainer>
       </Control>

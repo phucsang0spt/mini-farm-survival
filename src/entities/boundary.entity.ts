@@ -6,8 +6,8 @@ import {
 } from "react-simple-game-engine";
 
 import {
+  Configuration,
   EntityPrepare,
-  Configation,
 } from "react-simple-game-engine/lib/export-types";
 
 export type BoundaryProps = {};
@@ -29,7 +29,7 @@ export class BoundaryEntity extends RectEntity<BoundaryProps> {
 }
 
 export class BoundaryPrefab extends Prefab<BoundaryEntity> {
-  constructor(config: Configation<BoundaryEntity>) {
+  constructor(config: Configuration<BoundaryEntity>) {
     super([BoundaryEntity, config]);
   }
 }

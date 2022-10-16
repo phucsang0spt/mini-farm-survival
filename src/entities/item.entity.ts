@@ -7,7 +7,7 @@ import {
 } from "react-simple-game-engine/lib";
 import {
   Avatar,
-  Configation,
+  Configuration,
   EntityPrepare,
 } from "react-simple-game-engine/lib/export-types";
 import { FarmerEntity } from "./farmer.entity";
@@ -79,7 +79,7 @@ export class ItemEntity extends RectEntity<Props> {
 }
 
 export class ItemPrefab extends Prefab<ItemEntity> {
-  constructor(config: Configation<ItemEntity>) {
+  constructor(config: Configuration<ItemEntity>) {
     super([ItemEntity, config]);
   }
 }

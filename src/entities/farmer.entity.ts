@@ -21,8 +21,13 @@ import {
   Vector,
 } from "react-simple-game-engine/lib/export-types";
 import { genId } from "utils";
+import { AxeEntity } from "./axe.entity";
 import { BackgroundEntity } from "./background.entity";
 import { ChickenGeneratorEntity } from "./chicken.generator.entity";
+import { FishingRodEntity } from "./fishing-rod.entity";
+import { PickaxeEntity } from "./pickaxe.entity";
+import { ToolEntity } from "./tool.entity";
+import { TreeEntity } from "./tree.entity";
 
 type Props = {
   farmerSprite: Avatar;
@@ -51,14 +56,20 @@ export class FarmerEntity extends RectEntity<Props> {
     {}
   );
   private _cash: number = Saver.getWithDefault("cash", 5);
-  private _ChickenGeneratorEntity: ChickenGeneratorEntity;
+  private _chickenGenerator: ChickenGeneratorEntity;
+  private background: BackgroundEntity;
+  private axe: AxeEntity;
+  private pickaxe: PickaxeEntity;
+  private fishingRod: FishingRodEntity;
+  private direction: MovementState;
+  private activeTool: ToolEntity;
 
   get cash() {
     return this._cash;
   }
 
-  get ChickenGeneratorEntity() {
-    return this._ChickenGeneratorEntity;
+  get chickenGenerator() {
+    return this._chickenGenerator;
   }
 
   set cash(_cash: number) {
@@ -107,6 +118,137 @@ export class FarmerEntity extends RectEntity<Props> {
 
   get groupOwnItems() {
     return this._groupOwnItems;
+  }
+
+  protected onPrepare(): EntityPrepare<this> {
+    const initialOwnItems = Saver.getWithDefault("own-items", [
+      {
+        code: "wood",
+        qty: 10,
+      },
+      {
+        code: "stone",
+        qty: 5,
+      },
+      {
+        code: "metal-ore",
+        qty: 1,
+      },
+    ]) as OwnItem[];
+    for (const item of initialOwnItems) {
+      this.addItem(item.code, item.qty, { id: item.id, emit: false });
+    }
+
+    return {
+      sprite: new LogicComponent([
+        AvatarSprite,
+        {
+          source: this.props.farmerSprite,
+          animation: new LogicComponent([
+            Animator,
+            {
+              activeKey: MovementState.STAND_DOWN,
+              states: {
+                [MovementState.DOWN]: new LogicComponent([
+                  AvatarAnimationSprite,
+                  {
+                    x: 0,
+                    y: 0,
+                    width: 16,
+                    height: 16,
+                    distancePerFrame: 32,
+                    timePerFrame: 100,
+                  },
+                ]).output(),
+                [MovementState.STAND_DOWN]: new LogicComponent([
+                  AvatarAnimationSprite,
+                  {
+                    x: 0,
+                    y: 0,
+                    width: 16,
+                    height: 16,
+                    maxFrame: 1,
+                  },
+                ]).output(),
+                //
+                [MovementState.UP]: new LogicComponent([
+                  AvatarAnimationSprite,
+                  {
+                    x: 0,
+                    y: (16 + 32) * 1,
+                    width: 16,
+                    height: 16,
+                    distancePerFrame: 32,
+                    timePerFrame: 100,
+                  },
+                ]).output(),
+                [MovementState.STAND_UP]: new LogicComponent([
+                  AvatarAnimationSprite,
+                  {
+                    x: 0,
+                    y: (16 + 32) * 1,
+                    width: 16,
+                    height: 16,
+                    maxFrame: 1,
+                  },
+                ]).output(),
+                //
+                [MovementState.LEFT]: new LogicComponent([
+                  AvatarAnimationSprite,
+                  {
+                    x: 0,
+                    y: (16 + 32) * 2,
+                    width: 16,
+                    height: 16,
+                    distancePerFrame: 32,
+                    timePerFrame: 100,
+                  },
+                ]).output(),
+                [MovementState.STAND_LEFT]: new LogicComponent([
+                  AvatarAnimationSprite,
+                  {
+                    x: 0,
+                    y: (16 + 32) * 2,
+                    width: 16,
+                    height: 16,
+                    maxFrame: 1,
+                  },
+                ]).output(),
+                //
+                [MovementState.RIGHT]: new LogicComponent([
+                  AvatarAnimationSprite,
+                  {
+                    x: 0,
+                    y: (16 + 32) * 3,
+                    width: 16,
+                    height: 16,
+                    distancePerFrame: 32,
+                    timePerFrame: 100,
+                  },
+                ]).output(),
+                [MovementState.STAND_RIGHT]: new LogicComponent([
+                  AvatarAnimationSprite,
+                  {
+                    x: 0,
+                    y: (16 + 32) * 3,
+                    width: 16,
+                    height: 16,
+                    maxFrame: 1,
+                  },
+                ]).output(),
+              },
+            },
+          ]),
+        },
+      ]),
+      transform: {
+        x: 177,
+        y: -812,
+        width: 32,
+        height: 32,
+      },
+      enabledGravity: false,
+    };
   }
 
   private updateGroupOwnItems() {
@@ -275,7 +417,7 @@ export class FarmerEntity extends RectEntity<Props> {
   ) {
     if (item.type === "stuff") {
       if (item.code === "chicken") {
-        this._ChickenGeneratorEntity.addChickens(qty);
+        this.chickenGenerator.addChickens(qty);
         this.cash = this._cash - totalPrice;
         return;
       }
@@ -294,137 +436,6 @@ export class FarmerEntity extends RectEntity<Props> {
       group: this._groupOwnItems,
     });
     // todo: up health, up water
-  }
-
-  protected onPrepare(): EntityPrepare<this> {
-    const initialOwnItems = Saver.getWithDefault("own-items", [
-      {
-        code: "wood",
-        qty: 10,
-      },
-      {
-        code: "stone",
-        qty: 5,
-      },
-      {
-        code: "metal-ore",
-        qty: 1,
-      },
-    ]) as OwnItem[];
-    for (const item of initialOwnItems) {
-      this.addItem(item.code, item.qty, { id: item.id, emit: false });
-    }
-
-    return {
-      sprite: new LogicComponent([
-        AvatarSprite,
-        {
-          source: this.props.farmerSprite,
-          animation: new LogicComponent([
-            Animator,
-            {
-              activeKey: MovementState.STAND_DOWN,
-              states: {
-                [MovementState.DOWN]: new LogicComponent([
-                  AvatarAnimationSprite,
-                  {
-                    x: 0,
-                    y: 0,
-                    width: 16,
-                    height: 16,
-                    distancePerFrame: 32,
-                    timePerFrame: 100,
-                  },
-                ]).output(),
-                [MovementState.STAND_DOWN]: new LogicComponent([
-                  AvatarAnimationSprite,
-                  {
-                    x: 0,
-                    y: 0,
-                    width: 16,
-                    height: 16,
-                    maxFrame: 1,
-                  },
-                ]).output(),
-                //
-                [MovementState.UP]: new LogicComponent([
-                  AvatarAnimationSprite,
-                  {
-                    x: 0,
-                    y: (16 + 32) * 1,
-                    width: 16,
-                    height: 16,
-                    distancePerFrame: 32,
-                    timePerFrame: 100,
-                  },
-                ]).output(),
-                [MovementState.STAND_UP]: new LogicComponent([
-                  AvatarAnimationSprite,
-                  {
-                    x: 0,
-                    y: (16 + 32) * 1,
-                    width: 16,
-                    height: 16,
-                    maxFrame: 1,
-                  },
-                ]).output(),
-                //
-                [MovementState.LEFT]: new LogicComponent([
-                  AvatarAnimationSprite,
-                  {
-                    x: 0,
-                    y: (16 + 32) * 2,
-                    width: 16,
-                    height: 16,
-                    distancePerFrame: 32,
-                    timePerFrame: 100,
-                  },
-                ]).output(),
-                [MovementState.STAND_LEFT]: new LogicComponent([
-                  AvatarAnimationSprite,
-                  {
-                    x: 0,
-                    y: (16 + 32) * 2,
-                    width: 16,
-                    height: 16,
-                    maxFrame: 1,
-                  },
-                ]).output(),
-                //
-                [MovementState.RIGHT]: new LogicComponent([
-                  AvatarAnimationSprite,
-                  {
-                    x: 0,
-                    y: (16 + 32) * 3,
-                    width: 16,
-                    height: 16,
-                    distancePerFrame: 32,
-                    timePerFrame: 100,
-                  },
-                ]).output(),
-                [MovementState.STAND_RIGHT]: new LogicComponent([
-                  AvatarAnimationSprite,
-                  {
-                    x: 0,
-                    y: (16 + 32) * 3,
-                    width: 16,
-                    height: 16,
-                    maxFrame: 1,
-                  },
-                ]).output(),
-              },
-            },
-          ]),
-        },
-      ]),
-      transform: {
-        x: 177,
-        y: -812,
-        width: 32,
-        height: 32,
-      },
-      enabledGravity: false,
-    };
   }
 
   private moveCamera(edge: EntityEdge) {
@@ -508,42 +519,101 @@ export class FarmerEntity extends RectEntity<Props> {
     });
   }
 
-  private movement() {
+  private handleMovement() {
     if (this.lastMove) {
       if (this.lastMove.direction === JoystickDirection.BACKWARD) {
         this.sprite.animator.state = MovementState.DOWN;
+        this.direction = MovementState.DOWN;
       } else if (this.lastMove.direction === JoystickDirection.LEFT) {
         this.sprite.animator.state = MovementState.LEFT;
+        this.direction = MovementState.LEFT;
       } else if (this.lastMove.direction === JoystickDirection.RIGHT) {
         this.sprite.animator.state = MovementState.RIGHT;
+        this.direction = MovementState.RIGHT;
       } else if (this.lastMove.direction === JoystickDirection.FORWARD) {
         this.sprite.animator.state = MovementState.UP;
+        this.direction = MovementState.UP;
       }
-      const edge = this.worldManagement.getEntity(BackgroundEntity).edge;
-
+      const edge = this.background.edge;
       this.moveCamera(edge);
       this.moveFarmer(edge);
     } else {
       if (this.sprite.animator.state === MovementState.DOWN) {
         this.sprite.animator.state = MovementState.STAND_DOWN;
+        this.direction = MovementState.DOWN;
       } else if (this.sprite.animator.state === MovementState.UP) {
         this.sprite.animator.state = MovementState.STAND_UP;
+        this.direction = MovementState.UP;
       } else if (this.sprite.animator.state === MovementState.LEFT) {
         this.sprite.animator.state = MovementState.STAND_LEFT;
+        this.direction = MovementState.LEFT;
       } else if (this.sprite.animator.state === MovementState.RIGHT) {
         this.sprite.animator.state = MovementState.STAND_RIGHT;
+        this.direction = MovementState.RIGHT;
+      }
+    }
+  }
+
+  chopTree() {
+    if (this.activeTool instanceof AxeEntity) {
+      const animation = this.activeTool.sprite.animation;
+      if (!animation.isRunning) {
+        animation.onCompletedCycle = () => {
+          (this.activeTool.target as TreeEntity).getChop();
+        };
+      }
+      animation.isRunning = true;
+    }
+  }
+
+  private setActiveTool(tool: ToolEntity<any> | null) {
+    if (this.activeTool && !tool) {
+      this.activeTool.isVisible = false;
+      this.activeTool.target = null;
+    }
+    if (tool) {
+      tool.isVisible = true;
+    }
+    this.activeTool = tool;
+  }
+
+  private handleActiveTool() {
+    const activeTool = this.activeTool;
+    if (activeTool) {
+      activeTool.position.x = this.position.x;
+      activeTool.position.y =
+        this.position.y - this.height / 2 - activeTool.height / 2;
+
+      if (this.direction === MovementState.LEFT) {
+        activeTool.scaleX = -1;
+      } else if (this.direction === MovementState.RIGHT) {
+        activeTool.scaleX = 1;
+      } else if (this.direction === MovementState.UP) {
+      } else {
+        // todo
       }
     }
   }
 
   onUpdate() {
-    this.movement();
+    this.handleMovement();
+    this.handleActiveTool();
+  }
+
+  onActive() {
+    // this.debugSensor = true;
+    this.addSensor({ width: 80, height: 90 });
   }
 
   onBootstrapCompleted() {
-    this._ChickenGeneratorEntity = this.worldManagement.getEntity(
+    this._chickenGenerator = this.worldManagement.getEntity(
       ChickenGeneratorEntity
     );
+    this.background = this.worldManagement.getEntity(BackgroundEntity);
+    this.axe = this.worldManagement.getEntity(AxeEntity);
+    this.pickaxe = this.worldManagement.getEntity(PickaxeEntity);
+    this.fishingRod = this.worldManagement.getEntity(FishingRodEntity);
+
     this.scene.onJoystickAction((data) => {
       if (data.type === JoystickActionType.MOVE) {
         this.lastMove = {
@@ -554,5 +624,20 @@ export class FarmerEntity extends RectEntity<Props> {
         this.lastMove = undefined;
       }
     });
+  }
+
+  onSensorCollisionActive(_: any, target: any) {
+    if (target instanceof TreeEntity) {
+      if (!this.activeTool) {
+        this.axe.target = target;
+        this.setActiveTool(this.axe);
+      }
+    }
+  }
+
+  onSensorCollisionEnd(_: any, target: any) {
+    if (target instanceof TreeEntity) {
+      this.setActiveTool(null);
+    }
   }
 }

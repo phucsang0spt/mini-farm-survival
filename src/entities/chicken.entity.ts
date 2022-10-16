@@ -9,7 +9,7 @@ import {
 } from "react-simple-game-engine/lib";
 import {
   Avatar,
-  Configation,
+  Configuration,
   EntityPrepare,
 } from "react-simple-game-engine/lib/export-types";
 import { msToTimer } from "utils";
@@ -140,7 +140,7 @@ export class ChickenEntity extends RectEntity<Props> {
 
   onActive() {
     this.onTimer(
-      this.growTime,
+      this.growTime * 1000,
       //invoke
       () => {
         this.sprite.animator.state = ChickenState.ADULT;
@@ -163,7 +163,7 @@ export class ChickenEntity extends RectEntity<Props> {
 }
 
 export class ChickenPrefab extends Prefab<ChickenEntity> {
-  constructor(config: Configation<ChickenEntity>) {
+  constructor(config: Configuration<ChickenEntity>) {
     super([ChickenEntity, config]);
   }
 }

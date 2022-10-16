@@ -78,7 +78,7 @@ function InfoViewExtend({ item, source, onBuy }: InfoViewExtendProps) {
 
   const isOverloadChickenPlace =
     item.code === "chicken"
-      ? source.ChickenGeneratorEntity.isOverloadChickenPlace(qty)
+      ? source.chickenGenerator.isOverloadChickenPlace(qty)
       : false;
   return (
     <>

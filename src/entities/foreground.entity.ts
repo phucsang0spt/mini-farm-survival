@@ -10,22 +10,22 @@ import {
 } from "react-simple-game-engine/lib/export-types";
 
 type Props = {
-  forgroundSprite: Avatar;
+  foregroundSprite: Avatar;
 };
-export class ForgroundEntity extends RectEntity<Props> {
+export class ForegroundEntity extends RectEntity<Props> {
   protected onPrepare(): EntityPrepare<this> {
     return {
       sprite: new LogicComponent([
         AvatarSprite,
         {
-          source: this.props.forgroundSprite,
+          source: this.props.foregroundSprite,
         },
       ]),
       transform: {
         x: 0,
         y: 0,
-        width: this.props.forgroundSprite.width,
-        height: this.props.forgroundSprite.height,
+        width: this.props.foregroundSprite.width,
+        height: this.props.foregroundSprite.height,
       },
       enabledPhysicBody: false,
     };
