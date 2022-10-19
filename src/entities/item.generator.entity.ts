@@ -1,10 +1,14 @@
 import { Saver } from "react-simple-game-engine/lib";
-import { Avatar } from "react-simple-game-engine/lib/export-types";
+import { Avatar, Point } from "react-simple-game-engine/lib/export-types";
 import { Generator } from "./generator.entity";
 import { ItemPrefab } from "./item.entity";
 
 type Props = {
   coinSprite: Avatar;
+  woodSprite: {
+    x6: Avatar;
+    x9: Avatar;
+  };
 };
 
 export class ItemGeneratorEntity extends Generator<Props> {
@@ -44,6 +48,22 @@ export class ItemGeneratorEntity extends Generator<Props> {
 
       Saver.set("daily-coin", dailyCoin);
     }
+  }
+
+  generateWood(size: "x6" | "x9", position: Point) {
+    this.worldManagement.addEntity(
+      this.scene.getPrefab(ItemPrefab).output({
+        props: {
+          code: "wood",
+          sprite: this.props.woodSprite[size],
+          qty: size === "x6" ? 6 : 9,
+        },
+        transform: {
+          x: position.x,
+          y: position.y,
+        },
+      })
+    );
   }
 
   onBootstrapCompleted() {

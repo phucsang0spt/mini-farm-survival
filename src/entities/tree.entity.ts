@@ -10,7 +10,7 @@ import {
   EntityPrepare,
 } from "react-simple-game-engine/lib/export-types";
 import { TILE_SIZE } from "./generator.entity";
-import { WoodPrefab } from "./wood.entity";
+import { ItemGeneratorEntity } from "./item.generator.entity";
 
 type Props = {
   sprite: Avatar;
@@ -107,17 +107,12 @@ export class TreeEntity extends RectEntity<Props> {
     const hp = --this.hp.current;
     if (hp < 1) {
       this.terminate({ duration: 200, keepVisible: true });
-      this.worldManagement.addEntity(
-        this.scene.getPrefab(WoodPrefab).output({
-          props: {
-            type: this.props.type === "big" ? "x5" : "x3",
-          },
-          transform: {
-            x: this.position.x,
-            y: this.position.y,
-          },
-        })
-      );
+      this.worldManagement
+        .getEntity(ItemGeneratorEntity)
+        .generateWood(this.props.type === "big" ? "x9" : "x6", {
+          x: this.position.x,
+          y: this.position.y,
+        });
     }
   }
 

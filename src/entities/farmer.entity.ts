@@ -112,6 +112,12 @@ export class FarmerEntity extends RectEntity<Props> {
     return this._ownItems;
   }
 
+  get woodQty() {
+    return (
+      this._groupOwnItems.wood?.reduce((s, ownItem) => s + ownItem.qty, 0) || 0
+    );
+  }
+
   get ownFoodItems() {
     return this._ownItems.filter((item) => itemHash[item.code].type === "food");
   }
@@ -331,9 +337,12 @@ export class FarmerEntity extends RectEntity<Props> {
   }
 
   isUsing(id: string) {
-    if (id === this._activeShield?.id || id === this._activeSword?.id) {
-      return true;
+    if (this._activeShield) {
+      if (id === this._activeShield.id || id === this._activeSword.id) {
+        return true;
+      }
     }
+
     for (const shape in this._activeTools) {
       if (this._activeTools.hasOwnProperty(shape)) {
         if (this._activeTools[shape as ToolShape].id === id) {
@@ -393,6 +402,7 @@ export class FarmerEntity extends RectEntity<Props> {
       this.cash = this._cash + COIN_VALUE;
       return;
     }
+    console.log("code", code, qty);
     this.addItem(code, qty);
   }
 
@@ -554,6 +564,10 @@ export class FarmerEntity extends RectEntity<Props> {
     }
   }
 
+  action() {
+    this.chopTree();
+  }
+
   chopTree() {
     if (this.activeTool instanceof AxeEntity) {
       const animation = this.activeTool.sprite.animation;
@@ -570,6 +584,7 @@ export class FarmerEntity extends RectEntity<Props> {
     if (this.activeTool && !tool) {
       this.activeTool.isVisible = false;
       this.activeTool.target = null;
+      this.activeTool.sprite.animation.isRunning = false;
     }
     if (tool) {
       tool.isVisible = true;
@@ -602,7 +617,7 @@ export class FarmerEntity extends RectEntity<Props> {
 
   onActive() {
     // this.debugSensor = true;
-    this.addSensor({ width: 80, height: 90 });
+    this.addSensor({ width: 75, height: 90 });
   }
 
   onBootstrapCompleted() {

@@ -19,10 +19,11 @@ import { BasketTool } from "components/basket-tool";
 
 import heart from "assets/images/heart.png";
 import cog from "assets/images/cog.png";
-import cogBag from "assets/images/coin-bag.png";
+import coinBag from "assets/images/coin-bag.png";
 import waterBar from "assets/images/water-bar.png";
 import backpack from "assets/images/backpack.png";
 import cart from "assets/images/cart.png";
+import woodGroup from "assets/images/wood-group.png";
 
 import hand from "assets/images/hand.png";
 
@@ -87,11 +88,11 @@ const ToolStack = styled.div`
   }
 `;
 
-const CoinValue = styled.span`
-  font-size: 0.9rem;
-  line-height: 0.9rem;
+const Value = styled.span`
+  font-size: 0.8rem;
+  line-height: 0.8rem;
   font-weight: bold;
-  color: #fee03c;
+  color: #3e3e3e;
 `;
 
 export type GamePlayUIProps = {
@@ -193,7 +194,7 @@ export function GamePlayUI({ scene }: GamePlayUIProps) {
               rounded
               size="medium"
               onPress={() => {
-                farmer.chopTree();
+                farmer.action();
               }}
               sprite={hand}
             />
@@ -205,13 +206,40 @@ export function GamePlayUI({ scene }: GamePlayUIProps) {
         <ControlContainer>
           <Control top={0} right={20 + 20 + 0} yAxisOriginCenter>
             <ControlContainer>
-              <Control top={0} right={3 + 22} yAxisOriginCenter>
-                <Watcher names="cash" initialValues={{ cash: farmer.cash }}>
-                  {({ cash }) => <CoinValue>{valueToAlpha(cash)}</CoinValue>}
-                </Watcher>
-              </Control>
               <Control top={0} right={0} yAxisOriginCenter>
-                <BlockItem sprite={cogBag} size="small" background={false} />
+                <ControlContainer>
+                  <Control top={0} right={3 + 22} yAxisOriginCenter>
+                    <Watcher names="cash" initialValues={{ cash: farmer.cash }}>
+                      {({ cash }) => <Value>{valueToAlpha(cash)}</Value>}
+                    </Watcher>
+                  </Control>
+                  <Control top={0} right={0} yAxisOriginCenter>
+                    <BlockItem
+                      sprite={coinBag}
+                      size="small"
+                      background={false}
+                    />
+                  </Control>
+                </ControlContainer>
+              </Control>
+              <Control top={3 + 22} right={0} yAxisOriginCenter>
+                <ControlContainer>
+                  <Control top={0} right={3 + 22} yAxisOriginCenter>
+                    <Watcher
+                      names="own-items"
+                      initialValues={{ "own-items": farmer.ownItems }}
+                    >
+                      {() => <Value>{valueToAlpha(farmer.woodQty)}</Value>}
+                    </Watcher>
+                  </Control>
+                  <Control top={0} right={0} yAxisOriginCenter>
+                    <BlockItem
+                      sprite={woodGroup}
+                      size="small"
+                      background={false}
+                    />
+                  </Control>
+                </ControlContainer>
               </Control>
             </ControlContainer>
           </Control>

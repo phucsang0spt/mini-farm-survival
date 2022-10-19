@@ -42,8 +42,8 @@ import axeSheet from "assets/images/axe-sheet.png";
 import pickaxeSheet from "assets/images/pickaxe-sheet.png";
 import fishingRodSheet from "assets/images/fishing-rod-sheet.png";
 import chickenSheet from "assets/images/items/animals/chicken-sheet.png";
-import woodX3 from "assets/images/wood-x3.png";
-import woodX5 from "assets/images/wood-x5.png";
+import woodX6 from "assets/images/wood-x6.png";
+import woodX9 from "assets/images/wood-x9.png";
 
 import coin from "assets/images/items/coin.png";
 
@@ -56,7 +56,6 @@ import bigTreeOffsets from "data/big-tree-offsets.json";
 
 import { GamePlayUI } from "./ui/game-play.ui";
 import { PickaxeEntity } from "entities/pickaxe.entity";
-import { WoodPrefab } from "entities/wood.entity";
 
 @SceneTag("scene-1")
 @SceneUI(GamePlayUI)
@@ -70,11 +69,11 @@ export class Scene1 extends Scene {
   @SpriteFrom(tree)
   treeSprite: Avatar;
 
-  @SpriteFrom(woodX3)
-  woodX3Sprite: Avatar;
+  @SpriteFrom(woodX6)
+  woodX6Sprite: Avatar;
 
-  @SpriteFrom(woodX5)
-  woodX5Sprite: Avatar;
+  @SpriteFrom(woodX9)
+  woodX9Sprite: Avatar;
 
   @SpriteFrom(bigTree)
   bigTreeSprite: Avatar;
@@ -162,12 +161,6 @@ export class Scene1 extends Scene {
           bigSprite: this.bigTreeSprite,
         },
       }),
-      new WoodPrefab({
-        props: {
-          sprite: this.woodX3Sprite,
-          spriteX5: this.woodX5Sprite,
-        },
-      }),
       new LogicComponent([
         BoundaryGeneratorEntity,
         {
@@ -222,6 +215,10 @@ export class Scene1 extends Scene {
         {
           props: {
             coinSprite: this.coinSprite,
+            woodSprite: {
+              x6: this.woodX6Sprite,
+              x9: this.woodX9Sprite,
+            },
           },
         },
       ]),

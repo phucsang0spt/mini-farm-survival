@@ -17,11 +17,13 @@ type Props = {
   code: Item["code"];
   highlight?: boolean;
   highlightSprite: Avatar;
+  qty?: number;
 };
 
 export class ItemEntity extends RectEntity<Props> {
   private highlightAnimation: AvatarAnimationSprite;
   protected onPrepare(): EntityPrepare<this> {
+    this.props.qty = this.props.qty ?? 1;
     this.highlightAnimation = new LogicComponent([
       AvatarAnimationSprite,
       {
@@ -71,7 +73,7 @@ export class ItemEntity extends RectEntity<Props> {
 
   onCollision(target: any) {
     if (target instanceof FarmerEntity) {
-      target.pickItem(this.props.code, 1);
+      target.pickItem(this.props.code, this.props.qty);
       // destroy item after pick
       this.terminate();
     }
