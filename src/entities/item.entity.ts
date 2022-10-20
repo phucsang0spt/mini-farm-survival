@@ -10,7 +10,6 @@ import {
   Configuration,
   EntityPrepare,
 } from "react-simple-game-engine/lib/export-types";
-import { FarmerEntity } from "./farmer.entity";
 
 type Props = {
   sprite: Avatar;
@@ -68,14 +67,6 @@ export class ItemEntity extends RectEntity<Props> {
           this.highlightAnimation.draw();
         }
       );
-    }
-  }
-
-  onCollision(target: any) {
-    if (target instanceof FarmerEntity) {
-      target.pickItem(this.props.code, this.props.qty);
-      // destroy item after pick
-      this.terminate();
     }
   }
 }

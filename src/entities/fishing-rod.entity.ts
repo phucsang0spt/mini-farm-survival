@@ -2,18 +2,18 @@ import {
   AvatarAnimationSprite,
   AvatarSprite,
   LogicComponent,
-  RectEntity,
 } from "react-simple-game-engine/lib";
 import {
   Avatar,
   EntityPrepare,
 } from "react-simple-game-engine/lib/export-types";
+import { ToolEntity } from "./tool.entity";
 
 type Props = {
   sprite: Avatar;
 };
 
-export class FishingRodEntity extends RectEntity<Props> {
+export class FishingRodEntity extends ToolEntity<Props> {
   protected onPrepare(): EntityPrepare<this> {
     return {
       isVisible: false,

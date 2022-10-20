@@ -25,9 +25,12 @@ import { AxeEntity } from "./axe.entity";
 import { BackgroundEntity } from "./background.entity";
 import { ChickenGeneratorEntity } from "./chicken.generator.entity";
 import { FishingRodEntity } from "./fishing-rod.entity";
+import { ItemEntity } from "./item.entity";
 import { PickaxeEntity } from "./pickaxe.entity";
-import { ToolEntity } from "./tool.entity";
+import { FarmerAction, ToolEntity } from "./tool.entity";
 import { TreeEntity } from "./tree.entity";
+
+type ActionType = "chop-tree" | "crush-stone" | "pick";
 
 type Props = {
   farmerSprite: Avatar;
@@ -46,7 +49,9 @@ enum MovementState {
 
 const COIN_VALUE = 100;
 export class FarmerEntity extends RectEntity<Props> {
+  private direction: MovementState;
   private lastMove?: { vector: Vector; direction: JoystickDirection };
+
   private _ownItems: OwnItem[] = [];
   private _groupOwnItems: Record<OwnItem["code"], OwnItem[]> = {};
   private _activeSword: ActiveItem = Saver.get("active-sword");
@@ -57,12 +62,17 @@ export class FarmerEntity extends RectEntity<Props> {
   );
   private _cash: number = Saver.getWithDefault("cash", 5);
   private _chickenGenerator: ChickenGeneratorEntity;
+
   private background: BackgroundEntity;
+
   private axe: AxeEntity;
   private pickaxe: PickaxeEntity;
   private fishingRod: FishingRodEntity;
-  private direction: MovementState;
-  private activeTool: ToolEntity;
+  private pickTarget: ItemEntity;
+  private actionStacks: {
+    type: ActionType;
+    tool: ToolEntity | { action: FarmerAction };
+  }[] = [];
 
   get cash() {
     return this._cash;
@@ -290,74 +300,6 @@ export class FarmerEntity extends RectEntity<Props> {
     this.activeTools = { ...this._activeTools };
   }
 
-  addItem(
-    code: Item["code"],
-    qty: number,
-    { id, emit = true }: { id?: OwnItem["id"]; emit?: boolean } = {}
-  ) {
-    const itemClass = itemHash[code];
-    if (itemClass.type === "equipment" || itemClass.type === "tool") {
-      Array.from({ length: qty }).forEach(() => {
-        const _id = id ?? genId();
-        this._ownItems.push({
-          code,
-          qty: 1,
-          id: _id,
-        });
-        if (itemClass.type === "tool") {
-          if (!this._activeTools[itemClass.format.shape]) {
-            this.activeTools = {
-              ...this._activeTools,
-              [itemClass.format.shape]: { code, id: _id },
-            };
-          }
-        }
-      });
-    } else {
-      const item = this._groupOwnItems[code]?.[0];
-      if (item) {
-        item.qty += qty;
-      } else {
-        this._ownItems.push({
-          code,
-          qty,
-          id: id ?? genId(),
-        });
-      }
-    }
-    this.updateGroupOwnItems();
-
-    if (emit) {
-      Saver.set("own-items", this.ownItems);
-      this.scene.emitEntityPropsChange("own-items", {
-        list: this._ownItems,
-        group: this._groupOwnItems,
-      });
-    }
-  }
-
-  isUsing(id: string) {
-    if (this._activeShield) {
-      if (id === this._activeShield.id || id === this._activeSword.id) {
-        return true;
-      }
-    }
-
-    for (const shape in this._activeTools) {
-      if (this._activeTools.hasOwnProperty(shape)) {
-        if (this._activeTools[shape as ToolShape].id === id) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  getItemQuantity(code: Item["code"]) {
-    const items = this._groupOwnItems[code] || [];
-    return items.reduce((s, item) => s + item.qty, 0);
-  }
-
   private reduceItem(code: Item["code"], qty: number) {
     const delIndexes = [];
     const items = this._groupOwnItems[code] || [];
@@ -381,71 +323,6 @@ export class FarmerEntity extends RectEntity<Props> {
     }
 
     return remainQty;
-  }
-
-  craftItem(
-    target: { code: Item["code"]; qty: number },
-    materials: { code: Item["code"]; usedQty: number }[]
-  ) {
-    for (const material of materials) {
-      material.usedQty = this.reduceItem(material.code, material.usedQty);
-    }
-
-    this.updateGroupOwnItems();
-    this.cleanActiveItems();
-
-    this.addItem(target.code, target.qty);
-  }
-
-  pickItem(code: Item["code"], qty: number) {
-    if (code === "coin") {
-      this.cash = this._cash + COIN_VALUE;
-      return;
-    }
-    console.log("code", code, qty);
-    this.addItem(code, qty);
-  }
-
-  sellItem(
-    code: Item["code"],
-    { qty, totalIncome }: { qty: number; totalIncome: number }
-  ) {
-    this.reduceItem(code, qty);
-    this.cash = this._cash + totalIncome;
-    this.updateGroupOwnItems();
-    this.cleanActiveItems();
-    Saver.set("own-items", this.ownItems);
-    this.scene.emitEntityPropsChange("own-items", {
-      list: this._ownItems,
-      group: this._groupOwnItems,
-    });
-  }
-
-  buyItem(
-    item: Item,
-    { qty, totalPrice }: { qty: number; totalPrice: number }
-  ) {
-    if (item.type === "stuff") {
-      if (item.code === "chicken") {
-        this.chickenGenerator.addChickens(qty);
-        this.cash = this._cash - totalPrice;
-        return;
-      }
-    }
-    this.addItem(item.code, qty);
-    this.cash = this._cash - totalPrice;
-  }
-
-  eatFood(code: Item["code"]) {
-    this.reduceItem(code, 1);
-    this.updateGroupOwnItems();
-    this.cleanActiveItems();
-    Saver.set("own-items", this.ownItems);
-    this.scene.emitEntityPropsChange("own-items", {
-      list: this._ownItems,
-      group: this._groupOwnItems,
-    });
-    // todo: up health, up water
   }
 
   private moveCamera(edge: EntityEdge) {
@@ -564,41 +441,39 @@ export class FarmerEntity extends RectEntity<Props> {
     }
   }
 
-  action() {
-    this.chopTree();
+  get activeAction() {
+    return this.actionStacks[0];
   }
 
-  chopTree() {
-    if (this.activeTool instanceof AxeEntity) {
-      const animation = this.activeTool.sprite.animation;
-      if (!animation.isRunning) {
-        animation.onCompletedCycle = () => {
-          (this.activeTool.target as TreeEntity).getChop();
-        };
-      }
-      animation.isRunning = true;
+  private pickItem() {
+    const activeTool = this.activeAction.tool;
+    const target = activeTool.action.latestTarget as ItemEntity;
+    const { code, qty = 1 } = target.props;
+    if (code === "coin") {
+      this.cash = this._cash + COIN_VALUE;
+      return;
     }
+    this.addItem(code, qty);
+    target.terminate();
   }
 
-  private setActiveTool(tool: ToolEntity<any> | null) {
-    if (this.activeTool && !tool) {
-      this.activeTool.isVisible = false;
-      this.activeTool.target = null;
-      this.activeTool.sprite.animation.isRunning = false;
+  private chopTree() {
+    const activeTool = this.activeAction.tool as AxeEntity;
+    const animation = activeTool.sprite.animation;
+    if (!animation.isRunning) {
+      animation.onCompletedCycle = () => {
+        (activeTool.action.latestTarget as TreeEntity).getChop();
+      };
     }
-    if (tool) {
-      tool.isVisible = true;
-    }
-    this.activeTool = tool;
+    animation.isRunning = true;
   }
 
   private handleActiveTool() {
-    const activeTool = this.activeTool;
-    if (activeTool) {
+    const activeTool = this.activeAction?.tool;
+    if (activeTool instanceof ToolEntity) {
       activeTool.position.x = this.position.x;
       activeTool.position.y =
         this.position.y - this.height / 2 - activeTool.height / 2;
-
       if (this.direction === MovementState.LEFT) {
         activeTool.scaleX = -1;
       } else if (this.direction === MovementState.RIGHT) {
@@ -610,14 +485,206 @@ export class FarmerEntity extends RectEntity<Props> {
     }
   }
 
+  private reduceAction(type: ActionType, target: RectEntity) {
+    const exist = this.getAction(type);
+    if (exist) {
+      // go away from target
+      exist.tool.action.removeTarget(target);
+      if (exist.tool instanceof ToolEntity) {
+        exist.tool.sprite.animation.isRunning = false;
+      }
+
+      // if any target nearby then remove action
+      if (!exist.tool.action.targets.length) {
+        if (exist.tool instanceof ToolEntity) {
+          exist.tool.isVisible = false;
+        }
+        this.actionStacks.splice(this.actionStacks.indexOf(exist), 1);
+      }
+    }
+    this.scene.emitEntityPropsChange("active-action", this.activeAction);
+  }
+
+  private addAction(
+    type: ActionType,
+    tool: typeof this.actionStacks[0]["tool"],
+    target: RectEntity
+  ) {
+    let exist = this.getAction(type);
+    if (!exist) {
+      exist = { type, tool };
+      if (tool instanceof ToolEntity) {
+        tool.isVisible = true;
+      }
+
+      //add action
+      this.actionStacks.push(exist);
+    }
+    // detected target nearby
+    exist.tool.action.addTarget(target);
+    this.scene.emitEntityPropsChange("active-action", this.activeAction);
+  }
+
+  private getAction(type: ActionType) {
+    return this.actionStacks.find((act) => act.type === type);
+  }
+
+  doAction() {
+    const activeTool = this.activeAction?.tool;
+    if (activeTool) {
+      const xDir = activeTool.action.latestTarget.position.x - this.position.x;
+
+      // snap farmer to target direction
+      if (xDir > 0) {
+        this.sprite.animator.state = MovementState.STAND_RIGHT;
+        this.direction = MovementState.RIGHT;
+      } else if (xDir < 0) {
+        this.sprite.animator.state = MovementState.STAND_LEFT;
+        this.direction = MovementState.LEFT;
+      }
+
+      if (activeTool instanceof ToolEntity) {
+        if (activeTool instanceof AxeEntity) {
+          this.chopTree();
+        }
+      } else {
+        this.pickItem();
+      }
+    }
+  }
+
+  addItem(
+    code: Item["code"],
+    qty: number,
+    { id, emit = true }: { id?: OwnItem["id"]; emit?: boolean } = {}
+  ) {
+    const itemClass = itemHash[code];
+    if (itemClass.type === "equipment" || itemClass.type === "tool") {
+      Array.from({ length: qty }).forEach(() => {
+        const _id = id ?? genId();
+        this._ownItems.push({
+          code,
+          qty: 1,
+          id: _id,
+        });
+        if (itemClass.type === "tool") {
+          if (!this._activeTools[itemClass.format.shape]) {
+            this.activeTools = {
+              ...this._activeTools,
+              [itemClass.format.shape]: { code, id: _id },
+            };
+          }
+        }
+      });
+    } else {
+      const item = this._groupOwnItems[code]?.[0];
+      if (item) {
+        item.qty += qty;
+      } else {
+        this._ownItems.push({
+          code,
+          qty,
+          id: id ?? genId(),
+        });
+      }
+    }
+    this.updateGroupOwnItems();
+
+    if (emit) {
+      Saver.set("own-items", this.ownItems);
+      this.scene.emitEntityPropsChange("own-items", {
+        list: this._ownItems,
+        group: this._groupOwnItems,
+      });
+    }
+  }
+
+  isUsing(id: string) {
+    if (this._activeShield) {
+      if (id === this._activeShield.id || id === this._activeSword.id) {
+        return true;
+      }
+    }
+
+    for (const shape in this._activeTools) {
+      if (this._activeTools.hasOwnProperty(shape)) {
+        if (this._activeTools[shape as ToolShape].id === id) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  getItemQuantity(code: Item["code"]) {
+    const items = this._groupOwnItems[code] || [];
+    return items.reduce((s, item) => s + item.qty, 0);
+  }
+
+  craftItem(
+    target: { code: Item["code"]; qty: number },
+    materials: { code: Item["code"]; usedQty: number }[]
+  ) {
+    for (const material of materials) {
+      material.usedQty = this.reduceItem(material.code, material.usedQty);
+    }
+
+    this.updateGroupOwnItems();
+    this.cleanActiveItems();
+
+    this.addItem(target.code, target.qty);
+  }
+
+  sellItem(
+    code: Item["code"],
+    { qty, totalIncome }: { qty: number; totalIncome: number }
+  ) {
+    this.reduceItem(code, qty);
+    this.cash = this._cash + totalIncome;
+    this.updateGroupOwnItems();
+    this.cleanActiveItems();
+    Saver.set("own-items", this.ownItems);
+    this.scene.emitEntityPropsChange("own-items", {
+      list: this._ownItems,
+      group: this._groupOwnItems,
+    });
+  }
+
+  buyItem(
+    item: Item,
+    { qty, totalPrice }: { qty: number; totalPrice: number }
+  ) {
+    if (item.type === "stuff") {
+      if (item.code === "chicken") {
+        this.chickenGenerator.addChickens(qty);
+        this.cash = this._cash - totalPrice;
+        return;
+      }
+    }
+    this.addItem(item.code, qty);
+    this.cash = this._cash - totalPrice;
+  }
+
+  eatFood(code: Item["code"]) {
+    this.reduceItem(code, 1);
+    this.updateGroupOwnItems();
+    this.cleanActiveItems();
+    Saver.set("own-items", this.ownItems);
+    this.scene.emitEntityPropsChange("own-items", {
+      list: this._ownItems,
+      group: this._groupOwnItems,
+    });
+    // todo: up health, up water
+  }
+
   onUpdate() {
     this.handleMovement();
     this.handleActiveTool();
   }
 
   onActive() {
-    // this.debugSensor = true;
-    this.addSensor({ width: 75, height: 90 });
+    this.debugSensor = true;
+    this.addSensor({ width: 60, height: 60 }, true);
   }
 
   onBootstrapCompleted() {
@@ -641,18 +708,19 @@ export class FarmerEntity extends RectEntity<Props> {
     });
   }
 
-  onSensorCollisionActive(_: any, target: any) {
+  onSensorCollision(_: any, target: any) {
     if (target instanceof TreeEntity) {
-      if (!this.activeTool) {
-        this.axe.target = target;
-        this.setActiveTool(this.axe);
-      }
+      this.addAction("chop-tree", this.axe, target);
+    } else if (target instanceof ItemEntity) {
+      this.addAction("pick", { action: new FarmerAction() }, target);
     }
   }
 
   onSensorCollisionEnd(_: any, target: any) {
     if (target instanceof TreeEntity) {
-      this.setActiveTool(null);
+      this.reduceAction("chop-tree", target);
+    } else if (target instanceof ItemEntity) {
+      this.reduceAction("pick", target);
     }
   }
 }

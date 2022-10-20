@@ -12,6 +12,7 @@ import {
 
 import { SettingsPanel } from "components/settings-panel";
 import { BackpackPanel } from "components/backpack-panel";
+import { ShopPanel } from "components/shop-panel";
 
 import { Button } from "components/button";
 import { BlockItem } from "components/block-item";
@@ -24,13 +25,14 @@ import waterBar from "assets/images/water-bar.png";
 import backpack from "assets/images/backpack.png";
 import cart from "assets/images/cart.png";
 import woodGroup from "assets/images/wood-group.png";
-
 import hand from "assets/images/hand.png";
+import power from "assets/images/power.png";
 
 import { itemHash } from "data/item-list";
-import { ShopPanel } from "components/shop-panel";
 import { valueToAlpha } from "utils";
+
 import { FarmerEntity } from "entities/farmer.entity";
+import { ToolEntity } from "entities/tool.entity";
 
 const Root = styled.div`
   width: 100%;
@@ -190,14 +192,27 @@ export function GamePlayUI({ scene }: GamePlayUIProps) {
             <BasketTool />
           </Control>
           <Control right={0} bottom={0}>
-            <BlockItem
-              rounded
-              size="medium"
-              onPress={() => {
-                farmer.action();
-              }}
-              sprite={hand}
-            />
+            <Watcher
+              names="active-action"
+              initialValues={{ "active-action": farmer.activeAction }}
+            >
+              {({ "active-action": action }) => (
+                <BlockItem
+                  rounded
+                  size="medium"
+                  onPress={() => {
+                    farmer.doAction();
+                  }}
+                  sprite={
+                    action
+                      ? action.tool instanceof ToolEntity
+                        ? power
+                        : hand
+                      : undefined
+                  }
+                />
+              )}
+            </Watcher>
           </Control>
         </ControlContainer>
       </Control>
