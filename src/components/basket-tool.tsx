@@ -70,9 +70,10 @@ export function BasketTool() {
         onPress={() => {
           if (showBasket) {
             setShow(false);
-          }
-          if (activeFood) {
-            farmer.eatFood(activeFood.code);
+          } else {
+            if (activeFood) {
+              farmer.eatFood(activeFood.code);
+            }
           }
         }}
         onLongPress={() => setShow(true)}
