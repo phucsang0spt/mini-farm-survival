@@ -683,7 +683,7 @@ export class FarmerEntity extends RectEntity<Props> {
   }
 
   onActive() {
-    this.debugSensor = true;
+    this.debugSensor = false;
     this.addSensor({ width: 60, height: 60 }, true);
   }
 

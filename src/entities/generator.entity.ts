@@ -58,15 +58,32 @@ export class Generator<Props> extends RectEntity<Props> {
   generateTile<E extends RectEntity<any>>(
     prefabClass: { new (...args: any[]): Prefab<E> },
     tileOffsets: number[],
-    props?: Partial<E["props"]> & Record<string, any>
+    {
+      props,
+      extendOffsets = {},
+    }: {
+      props?: Partial<E["props"]> & Record<string, any>;
+      extendOffsets?: {
+        x?: number;
+        y?: number;
+        width?: number;
+        height?: number;
+      };
+    } = {}
   ) {
+    const {
+      x: extendX = 0,
+      y: extendY = 0,
+      width: extendWidth = 0,
+      height: extendHeight = 0,
+    } = extendOffsets;
     for (const offset of this.generate2DOffset(tileOffsets)) {
       const entity = this.scene.getPrefab(prefabClass).output({
         transform: {
-          x: offset.x,
-          y: offset.y,
-          width: offset.width,
-          height: offset.height,
+          x: offset.x + extendX,
+          y: offset.y + extendY,
+          width: offset.width + extendWidth,
+          height: offset.height + extendHeight,
         },
         props,
       });

@@ -24,7 +24,6 @@ import { BoundaryGeneratorEntity } from "entities/boundary.generator.entity";
 import { ChickenGeneratorEntity } from "entities/chicken.generator.entity";
 import { BackgroundEntity } from "entities/background.entity";
 import { FarmerEntity } from "entities/farmer.entity";
-import { ForegroundEntity } from "entities/foreground.entity";
 import { ItemPrefab } from "entities/item.entity";
 import { ItemGeneratorEntity } from "entities/item.generator.entity";
 import { TreePrefab } from "entities/tree.entity";
@@ -33,8 +32,8 @@ import { AxeEntity } from "entities/axe.entity";
 import { FishingRodEntity } from "entities/fishing-rod.entity";
 
 import background from "assets/images/survival-farm-map.png";
-import foreground from "assets/images/survival-farm-map-foreground.png";
 import tree from "assets/images/tree.png";
+import staticTree from "assets/images/static-tree.png";
 import bigTree from "assets/images/big-tree.png";
 import highlightSheet from "assets/images/highlight-sheet.png";
 import farmerSheet from "assets/images/farmer-sheet.png";
@@ -49,6 +48,8 @@ import coin from "assets/images/items/coin.png";
 
 import backgroundMusic from "assets/sounds/music.wav";
 
+import staticTreeOffsets from "data/static-tree-offsets.json";
+import staticTreeOffsets2 from "data/static-tree-offsets-2.json";
 import boundaryOffsets from "data/boundary-offsets.json";
 import breadPlaceOffsets from "data/bread-place-offsets.json";
 import treeOffsets from "data/tree-offsets.json";
@@ -56,6 +57,8 @@ import bigTreeOffsets from "data/big-tree-offsets.json";
 
 import { GamePlayUI } from "./ui/game-play.ui";
 import { PickaxeEntity } from "entities/pickaxe.entity";
+import { StaticTreeGeneratorEntity } from "entities/static-tree.generator.entity";
+import { StaticTreePrefab } from "entities/static-tree.entity";
 
 @SceneTag("scene-1")
 @SceneUI(GamePlayUI)
@@ -63,8 +66,8 @@ export class Scene1 extends Scene {
   @SpriteFrom(background)
   backgroundSprite!: Avatar;
 
-  @SpriteFrom(foreground)
-  foregroundSprite!: Avatar;
+  @SpriteFrom(staticTree)
+  staticTreeSprite: Avatar;
 
   @SpriteFrom(tree)
   treeSprite: Avatar;
@@ -143,6 +146,11 @@ export class Scene1 extends Scene {
           },
         },
       ]),
+      new StaticTreePrefab({
+        props: {
+          sprite: this.staticTreeSprite,
+        },
+      }),
       new BoundaryPrefab({}),
       new ChickenPrefab({
         props: {
@@ -230,11 +238,13 @@ export class Scene1 extends Scene {
           },
         },
       ]),
+
       new LogicComponent([
-        ForegroundEntity,
+        StaticTreeGeneratorEntity,
         {
           props: {
-            foregroundSprite: this.foregroundSprite,
+            staticTreeOffsets: staticTreeOffsets as (1 | 0)[],
+            staticTreeOffsets2: staticTreeOffsets2 as (1 | 0)[],
           },
         },
       ]),

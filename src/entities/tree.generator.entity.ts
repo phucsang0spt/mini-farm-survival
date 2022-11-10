@@ -11,6 +11,6 @@ export class TreeGeneratorEntity extends Generator<Props> {
     super.onBootstrapCompleted();
     const { treeOffsets, bigTreeOffsets } = this.props;
     this.generateTile(TreePrefab, treeOffsets);
-    this.generateTile(TreePrefab, bigTreeOffsets, { type: "big" });
+    this.generateTile(TreePrefab, bigTreeOffsets, { props: { type: "big" } });
   }
 }
