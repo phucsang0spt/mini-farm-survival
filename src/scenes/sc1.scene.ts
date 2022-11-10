@@ -20,18 +20,26 @@ import {
 
 import { BoundaryPrefab } from "entities/boundary.entity";
 import { ChickenPrefab } from "entities/chicken.entity";
+import { ItemPrefab } from "entities/item.entity";
+import { TreePrefab } from "entities/tree.entity";
+import { StaticTreePrefab } from "entities/static-tree.entity";
+import { HousePrefab } from "entities/house.entity";
+
+import { HouseGeneratorEntity } from "entities/house.generator.entity";
+import { StaticTreeGeneratorEntity } from "entities/static-tree.generator.entity";
 import { BoundaryGeneratorEntity } from "entities/boundary.generator.entity";
 import { ChickenGeneratorEntity } from "entities/chicken.generator.entity";
+
 import { BackgroundEntity } from "entities/background.entity";
 import { FarmerEntity } from "entities/farmer.entity";
-import { ItemPrefab } from "entities/item.entity";
 import { ItemGeneratorEntity } from "entities/item.generator.entity";
-import { TreePrefab } from "entities/tree.entity";
 import { TreeGeneratorEntity } from "entities/tree.generator.entity";
 import { AxeEntity } from "entities/axe.entity";
 import { FishingRodEntity } from "entities/fishing-rod.entity";
+import { PickaxeEntity } from "entities/pickaxe.entity";
 
 import background from "assets/images/survival-farm-map.png";
+import house from "assets/images/house.png";
 import tree from "assets/images/tree.png";
 import staticTree from "assets/images/static-tree.png";
 import bigTree from "assets/images/big-tree.png";
@@ -48,6 +56,7 @@ import coin from "assets/images/items/coin.png";
 
 import backgroundMusic from "assets/sounds/music.wav";
 
+import houseOffsets from "data/player-house-offsets.json";
 import staticTreeOffsets from "data/static-tree-offsets.json";
 import staticTreeOffsets2 from "data/static-tree-offsets-2.json";
 import boundaryOffsets from "data/boundary-offsets.json";
@@ -56,15 +65,15 @@ import treeOffsets from "data/tree-offsets.json";
 import bigTreeOffsets from "data/big-tree-offsets.json";
 
 import { GamePlayUI } from "./ui/game-play.ui";
-import { PickaxeEntity } from "entities/pickaxe.entity";
-import { StaticTreeGeneratorEntity } from "entities/static-tree.generator.entity";
-import { StaticTreePrefab } from "entities/static-tree.entity";
 
 @SceneTag("scene-1")
 @SceneUI(GamePlayUI)
 export class Scene1 extends Scene {
   @SpriteFrom(background)
   backgroundSprite!: Avatar;
+
+  @SpriteFrom(house)
+  houseSprite: Avatar;
 
   @SpriteFrom(staticTree)
   staticTreeSprite: Avatar;
@@ -146,6 +155,11 @@ export class Scene1 extends Scene {
           },
         },
       ]),
+      new HousePrefab({
+        props: {
+          sprite: this.houseSprite,
+        },
+      }),
       new StaticTreePrefab({
         props: {
           sprite: this.staticTreeSprite,
@@ -245,6 +259,14 @@ export class Scene1 extends Scene {
           props: {
             staticTreeOffsets: staticTreeOffsets as (1 | 0)[],
             staticTreeOffsets2: staticTreeOffsets2 as (1 | 0)[],
+          },
+        },
+      ]),
+      new LogicComponent([
+        HouseGeneratorEntity,
+        {
+          props: {
+            houseOffsets: houseOffsets as (1 | 0)[],
           },
         },
       ]),
